@@ -4,63 +4,194 @@
 #define	GROWING_FACTOR 2 // needs to be larger than 1!
 
 namespace ft {
-template<typename T>
+template < class T, class Allocator = std::allocator<T> >
 class Vector
 {
-	public:
-		Vector(void) : _data(nullptr), _size(0), _capacity(0)
+	public:			// member functions:
+
+		Vector( void ) : _value_type(nullptr), _size_type(0), _capacity(0)
 		{
 			realloc(2);
 		}
 
-		void	push_back(const T& value)
+		~Vector( void )
 		{
-			if (_size >= _capacity)
+			delete []_value_type;
+		}
+
+		Vector	&operator=( const vector& other )
+		{
+			if (this != &other)
+			{
+				delete []_value_type;							// not sure about wether or not to delete contents of vector that is about to be overwritten
+				reserve(other.capacity());				// should I only reserve for capacity items or size items?
+				_size_type = other._size_type;
+				_capacity = other._capacity;
+				for (size_t i = 0; i < _size_type; i++)
+				{
+					_value_type[i] = other._value_type[i];			// maybe also possible with insert()
+				}
+			}
+			return (*this);
+		}
+
+		//		assign()
+
+		void assign( size_type count, const T& value )
+		{
+			delete []_value_type;
+			reserve(count);
+			_size_type = count;
+			_capacity = count;
+			for (size_t i = 0; i < _size_type; i ++)
+			{
+				_value_type[i] = value;
+			}
+		}
+
+		template< class InputIt >
+		void assign( InputIt first, InputIt last )
+		{
+			if ((first >= begin() && first <= end()) || (last >= begin() && last <= end()))
+				return ;
+			delete []_value_type;
+			reserve(last - first);
+			_size_type = last - first;
+			_capacity = last - first;
+			for (size_t i = 0; first != last; first++)
+			{
+				_size_type[i++] = first;
+			}
+		}
+
+		//		get_allocator()
+
+		//	Element access:
+
+		//		at()
+
+		const T	&operator[]( size_t index ) const
+		{
+			if (index >= _size_type)
+			{
+				// out of bounds protection??
+			}
+			return (_value_type[index]);
+		}
+
+		T	&operator[]( size_t index )
+		{
+			if (index >= _size_type)
+			{
+				// out of bounds protection??
+			}
+			return (_value_type[index]);
+		}
+
+		//		front()
+
+		//		back()
+
+		//		data()
+
+		//	Iterators:
+
+		//		begin()
+
+		//		end()
+
+		//		rbegin()
+
+		//		rend()
+
+		//	Capacity:
+
+		//		empty()
+
+		size_t	size( void ) const
+		{
+			return (_size_type);
+		}
+
+		//		max_size()
+
+		void reserve( size_type newCapacity )
+		{
+			if (newCapacity > _capacity)
+				realloc(newCapacity);
+		}
+
+		size_t	capacity( void ) const
+		{
+			return (_capacity);
+		}
+
+		//	Modifiers:
+
+		//		clear()
+
+		//		insert()
+
+		//		erase()
+
+		void	push_back( const T& value )
+		{
+			if (_size_type >= _capacity)
 				realloc(_capacity * GROWING_FACTOR);
-			_data[_size] = value;
-			_size++;
+			_value_type[_size_type] = value;
+			_size_type++;
 		}
 
-		size_t	size(void) const
-		{
-			return (_size);
-		}
+		//		pop_back()
 
-		const T	&operator[](size_t index) const
-		{
-			if (index >= _size)
-			{
-				// out of bounds protection??
-			}
-			return (_data[index]);
-		}
+		//		resize()
 
-		T	&operator[](size_t index)
-		{
-			if (index >= _size)
-			{
-				// out of bounds protection??
-			}
-			return (_data[index]);
-		}
+		//		swap()
 
 	private:
-		void	realloc(size_t newCapacity)
+		void	realloc( size_t newCapacity )
 		{
-			T	*newVector = new T[newCapacity];
-			if (newCapacity < _size)
-				_size = newCapacity;
-			std::memmove(newVector, _data, _size * sizeof(T));
-			// for (size_t i = 0; i < _size; i++)
-			// 	newVector[i] = _data[i];
-			delete []_data;
-			_data = newVector;
+			T	*NewVector = new T[newCapacity];
+			if (newCapacity < _size_type)
+				_size_type = newCapacity;
+			std::memmove(NewVector, _value_type, _size_type * sizeof(T));		// memmove or just plain copying??
+			// for (size_t i = 0; i < _size_type; i++)
+			// 	NewVector[i] = _value_type[i];
+			delete []_value_type;
+			_value_type = NewVector;
 			_capacity = newCapacity;
 		}
 
-	private:
-		T	*_data;
-		size_t	_size;
-		size_t	_capacity;
+	public:
+		typedef Allocator			allocator_type;
+
+	protected:
+		typedef T			*_value_type;
+		typedef value_type			&reference;
+		typedef const value_type	&const_reference;
+		Allocator::pointer			pointer;
+		Allocator::const_pointer	const_pointer;
+		reverse_iterator<iterator>	
+
+		size_t		_size_type;
+		ptrdiff_t	_difference_type;
+		T			&reference
+		size_t		_capacity;
 };
 }
+
+//	Non-member functions:
+
+//		operator==()
+
+//		operator!=()
+
+//		operator<()
+
+//		operator<=()
+
+//		operator>()
+
+//		operator>=()
+
+//		std::swap(std::vector)

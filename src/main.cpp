@@ -1,6 +1,9 @@
 #include "Vector.hpp"
 #include <iostream>
 
+#define LOG(msg) std::cout << msg
+#define LOGN(msg) std::cout << msg << std::endl
+
 template<typename T>
 void	printVector(const T& vec)
 {
