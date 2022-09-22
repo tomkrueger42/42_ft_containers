@@ -22,5 +22,6 @@ int	main(void)
 	vec.push_back(13);
 	vec.push_back(14);
 	printVector(vec);
+
 	return (0);
 }

@@ -50,7 +50,7 @@ class Vector
 		}
 
 		template< class InputIt >
-		void assign( InputIt first, InputIt last )
+		void	assign( InputIt first, InputIt last )
 		{
 			if ((first >= begin() && first <= end()) || (last >= begin() && last <= end()))
 				return ;
@@ -64,35 +64,70 @@ class Vector
 			}
 		}
 
-		//		get_allocator()
+		allocator_type	get_allocator() const
+		{
+			return (allocator_type);
+		}
 
 		//	Element access:
 
-		//		at()
+		reference at( size_type pos )
+		{
+			if (pos >= _size_type || pos < 0)
+			{
+				throw std::out_of_range;
+			}
+			return (&_value_type[pos]);						// do I need to multiply pos with the size of each element??
+		}
+
+		const_reference at( size_type pos ) const
+		{
+			if (pos >= _size_type || pos < 0)
+			{
+				throw std::out_of_range;
+			}
+			return (&_value_type[pos]);						// do I need to multiply pos with the size of each element??
+		}
 
 		const T	&operator[]( size_t index ) const
 		{
-			if (index >= _size_type)
-			{
-				// out of bounds protection??
-			}
 			return (_value_type[index]);
 		}
 
 		T	&operator[]( size_t index )
 		{
-			if (index >= _size_type)
-			{
-				// out of bounds protection??
-			}
 			return (_value_type[index]);
 		}
 
-		//		front()
+		reference front()
+		{
+			return (*_begin);
+		}
 
-		//		back()
+		const_reference front() const
+		{
+			return (*_begin);
+		}
 
-		//		data()
+		reference back()
+		{
+			return (*(_end - 1));
+		}
+
+		const_reference back() const
+		{
+			return (*(_end - 1));
+		}
+
+		T* data()
+		{
+			return (_begin);								// is this already a nullpointer when size_type == 0??
+		}
+
+		const T* data() const
+		{
+			return (_begin);								// is this already a nullpointer when size_type == 0??
+		}
 
 		//	Iterators:
 
@@ -163,15 +198,15 @@ class Vector
 		}
 
 	public:
-		typedef Allocator			allocator_type;
+		typedef Allocator				allocator_type;
 
 	protected:
-		typedef T			*_value_type;
-		typedef value_type			&reference;
-		typedef const value_type	&const_reference;
-		Allocator::pointer			pointer;
-		Allocator::const_pointer	const_pointer;
-		reverse_iterator<iterator>	
+		typedef T						_value_type;
+		// typedef value_type				&reference;
+		// typedef const value_type		&const_reference;
+		allocator_type::pointer			pointer;
+		allocator_type::pointer			iterator;
+		allocator_type::const_pointer	const_iterator;
 
 		size_t		_size_type;
 		ptrdiff_t	_difference_type;
