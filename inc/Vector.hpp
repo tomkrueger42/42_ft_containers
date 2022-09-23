@@ -5,21 +5,21 @@
 
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
-class Vector
+class vector
 {
 	public:			// member functions:
 
-		Vector( void ) : _value_type(nullptr), _size_type(0), _capacity(0)
+		vector( void ) : _value_type(nullptr), _size_type(0), _capacity(0)
 		{
 			realloc(2);
 		}
 
-		~Vector( void )
+		~vector( void )
 		{
 			delete []_value_type;
 		}
 
-		Vector	&operator=( const vector& other )
+		vector	&operator=( const vector& other )
 		{
 			if (this != &other)
 			{
@@ -186,14 +186,14 @@ class Vector
 	private:
 		void	realloc( size_t newCapacity )
 		{
-			T	*NewVector = new T[newCapacity];
+			T	*newVector = new T[newCapacity];
 			if (newCapacity < _size_type)
 				_size_type = newCapacity;
-			std::memmove(NewVector, _value_type, _size_type * sizeof(T));		// memmove or just plain copying??
+			std::memmove(newVector, _value_type, _size_type * sizeof(T));		// memmove or just plain copying??
 			// for (size_t i = 0; i < _size_type; i++)
 			// 	NewVector[i] = _value_type[i];
 			delete []_value_type;
-			_value_type = NewVector;
+			_value_type = newVector;
 			_capacity = newCapacity;
 		}
 
@@ -212,8 +212,8 @@ class Vector
 		ptrdiff_t	_difference_type;
 		T			&reference
 		size_t		_capacity;
-};
-}
+}; // class Vector
+} // namespace ft
 
 //	Non-member functions:
 
