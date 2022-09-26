@@ -39,6 +39,7 @@
 		"locale": "cpp",
 		"new": "cpp",
 		"__locale": "cpp",
-		"iosfwd": "cpp"
+		"iosfwd": "cpp",
+		"initializer_list": "cpp"
 	}
 }
