@@ -1,17 +1,40 @@
 #pragma once
 #include <vector>
 
-#define	GROWING_FACTOR 2 // needs to be larger than 1!
+#define	GROWING_FACTOR 2														// needs to be larger than 1!
 
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
 class vector
 {
-	public:			// member functions:
+	public:		// Member functions:
 
-		vector( void ) : _value_type(nullptr), _size_type(0), _capacity(0)
+		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)					// Default constructor. Constructs an empty container with a default-constructed allocator.
 		{
-			realloc(2);
+
+		}
+
+		explicit vector( const Allocator& alloc )								// Constructs an empty container with the given allocator alloc.
+		{
+
+		}
+
+		explicit vector( size_type count, const T& value = T(),
+							const Allocator& alloc = Allocator())				// Constructs the container with count copies of elements with value value.
+		{
+
+		}
+
+		template < class InputIt >
+		vector( InputIt first, InputIt last,
+				const Allocator& alloc = Allocator() )							// Constructs the container with the contents of the range [first, last).
+		{
+
+		}
+
+		vector( const vector& other )											// Copy constructor. Constructs the container with the copy of the contents of other.
+		{
+
 		}
 
 		~vector( void )
@@ -23,19 +46,17 @@ class vector
 		{
 			if (this != &other)
 			{
-				delete []_value_type;							// not sure about wether or not to delete contents of vector that is about to be overwritten
-				reserve(other.capacity());				// should I only reserve for capacity items or size items?
+				delete []_value_type;											// not sure about wether or not to delete contents of vector that is about to be overwritten
+				reserve(other.capacity());										// should I only reserve for capacity items or size items?
 				_size_type = other._size_type;
 				_capacity = other._capacity;
 				for (size_t i = 0; i < _size_type; i++)
 				{
-					_value_type[i] = other._value_type[i];			// maybe also possible with insert()
+					_value_type[i] = other._value_type[i];						// maybe also possible with insert()
 				}
 			}
 			return (*this);
 		}
-
-		//		assign()
 
 		void assign( size_type count, const T& value )
 		{
@@ -52,7 +73,8 @@ class vector
 		template< class InputIt >
 		void	assign( InputIt first, InputIt last )
 		{
-			if ((first >= begin() && first <= end()) || (last >= begin() && last <= end()))
+			if ((first >= begin() && first <= end())
+				|| (last >= begin() && last <= end()))
 				return ;
 			delete []_value_type;
 			reserve(last - first);
@@ -77,7 +99,7 @@ class vector
 			{
 				throw std::out_of_range;
 			}
-			return (&_value_type[pos]);						// do I need to multiply pos with the size of each element??
+			return (&_value_type[pos]);											// do I need to multiply pos with the size of each element??
 		}
 
 		const_reference at( size_type pos ) const
@@ -86,7 +108,7 @@ class vector
 			{
 				throw std::out_of_range;
 			}
-			return (&_value_type[pos]);						// do I need to multiply pos with the size of each element??
+			return (&_value_type[pos]);											// do I need to multiply pos with the size of each element??
 		}
 
 		const T	&operator[]( size_t index ) const
@@ -121,12 +143,12 @@ class vector
 
 		T* data()
 		{
-			return (_begin);								// is this already a nullpointer when size_type == 0??
+			return (_begin);													// is this already a nullpointer when size_type == 0??
 		}
 
 		const T* data() const
 		{
-			return (_begin);								// is this already a nullpointer when size_type == 0??
+			return (_begin);													// is this already a nullpointer when size_type == 0??
 		}
 
 		//	Iterators:
@@ -186,7 +208,7 @@ class vector
 	private:
 		void	realloc( size_t newCapacity )
 		{
-			T	*newVector = new T[newCapacity];
+			T	*newVector = new T[newCapacity]; // malloc protection??
 			if (newCapacity < _size_type)
 				_size_type = newCapacity;
 			std::memmove(newVector, _value_type, _size_type * sizeof(T));		// memmove or just plain copying??
@@ -198,22 +220,25 @@ class vector
 		}
 
 	public:
-		typedef Allocator				allocator_type;
+		typedef T										value_type;
+		typedef Allocator								allocator_type;
+		typedef size_t									size_type;
+		typedef std::ptrdiff_t							difference_type;
+		typedef value_type&								reference;
+		typedef const value_type&						const_reference;
+		typedef Allocator::pointer						pointer;
+		typedef Allocator::const_pointer				const_pointer;
+		typedef ft::vector_iterator<value_type>			iterator;
+		typedef ft::vector_iterator<const value_type>	const_iterator;
+		// typedef ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
+		// typedef ft::reverse_iterator<const value_type>	const_reverse_iterator;
 
-	protected:
-		typedef T						_value_type;
-		// typedef value_type				&reference;
-		// typedef const value_type		&const_reference;
-		allocator_type::pointer			pointer;
-		allocator_type::pointer			iterator;
-		allocator_type::const_pointer	const_iterator;
+	private:
+		size_type	_size;
+		size_type	_capacity;													// is this also in STL??
+		pointer		_ptr;														// not needed so far
 
-		size_t		_size_type;
-		ptrdiff_t	_difference_type;
-		T			&reference
-		size_t		_capacity;
 }; // class Vector
-} // namespace ft
 
 //	Non-member functions:
 
@@ -230,3 +255,5 @@ class vector
 //		operator>=()
 
 //		std::swap(std::vector)
+
+} // namespace ft

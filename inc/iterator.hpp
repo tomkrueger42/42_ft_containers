@@ -1,6 +1,6 @@
 #pragma once
 #include <iterator>
-#include <cstddef>											// for std::ptrdiff_t
+#include <cstddef>																// for std::ptrdiff_t
 
 namespace ft {
 template <
