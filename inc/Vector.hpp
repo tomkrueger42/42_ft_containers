@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 
-#define	GROWING_FACTOR 2														// needs to be larger than 1!
+#define	GROWTH_FACTOR 2															// needs to be larger than 1!
 
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
@@ -11,7 +11,7 @@ class vector
 
 		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)					// Default constructor. Constructs an empty container with a default-constructed allocator.
 		{
-
+			
 		}
 
 		explicit vector( const Allocator& alloc )								// Constructs an empty container with the given allocator alloc.
@@ -234,9 +234,10 @@ class vector
 		// typedef ft::reverse_iterator<const value_type>	const_reverse_iterator;
 
 	private:
-		size_type	_size;
-		size_type	_capacity;													// is this also in STL??
-		pointer		_ptr;														// not needed so far
+		size_type		_size;
+		size_type		_capacity;												// is this also in STL??
+		pointer			_ptr;													// not needed so far
+		allocator_type	_alloc;
 
 }; // class Vector
 
