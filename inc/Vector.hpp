@@ -9,87 +9,107 @@ class vector
 {
 	public:		// Member functions:
 
-		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)					// Default constructor. Constructs an empty container with a default-constructed allocator.
+		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
+		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)
 		{
-			
+			this->_ptr = this->_alloc.allocate(0);
 		}
 
-		explicit vector( const Allocator& alloc )								// Constructs an empty container with the given allocator alloc.
+		// (2)	Constructs an empty container with the given allocator alloc.
+		explicit vector( const Allocator& alloc ) : _ptr(nullptr), _size(0),
+													_capacity(0)
 		{
-
+			this->_ptr = alloc.allocate(0);
 		}
 
+		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
-							const Allocator& alloc = Allocator())				// Constructs the container with count copies of elements with value value.
+							const Allocator& alloc = Allocator() )
 		{
-
+			this->_ptr = alloc.allocate(count);
+			this->_capacity = count;
+			for (iterator it = begin(); it != end(); it++)
+				*it = value;
+			this->_size = count;
 		}
 
+		// (5)	Constructs the container with the contents of the range [first, last).
+		//		This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a) if InputIt is an integral type.
 		template < class InputIt >
 		vector( InputIt first, InputIt last,
-				const Allocator& alloc = Allocator() )							// Constructs the container with the contents of the range [first, last).
+				const Allocator& alloc = Allocator() )
 		{
-
+			this->_ptr = alloc.allocate(last - first);
+			this->_capacity = last - first;
+			for (iterator it = begin(); first != last; it++, first++)
+				*it = *first;
+			this->_size = last - first;
 		}
 
-		vector( const vector& other )											// Copy constructor. Constructs the container with the copy of the contents of other.
+		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
+		vector( const vector& other )
 		{
-
+			*this = other;
 		}
 
+		//		Destructs the vector. The destructors of the elements are called and the used storage is deallocated.
+		//		Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 		~vector( void )
 		{
-			delete []_value_type;
+			this->_alloc.deallocate(this->_ptr, this->_capacity);
 		}
 
+		// (1)	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 		vector	&operator=( const vector& other )
 		{
 			if (this != &other)
 			{
-				delete []_value_type;											// not sure about wether or not to delete contents of vector that is about to be overwritten
-				reserve(other.capacity());										// should I only reserve for capacity items or size items?
-				_size_type = other._size_type;
-				_capacity = other._capacity;
-				for (size_t i = 0; i < _size_type; i++)
+				this->_alloc.deallocate(this->_ptr, this->_capacity);
+				this->_ptr = this->_alloc.allocate(other._capacity);
+				this->_size = other._size;
+				this->_capacity = other._capacity;
+				for (size_t i = 0; i < this->_size; i++)
 				{
-					_value_type[i] = other._value_type[i];						// maybe also possible with insert()
+					this->_ptr[i] = other._ptr[i];						// maybe also possible with insert()
 				}
 			}
 			return (*this);
 		}
 
-		void assign( size_type count, const T& value )
+		// (1)	Replaces the contents with count copies of value value
+		void	assign( size_type count, const T& value )
 		{
-			delete []_value_type;
 			reserve(count);
-			_size_type = count;
-			_capacity = count;
-			for (size_t i = 0; i < _size_type; i ++)
+			for (size_t i = 0; i < count; i++)
 			{
-				_value_type[i] = value;
+				this->_ptr[i] = value;
 			}
 		}
 
+		// (2)	Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argument is an iterator into *this. 
+		// 		This overload has the same effect as overload (1) if InputIt is an integral type.
 		template< class InputIt >
 		void	assign( InputIt first, InputIt last )
 		{
 			if ((first >= begin() && first <= end())
 				|| (last >= begin() && last <= end()))
 				return ;
-			delete []_value_type;
 			reserve(last - first);
-			_size_type = last - first;
-			_capacity = last - first;
-			for (size_t i = 0; first != last; first++)
+			for (size_t i = 0; first != last; i++, first++)
 			{
-				_size_type[i++] = first;
+				this->_ptr[i] = *first;
 			}
 		}
 
+		//		Returns the allocator associated with the container.
 		allocator_type	get_allocator() const
 		{
-			return (allocator_type);
+			return (this->_alloc);
 		}
+
+		//
+		// CONTINUE FROM THIS LINE ON!!!
+		//
 
 		//	Element access:
 
@@ -172,6 +192,8 @@ class vector
 
 		//		max_size()
 
+		//		Increase the capacity of the vector to a value that's greater or equal to new_cap.
+		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 		void reserve( size_type newCapacity )
 		{
 			if (newCapacity > _capacity)
@@ -222,8 +244,8 @@ class vector
 	public:
 		typedef T										value_type;
 		typedef Allocator								allocator_type;
-		typedef size_t									size_type;
-		typedef std::ptrdiff_t							difference_type;
+		typedef Allocator::size_type					size_type;
+		typedef Allocator::difference_type				difference_type;
 		typedef value_type&								reference;
 		typedef const value_type&						const_reference;
 		typedef Allocator::pointer						pointer;
