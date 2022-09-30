@@ -1,5 +1,11 @@
 #pragma once
 #include <vector>
+#include <iostream>
+
+#include "vector_iterator.hpp"
+
+#define LOG(msg) std::cout << msg
+#define LOGN(msg) std::cout << msg << std::endl;
 
 #define	GROWTH_FACTOR 2															// needs to be larger than 1!
 
@@ -7,7 +13,12 @@ namespace ft {
 template < class T, class Allocator = std::allocator<T> >
 class vector
 {
-	public:		// Member functions:
+	public:
+
+
+		/* ****************************************************************** */
+		/*	Member functions												  */
+		/* ****************************************************************** */
 
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
 		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)
@@ -107,28 +118,35 @@ class vector
 			return (this->_alloc);
 		}
 
-		//
-		// CONTINUE FROM THIS LINE ON!!!
-		//
 
-		//	Element access:
+		/* ****************************************************************** */
+		/*	Element access													  */
+		/* ****************************************************************** */
 
-		reference at( size_type pos )
+		//		Returns a reference to the element at specified location pos, with bounds checking.
+		//		If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
+		reference	at( size_type pos )
 		{
 			if (pos >= _size_type || pos < 0)
 			{
 				throw std::out_of_range;
 			}
-			return (&_value_type[pos]);											// do I need to multiply pos with the size of each element??
+			return (&_value_type[pos]);
 		}
 
-		const_reference at( size_type pos ) const
+		const_reference	at( size_type pos ) const
 		{
 			if (pos >= _size_type || pos < 0)
 			{
 				throw std::out_of_range;
 			}
-			return (&_value_type[pos]);											// do I need to multiply pos with the size of each element??
+			return (&_value_type[pos]);
+		}
+
+		//		Returns a reference to the element at specified location pos. No bounds checking is performed.
+		T	&operator[]( size_t index )
+		{
+			return (_value_type[index]);
 		}
 
 		const T	&operator[]( size_t index ) const
@@ -136,50 +154,100 @@ class vector
 			return (_value_type[index]);
 		}
 
-		T	&operator[]( size_t index )
+		//		Returns a reference to the first element in the container.
+		//		Calling front on an empty container is undefined.
+		reference	front()
 		{
-			return (_value_type[index]);
+			return (*begin());
 		}
 
-		reference front()
+		const_reference	front() const
 		{
-			return (*_begin);
+			return (*begin());
 		}
 
-		const_reference front() const
+		//		Returns a reference to the last element in the container.
+		//		Calling back on an empty container causes undefined behavior.
+		reference	back()
 		{
-			return (*_begin);
+			return (*(end() - 1));
 		}
 
-		reference back()
+		const_reference	back() const
 		{
-			return (*(_end - 1));
+			return (*(end() - 1));
 		}
 
-		const_reference back() const
+		//		Returns pointer to the underlying array serving as element storage.
+		//		The pointer is such that range [data(); data()+size()) is always a valid range,
+		//		even if the container is empty (data() is not dereferenceable in that case).
+		T*	data()
 		{
-			return (*(_end - 1));
+			return (this->_ptr);
 		}
 
-		T* data()
+		const T*	data() const
 		{
-			return (_begin);													// is this already a nullpointer when size_type == 0??
+			return (this->_ptr);
 		}
 
-		const T* data() const
+
+		/* ****************************************************************** */
+		/*	Iterators														  */
+		/* ****************************************************************** */
+
+		//		Returns an iterator to the first element of the vector.
+		//		If the vector is empty, the returned iterator will be equal to end().
+		iterator	begin( void )
 		{
-			return (_begin);													// is this already a nullpointer when size_type == 0??
+			if (this->empty() && ft::vector_iterator<value_type>(this->_ptr) != end())			// this needs to be removed for final version
+				LOGN("\033[31merror in begin(). \033[36m ft::vector_iterator<value_type>(this->_ptr) != end() \033[0m");
+			return (ft::vector_iterator<value_type>(this->_ptr));				// should also work just with return (iterator(this->_ptr));
 		}
 
-		//	Iterators:
+		const_iterator	begin( void ) const
+		{
+			if (this->empty() && ft::vector_iterator<const value_type>(this->_ptr) != end())	// this needs to be removed for final version
+				LOGN("\033[31merror in begin() const. \033[36m ft::vector_iterator<const value_type>(this->_ptr) != end() \033[0m");
+			return (ft::vector_iterator<const value_type>(this->_ptr));			// should also work just with return (const_iterator(this->_ptr));
+		}
 
-		//		begin()
+		//		Returns an iterator to the element following the last element of the vector.
+		//		This element acts as a placeholder; attempting to access it results in undefined behavior.
+		iterator	end( void )
+		{
+			return (ft::vector_iterator<value_type>(this->_ptr + this->_capacity));				// should also work just with return (iterator(this->_ptr + this->_capacity));
+		}
 
-		//		end()
+		const_iterator	end( void )
+		{
+			return (ft::vector_iterator<const value_type>(this->_ptr + this->_capacity));		// should also work just with return (iterator(this->_ptr + this->_capacity));
+		}
 
-		//		rbegin()
+		//		Returns a reverse iterator to the first element of the reversed vector.
+		//		It corresponds to the last element of the non-reversed vector.
+		//		If the vector is empty, the returned iterator is equal to rend().
+		reverse_iterator	rbegin( void )
+		{
+			if (this->empty() && ft::reverse_iterator<value_type>(this->end()) != begin())	// this needs to be removed for final version
+				LOGN("\033[31merror in rbegin(). \033[36m ft::reverse_iterator<value_type>(this->end()) != begin() \033[0m");
+			return (ft::reverse_iterator<value_type>(this->end()));
+		}
+		
+		const_reverse_iterator	rbegin( void ) const
+		{
+			if (this->empty() && ft::reverse_iterator<const value_type>(this->end()) != begin())	// this needs to be removed for final version
+				LOGN("\033[31merror in begin() const. \033[36m ft::reverse_iterator<const value_type>(this->end()) != begin() \033[0m");
+			return (ft::reverse_iterator<const value_type>(this->end()));
+		}
 
-		//		rend()
+		//		Returns a reverse iterator to the element following the last element of the reversed vector.
+		//		It corresponds to the element preceding the first element of the non-reversed vector.
+		//		This element acts as a placeholder, attempting to access it results in undefined behavior.
+		reverse_iterator	rend( void )
+		{
+			
+		}
 
 		//	Capacity:
 
@@ -187,7 +255,7 @@ class vector
 
 		size_t	size( void ) const
 		{
-			return (_size_type);
+			return (this->_size);
 		}
 
 		//		max_size()

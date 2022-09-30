@@ -7,11 +7,6 @@
 int	main(void)
 {
 	std::vector<int> vec;
-	vec.push_back(1);
-	vec.push_back(1);
-	vec.push_back(1);
-	vec.push_back(1);
-	vec.push_back(1);
-	LOGN(vec.capacity());
+	LOGN(vec.front());
 	return (0);
 }
