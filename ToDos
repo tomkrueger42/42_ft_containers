@@ -1,0 +1,1 @@
+is _size as member type needed? Couldn't I just always use end() - begin() for the size(). Oder ist das schwierig weil begin() und end() die _capacity ausgeben?

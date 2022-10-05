@@ -35,7 +35,7 @@ class vector
 
 		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
-							const Allocator& alloc = Allocator() )
+							const Allocator& alloc = Allocator() ) : _ptr(nullptr)
 		{
 			this->_ptr = alloc.allocate(count);
 			this->_capacity = count;
@@ -127,7 +127,7 @@ class vector
 		//		If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
 		reference	at( size_type pos )
 		{
-			if (pos >= _size_type || pos < 0)
+			if (pos >= this->_size)
 			{
 				throw std::out_of_range;
 			}
@@ -136,7 +136,7 @@ class vector
 
 		const_reference	at( size_type pos ) const
 		{
-			if (pos >= _size_type || pos < 0)
+			if (pos >= this->_size)
 			{
 				throw std::out_of_range;
 			}
@@ -246,19 +246,34 @@ class vector
 		//		This element acts as a placeholder, attempting to access it results in undefined behavior.
 		reverse_iterator	rend( void )
 		{
-			
+			return (ft::reverse_iterator<value_type>(this->begin()));
+		}
+
+		const_reverse_iterator	rend( void ) const
+		{
+			return (ft::reverse_iterator<const value_type>(this->begin()));
 		}
 
 		//	Capacity:
 
-		//		empty()
+		//		Checks if the container has no elements, i.e. whether begin() == end().
+		bool	empty( void ) const
+		{
+			return (this->begin() == this->end());
+		}
 
-		size_t	size( void ) const
+		//		Returns the number of elements in the container, i.e. std::distance(begin(), end()).
+		size_type	size( void ) const
 		{
 			return (this->_size);
 		}
 
-		//		max_size()
+		//		Returns the maximum number of elements the container is able to hold due to system
+		//		or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container.
+		size_type	max_size() const
+		{
+			return (std::numeric_limits<difference_type>::max());				// is this correct??
+		}
 
 		//		Increase the capacity of the vector to a value that's greater or equal to new_cap.
 		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
@@ -283,10 +298,10 @@ class vector
 
 		void	push_back( const T& value )
 		{
-			if (_size_type >= _capacity)
+			if (this->_size >= _capacity)
 				realloc(_capacity * GROWING_FACTOR);
-			_value_type[_size_type] = value;
-			_size_type++;
+			_value_type[this->_size] = value;
+			this->_size++;
 		}
 
 		//		pop_back()
@@ -298,11 +313,13 @@ class vector
 	private:
 		void	realloc( size_t newCapacity )
 		{
+			if (newCapacity > max_size())
+				throw std::length_error();
 			T	*newVector = new T[newCapacity]; // malloc protection??
-			if (newCapacity < _size_type)
-				_size_type = newCapacity;
-			std::memmove(newVector, _value_type, _size_type * sizeof(T));		// memmove or just plain copying??
-			// for (size_t i = 0; i < _size_type; i++)
+			if (newCapacity < this->_size)
+				this->_size = newCapacity;
+			std::memmove(newVector, _value_type, this->_size * sizeof(T));		// memmove or just plain copying??
+			// for (size_t i = 0; i < this->_size; i++)
 			// 	NewVector[i] = _value_type[i];
 			delete []_value_type;
 			_value_type = newVector;

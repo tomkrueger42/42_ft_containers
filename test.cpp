@@ -7,6 +7,7 @@
 int	main(void)
 {
 	std::vector<int> vec;
-	LOGN(vec.front());
+	LOGN(vec.max_size());
+	LOGN(std::numeric_limits<difference_type>::max());
 	return (0);
 }
