@@ -7,15 +7,32 @@
 #define LOG(msg) std::cout << msg
 #define LOGN(msg) std::cout << msg << std::endl;
 
-#define	GROWTH_FACTOR 2															// needs to be larger than 1!
-
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
 class vector
 {
+
 	public:
+		typedef T										value_type;
+		typedef Allocator								allocator_type;
+		typedef Allocator::size_type					size_type;
+		typedef Allocator::difference_type				difference_type;
+		typedef value_type&								reference;
+		typedef const value_type&						const_reference;
+		typedef Allocator::pointer						pointer;
+		typedef Allocator::const_pointer				const_pointer;
+		typedef ft::vector_iterator<value_type>			iterator;
+		typedef ft::vector_iterator<const value_type>	const_iterator;
+		// typedef ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
+		// typedef ft::reverse_iterator<const value_type>	const_reverse_iterator;
 
+	private:
+		size_type		_size;
+		size_type		_capacity;												// is this also in STL??
+		pointer			_ptr;													// not needed so far
+		allocator_type	_alloc;
 
+	public:
 		/* ****************************************************************** */
 		/*	Member functions												  */
 		/* ****************************************************************** */
@@ -302,7 +319,7 @@ class vector
 		//		(1)	inserts value before pos.
 		iterator	insert( const_iterator pos, const T& value )
 		{
-			if (this->_size == this->_capacity)
+			while (this->_size + 1 >= this->_capacity)
 				this->realloc(this->_capacity * 2);
 
 			iterator	it = this->end();
@@ -312,13 +329,14 @@ class vector
 				--it;
 			}
 			*pos = value;
+			this->_size++;
 		}
 
 		//		(3)	inserts count copies of the value before pos.
 		iterator	insert( const_iterator pos, size_type count, const T& value )
 		{
 			while ( this->_size + count >= this->_capacity )
-				this->realloc(this->_capacity * GROWTH_FACTOR);
+				this->realloc(this->_capacity * 2);
 
 			iterator	it = this->end() - 1;
 			iterator	it2(it + count);
@@ -334,6 +352,7 @@ class vector
 				*it = value;
 				++it;
 			}
+			this->_size += count;
 		}
 
 		//		(4)	inserts elements from range [first, last) before pos.
@@ -342,32 +361,84 @@ class vector
 		iterator	insert( const_iterator pos, InputIt first, InputIt last )
 		{
 			while ( this->_size + last - first >= this->_capacity )
-				this->realloc(this->_capacity * GROWTH_FACTOR);
+				this->realloc(this->_capacity * 2);
 
-			iterator	it = static_cast<iterator>(pos);
-			InputIt		it2 = first;
+			iterator	it = this->end() - 1;
+			iterator	it2(it + (last - first));
+			while ( it != pos )
+			{
+				*it2 = *it;
+				--it;
+				--it2;
+			}
 			while ( it != last )
 			{
-				
+				*it = *first;
 				++it;
+				++first;
 			}
+			this->_size += (last - first);
 		}
 
-		//		erase()
+		//		Erases the specified elements from the container.
+		//		(1) Removes the element at pos.
+		iterator	erase( iterator pos )
+		{
+			while (pos++ != this->end())
+			{
+				*pos = *(pos + 1);
+			}
+			this->_size--;
+		}
 
+		//		(2) Removes the elements in the range [first, last).
+		iterator	erase( iterator first, iterator last )
+		{
+			while (last <= this->end())
+			{
+				*first = *last;
+				++first;
+				++last;
+			}
+			this->_size -= (last - first);
+		}
+
+		//		Appends the given element value to the end of the container.
+		//		The new element is initialized as a copy of value.
 		void	push_back( const T& value )
 		{
 			if (this->_size >= _capacity)
-				realloc(_capacity * GROWING_FACTOR);
-			_value_type[this->_size] = value;
+				realloc(_capacity * 2);
+			this->_ptr[this->_size] = value;
 			this->_size++;
 		}
 
-		//		pop_back()
+		//		Removes the last element of the container. 
+		void	pop_back( void )
+		{
+			*(this->end() - 1) = *(this->end());
+			this->_size--;
+		}
 
-		//		resize()
+		//		Resizes the container to contain count elements. If the current
+		//		size is greater than count, the container is reduced to its first count elements.
+		//		If the current size is less than count, additional copies of value are appended.
+		void	resize( size_type count, T value = T() )
+		{
+			while (this->_size < count)
+			{
+				this->push_back(value);
+			}
+			this->erase(this->begin() + count, this->end());
+		}
 
-		//		swap()
+		//		Exchanges the contents of the container with those of other.
+		//		Does not invoke any move, copy, or swap operations on individual elements.
+		//		All iterators and references remain valid. The past-the-end iterator is invalidated. 
+		void swap( vector& other )
+		{
+			
+		}
 
 	private:
 		void	realloc( size_t newCapacity )
@@ -384,37 +455,38 @@ class vector
 			_ptr = newVector;
 			_capacity = newCapacity;
 		}
-
-	public:
-		typedef T										value_type;
-		typedef Allocator								allocator_type;
-		typedef Allocator::size_type					size_type;
-		typedef Allocator::difference_type				difference_type;
-		typedef value_type&								reference;
-		typedef const value_type&						const_reference;
-		typedef Allocator::pointer						pointer;
-		typedef Allocator::const_pointer				const_pointer;
-		typedef ft::vector_iterator<value_type>			iterator;
-		typedef ft::vector_iterator<const value_type>	const_iterator;
-		// typedef ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
-		// typedef ft::reverse_iterator<const value_type>	const_reverse_iterator;
-
-	private:
-		size_type		_size;
-		size_type		_capacity;												// is this also in STL??
-		pointer			_ptr;													// not needed so far
-		allocator_type	_alloc;
-
 }; // class Vector
 
 //	Non-member functions:
 
-//		operator==()
+template< class T, class Alloc >
+bool	operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+{
+	ft::vector<T,Alloc>::iterator	l = lhs.begin();
+	ft::vector<T,Alloc>::iterator	r = rhs.begin();
+	if (lhs.size() != rhs.size())
+		return (false);
+	while (l != lhs.end() && r != rhs.end())
+	{
+		if (*l != *r)
+			return (false);
+	}
+	return (true);
+}
 
-//		operator!=()
+template< class T, class Alloc >
+bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs )
+{
+	if (lhs == rhs)
+		return (false);
+	return (true);
+}
 
-//		operator<()
-
+template< class T, class Alloc >
+bool operator<( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs )
+{
+	
+}
 //		operator<=()
 
 //		operator>()
