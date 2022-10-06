@@ -290,9 +290,68 @@ class vector
 
 		//	Modifiers:
 
-		//		clear()
+		//		Erases all elements from the container. After this call, size() returns zero.
+		void	clear( void )
+		{
+			this->_alloc.deallocate(this->_ptr, this->_capacity);
+			this->_ptr = this->_alloc.allocate(this->_capacity);
+			this->_size = 0;
+		}
 
-		//		insert()
+		//		Inserts elements at the specified location in the container.
+		//		(1)	inserts value before pos.
+		iterator	insert( const_iterator pos, const T& value )
+		{
+			if (this->_size == this->_capacity)
+				this->realloc(this->_capacity * 2);
+
+			iterator	it = this->end();
+			while ( it != pos )
+			{
+				*it = *(it - 1);
+				--it;
+			}
+			*pos = value;
+		}
+
+		//		(3)	inserts count copies of the value before pos.
+		iterator	insert( const_iterator pos, size_type count, const T& value )
+		{
+			while ( this->_size + count >= this->_capacity )
+				this->realloc(this->_capacity * GROWTH_FACTOR);
+
+			iterator	it = this->end() - 1;
+			iterator	it2(it + count);
+
+			while ( it != pos )
+			{
+				*it2 = *it;
+				--it;
+				--it2;
+			}
+			while ( it != it2 )
+			{
+				*it = value;
+				++it;
+			}
+		}
+
+		//		(4)	inserts elements from range [first, last) before pos.
+		//		This overload has the same effect as overload (3) if InputIt is an integral type.
+		template< class InputIt >
+		iterator	insert( const_iterator pos, InputIt first, InputIt last )
+		{
+			while ( this->_size + last - first >= this->_capacity )
+				this->realloc(this->_capacity * GROWTH_FACTOR);
+
+			iterator	it = static_cast<iterator>(pos);
+			InputIt		it2 = first;
+			while ( it != last )
+			{
+				
+				++it;
+			}
+		}
 
 		//		erase()
 
@@ -318,11 +377,11 @@ class vector
 			T	*newVector = new T[newCapacity]; // malloc protection??
 			if (newCapacity < this->_size)
 				this->_size = newCapacity;
-			std::memmove(newVector, _value_type, this->_size * sizeof(T));		// memmove or just plain copying??
+			std::memmove(newVector, _ptr, this->_size * sizeof(T));		// memmove or just plain copying??
 			// for (size_t i = 0; i < this->_size; i++)
-			// 	NewVector[i] = _value_type[i];
-			delete []_value_type;
-			_value_type = newVector;
+			// 	NewVector[i] = _ptr[i];
+			delete []_ptr;
+			_ptr = newVector;
 			_capacity = newCapacity;
 		}
 
