@@ -18,9 +18,13 @@ int	main(void)
 {
 	ft::vector<int>	vec;
 
-	vec.push_back(12);
-	vec.push_back(13);
-	vec.push_back(14);
+	// vec.push_back(2);
+	// LOGN(vec.size());
+	// LOGN(vec.capacity());
+	// LOGN(vec.max_size());
+	// LOGN(vec.empty());
+	LOGN(vec.front());
+	// LOGN(vec.back());
 	printVector(vec);
 
 	return (0);

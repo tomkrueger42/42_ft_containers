@@ -1,6 +1,6 @@
 NAME		=	ft_containers
 CC			=	c++
-CFLAGS		=	-Wall -Wextra -Werror -std=c++98
+CFLAGS		=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
 INC_DIR		=	./inc/
 SRC_DIR		=	./src/
 OBJ_DIR		=	./obj/

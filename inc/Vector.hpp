@@ -280,7 +280,7 @@ class vector
 		//		Checks if the container has no elements, i.e. whether begin() == end().
 		bool	empty( void ) const
 		{
-			return (this->begin() == this->end());
+			return (this->_size == 0);
 		}
 
 		//		Returns the number of elements in the container, i.e. std::distance(begin(), end()).

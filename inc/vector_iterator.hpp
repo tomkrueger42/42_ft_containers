@@ -39,17 +39,17 @@ class vector_iterator
 		{
 			if (this != &vi)
 			{
-				this->pointer = vi.pointer;
+				this->_ptr = vi._ptr;
 			}
 			return (*this);
 		}
 
-		pointer			base( void ) const
+		pointer	base( void ) const
 		{
 			return (_ptr);
 		}
 
-		reference		operator*( void ) const
+		reference	operator*( void ) const
 		{
 			return (*_ptr);
 		}
@@ -59,7 +59,7 @@ class vector_iterator
 			return (&(*_ptr));
 		}
 
-		reference		operator[]( difference_type n ) const					// does this need to return the reference or a new iterator at position n??
+		reference	operator[]( difference_type n ) const					// does this need to return the reference or a new iterator at position n??
 		{
 			return (*(_ptr + n));
 		}
@@ -123,7 +123,7 @@ bool	operator==( ft::vector_iterator<It1> &lhs,
 		return (true);
 	return (false);
 }
-
+ 
 template < class It1, class It2 >
 bool	operator!=( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
