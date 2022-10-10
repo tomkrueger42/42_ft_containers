@@ -1,5 +1,6 @@
 #pragma once
 
+#include "iterator.hpp"
 #include "iterator_traits.hpp"
 
 namespace ft {
@@ -8,11 +9,11 @@ template < class it >
 class vector_iterator
 {
 	public:
-		typename ft::iterator<ft::random_access_iterator_tag, it>::value_type			value_type;
-		typename ft::iterator<ft::random_access_iterator_tag, it>::difference_type		difference_type;
-		typename ft::iterator<ft::random_access_iterator_tag, it>::pointer				pointer;
-		typename ft::iterator<ft::random_access_iterator_tag, it>::reference			reference;
-		typename ft::iterator<ft::random_access_iterator_tag, it>::iterator_category	iterator_category;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::value_type			value_type;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::difference_type		difference_type;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::pointer				pointer;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::reference			reference;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::iterator_category	iterator_category;
 
 	private:
 		pointer	_ptr;
@@ -101,12 +102,12 @@ class vector_iterator
 			return (*this);
 		}
 		
-		vector_iterator	operator+( differnce_type n ) const
+		vector_iterator	operator+( difference_type n ) const
 		{
 			return (vector_iterator(_ptr + n));
 		}
 		
-		vector_iterator	operator-( differnce_type n ) const
+		vector_iterator	operator-( difference_type n ) const
 		{
 			return (vector_iterator(_ptr - n));
 		}

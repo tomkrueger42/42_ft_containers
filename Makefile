@@ -9,7 +9,7 @@ OBJS		=	$(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 
 SRCS		=	main.cpp
-INCS		=	iterator_traits.hpp iterator.hpp vector_iterator.hpp vector.hpp
+INCS		=	equal.hpp iterator_traits.hpp iterator.hpp lexicographical_compare.hpp vector_iterator.hpp vector.hpp
 
 .PHONY: all clean fclean re
 

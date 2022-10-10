@@ -11,10 +11,10 @@ template <
 		> struct iterator
 {
 	public:
-		typedef typename Category	iterator_category;
-		typedef typename T			value_type;
-		typedef typename Distance	difference_type;
-		typedef typename Pointer	pointer;
-		typedef typename Reference	reference;
-}; // struct Iterator
+		typedef Category	iterator_category;
+		typedef T			value_type;
+		typedef Distance	difference_type;
+		typedef Pointer		pointer;
+		typedef Reference	reference;
+}; // struct iterator
 } // namespace ft

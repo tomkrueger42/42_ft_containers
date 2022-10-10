@@ -7,7 +7,14 @@
 int	main(void)
 {
 	std::vector<int> vec;
-	LOGN(vec.max_size());
-	LOGN(std::numeric_limits<difference_type>::max());
+	std::vector<int> vec2;
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+	vec.swap(vec2);
+	LOGN(vec.size());
+	LOGN(vec.capacity());
+	LOGN(vec2.size());
+	LOGN(vec2.capacity());
 	return (0);
 }

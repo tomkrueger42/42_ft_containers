@@ -1,8 +1,8 @@
-#include "Vector.hpp"
+#include "vector.hpp"
 #include <iostream>
 
-#define LOG(msg) std::cout << msg
-#define LOGN(msg) std::cout << msg << std::endl
+// #define LOG(msg) std::cout << msg
+// #define LOGN(msg) std::cout << msg << std::endl
 
 template<typename T>
 void	printVector(const T& vec)
@@ -16,7 +16,7 @@ void	printVector(const T& vec)
 
 int	main(void)
 {
-	ft::Vector<int>	vec;
+	ft::vector<int>	vec;
 
 	vec.push_back(12);
 	vec.push_back(13);

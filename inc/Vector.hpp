@@ -1,8 +1,12 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 
 #include "vector_iterator.hpp"
+#include "iterator.hpp"
+#include "lexicographical_compare.hpp"
+#include "equal.hpp"
 
 #define LOG(msg) std::cout << msg
 #define LOGN(msg) std::cout << msg << std::endl;
@@ -13,23 +17,23 @@ class vector
 {
 
 	public:
-		typedef T										value_type;
-		typedef Allocator								allocator_type;
-		typedef Allocator::size_type					size_type;
-		typedef Allocator::difference_type				difference_type;
-		typedef value_type&								reference;
-		typedef const value_type&						const_reference;
-		typedef Allocator::pointer						pointer;
-		typedef Allocator::const_pointer				const_pointer;
-		typedef ft::vector_iterator<value_type>			iterator;
-		typedef ft::vector_iterator<const value_type>	const_iterator;
-		// typedef ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
-		// typedef ft::reverse_iterator<const value_type>	const_reverse_iterator;
+		typedef T												value_type;
+		typedef Allocator										allocator_type;
+		typedef typename Allocator::size_type					size_type;
+		typedef typename Allocator::difference_type				difference_type;
+		typedef typename Allocator::reference					reference;
+		typedef typename Allocator::const_reference				const_reference;
+		typedef typename Allocator::pointer						pointer;
+		typedef typename Allocator::const_pointer				const_pointer;
+		typedef typename ft::vector_iterator<value_type>			iterator;
+		typedef typename ft::vector_iterator<const value_type>	const_iterator;
+		// typedef typename ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
+		// typedef typename ft::reverse_iterator<const value_type>	const_reverse_iterator;
 
 	private:
 		size_type		_size;
-		size_type		_capacity;												// is this also in STL??
-		pointer			_ptr;													// not needed so far
+		size_type		_capacity;
+		pointer			_ptr;
 		allocator_type	_alloc;
 
 	public:
@@ -38,7 +42,7 @@ class vector
 		/* ****************************************************************** */
 
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
-		vector( void ) : _ptr(nullptr), _size(0), _capacity(0)
+		vector( void ) : _size(0), _capacity(0), _ptr(nullptr)
 		{
 			this->_ptr = this->_alloc.allocate(0);
 		}
@@ -146,29 +150,29 @@ class vector
 		{
 			if (pos >= this->_size)
 			{
-				throw std::out_of_range;
+				throw std::out_of_range("index is out of vector bounds");
 			}
-			return (&_value_type[pos]);
+			return (&(_ptr[pos]));
 		}
 
 		const_reference	at( size_type pos ) const
 		{
 			if (pos >= this->_size)
 			{
-				throw std::out_of_range;
+				throw std::out_of_range("index is out of vector bounds");
 			}
-			return (&_value_type[pos]);
+			return (&(_ptr[pos]));
 		}
 
 		//		Returns a reference to the element at specified location pos. No bounds checking is performed.
 		T	&operator[]( size_t index )
 		{
-			return (_value_type[index]);
+			return (_ptr[index]);
 		}
 
 		const T	&operator[]( size_t index ) const
 		{
-			return (_value_type[index]);
+			return (_ptr[index]);
 		}
 
 		//		Returns a reference to the first element in the container.
@@ -236,40 +240,40 @@ class vector
 			return (ft::vector_iterator<value_type>(this->_ptr + this->_capacity));				// should also work just with return (iterator(this->_ptr + this->_capacity));
 		}
 
-		const_iterator	end( void )
+		const_iterator	end( void ) const
 		{
 			return (ft::vector_iterator<const value_type>(this->_ptr + this->_capacity));		// should also work just with return (iterator(this->_ptr + this->_capacity));
 		}
 
-		//		Returns a reverse iterator to the first element of the reversed vector.
-		//		It corresponds to the last element of the non-reversed vector.
-		//		If the vector is empty, the returned iterator is equal to rend().
-		reverse_iterator	rbegin( void )
-		{
-			if (this->empty() && ft::reverse_iterator<value_type>(this->end()) != begin())	// this needs to be removed for final version
-				LOGN("\033[31merror in rbegin(). \033[36m ft::reverse_iterator<value_type>(this->end()) != begin() \033[0m");
-			return (ft::reverse_iterator<value_type>(this->end()));
-		}
+		// //		Returns a reverse iterator to the first element of the reversed vector.
+		// //		It corresponds to the last element of the non-reversed vector.
+		// //		If the vector is empty, the returned iterator is equal to rend().
+		// reverse_iterator	rbegin( void )
+		// {
+		// 	if (this->empty() && ft::reverse_iterator<value_type>(this->end()) != begin())	// this needs to be removed for final version
+		// 		LOGN("\033[31merror in rbegin(). \033[36m ft::reverse_iterator<value_type>(this->end()) != begin() \033[0m");
+		// 	return (ft::reverse_iterator<value_type>(this->end()));
+		// }
 		
-		const_reverse_iterator	rbegin( void ) const
-		{
-			if (this->empty() && ft::reverse_iterator<const value_type>(this->end()) != begin())	// this needs to be removed for final version
-				LOGN("\033[31merror in begin() const. \033[36m ft::reverse_iterator<const value_type>(this->end()) != begin() \033[0m");
-			return (ft::reverse_iterator<const value_type>(this->end()));
-		}
+		// const_reverse_iterator	rbegin( void ) const
+		// {
+		// 	if (this->empty() && ft::reverse_iterator<const value_type>(this->end()) != begin())	// this needs to be removed for final version
+		// 		LOGN("\033[31merror in begin() const. \033[36m ft::reverse_iterator<const value_type>(this->end()) != begin() \033[0m");
+		// 	return (ft::reverse_iterator<const value_type>(this->end()));
+		// }
 
-		//		Returns a reverse iterator to the element following the last element of the reversed vector.
-		//		It corresponds to the element preceding the first element of the non-reversed vector.
-		//		This element acts as a placeholder, attempting to access it results in undefined behavior.
-		reverse_iterator	rend( void )
-		{
-			return (ft::reverse_iterator<value_type>(this->begin()));
-		}
+		// //		Returns a reverse iterator to the element following the last element of the reversed vector.
+		// //		It corresponds to the element preceding the first element of the non-reversed vector.
+		// //		This element acts as a placeholder, attempting to access it results in undefined behavior.
+		// reverse_iterator	rend( void )
+		// {
+		// 	return (ft::reverse_iterator<value_type>(this->begin()));
+		// }
 
-		const_reverse_iterator	rend( void ) const
-		{
-			return (ft::reverse_iterator<const value_type>(this->begin()));
-		}
+		// const_reverse_iterator	rend( void ) const
+		// {
+		// 	return (ft::reverse_iterator<const value_type>(this->begin()));
+		// }
 
 		//	Capacity:
 
@@ -437,14 +441,25 @@ class vector
 		//		All iterators and references remain valid. The past-the-end iterator is invalidated. 
 		void swap( vector& other )
 		{
-			
+			size_type		tmp_size = this->_size;
+			size_type		tmp_capacity = this->_capacity;
+			pointer			tmp_ptr = this->_ptr;
+			allocator_type	tmp_alloc = this->_alloc;
+			this->_size = other._size;
+			this->_capacity = other._capacity;
+			this->_ptr = other._ptr;
+			this->_alloc = other._alloc;
+			other._size = tmp_size;
+			other._capacity = tmp_capacity;
+			other._ptr = tmp_ptr;
+			other._alloc = tmp_alloc;
 		}
 
 	private:
 		void	realloc( size_t newCapacity )
 		{
 			if (newCapacity > max_size())
-				throw std::length_error();
+				throw std::length_error("maximum capacity has been reached");
 			T	*newVector = new T[newCapacity]; // malloc protection??
 			if (newCapacity < this->_size)
 				this->_size = newCapacity;
@@ -457,25 +472,20 @@ class vector
 		}
 }; // class Vector
 
-//	Non-member functions:
+/* ****************************************************************** */
+/*	Non-member functions											  */
+/* ****************************************************************** */
 
 template< class T, class Alloc >
 bool	operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
 {
-	ft::vector<T,Alloc>::iterator	l = lhs.begin();
-	ft::vector<T,Alloc>::iterator	r = rhs.begin();
-	if (lhs.size() != rhs.size())
-		return (false);
-	while (l != lhs.end() && r != rhs.end())
-	{
-		if (*l != *r)
-			return (false);
-	}
-	return (true);
+	if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+		return (true);
+	return (false);
 }
 
 template< class T, class Alloc >
-bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs )
+bool	operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
 {
 	if (lhs == rhs)
 		return (false);
@@ -483,16 +493,38 @@ bool operator!=( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rh
 }
 
 template< class T, class Alloc >
-bool operator<( const std::vector<T,Alloc>& lhs, const std::vector<T,Alloc>& rhs )
+bool	operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
 {
-	
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
 }
-//		operator<=()
 
-//		operator>()
+template< class T, class Alloc >
+bool	operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+{
+	if (lhs == rhs || lhs < rhs)
+		return (true);
+	return (false);
+}
 
-//		operator>=()
+template< class T, class Alloc >
+bool	operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+{
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+}
 
-//		std::swap(std::vector)
+template< class T, class Alloc >
+bool	operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+{
+	if (lhs == rhs || lhs > rhs)
+		return (true);
+	return (false);
+}
+
+//		Specializes the ft::swap algorithm for ft::vector. Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).
+template< class T, class Alloc >
+void	swap( ft::vector<T,Alloc>& lhs, ft::vector<T,Alloc>& rhs )
+{
+	lhs.swap(rhs);
+}
 
 } // namespace ft
