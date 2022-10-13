@@ -119,54 +119,42 @@ template < class It1, class It2 >
 bool	operator==( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() == rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() == rhs.base());
 }
- 
+
 template < class It1, class It2 >
 bool	operator!=( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() != rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() != rhs.base());
 }
 
 template < class It1, class It2 >
 bool	operator<( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() < rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() < rhs.base());
 }
 
 template < class It1, class It2 >
 bool	operator<=( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() <= rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() <= rhs.base());
 }
 
 template < class It1, class It2 >
 bool	operator>( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() > rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() > rhs.base());
 }
 
 template < class It1, class It2 >
 bool	operator>=( ft::vector_iterator<It1> &lhs,
 					ft::vector_iterator<It2> &rhs )
 {
-	if (lhs.base() >= rhs.base())
-		return (true);
-	return (false);
+	return (lhs.base() >= rhs.base());
 }
 
 template < class It >

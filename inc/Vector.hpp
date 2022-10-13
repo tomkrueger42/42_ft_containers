@@ -25,7 +25,7 @@ class vector
 		typedef typename Allocator::const_reference				const_reference;
 		typedef typename Allocator::pointer						pointer;
 		typedef typename Allocator::const_pointer				const_pointer;
-		typedef typename ft::vector_iterator<value_type>			iterator;
+		typedef typename ft::vector_iterator<value_type>		iterator;
 		typedef typename ft::vector_iterator<const value_type>	const_iterator;
 		// typedef typename ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
 		// typedef typename ft::reverse_iterator<const value_type>	const_reverse_iterator;
@@ -44,20 +44,23 @@ class vector
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
 		vector( void ) : _size(0), _capacity(0), _ptr(nullptr)
 		{
+			LOGN("\033[32mDefault Constructor called for Vector\033[0m");
 			this->_ptr = this->_alloc.allocate(0);
 		}
 
 		// (2)	Constructs an empty container with the given allocator alloc.
-		explicit vector( const Allocator& alloc ) : _ptr(nullptr), _size(0),
-													_capacity(0)
+		explicit vector( const Allocator& alloc ) : _size(0), _capacity(0),
+													_ptr(nullptr), _alloc(alloc)
 		{
-			this->_ptr = alloc.allocate(0);
+			LOGN("\033[32mAlloc Constructor called for Vector\033[0m");
+			this->_ptr = this->_alloc.allocate(0);
 		}
 
 		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
-							const Allocator& alloc = Allocator() ) : _ptr(nullptr)
+							const Allocator& alloc = Allocator() ) : _size(0), _capacity(0), _ptr(nullptr), _alloc(alloc)
 		{
+			LOGN("\033[32mValue initializer Constructor called for Vector\033[0m");
 			this->_ptr = alloc.allocate(count);
 			this->_capacity = count;
 			for (iterator it = begin(); it != end(); it++)
@@ -71,6 +74,7 @@ class vector
 		vector( InputIt first, InputIt last,
 				const Allocator& alloc = Allocator() )
 		{
+			LOGN("\033[32mRange Constructor called for Vector\033[0m");
 			this->_ptr = alloc.allocate(last - first);
 			this->_capacity = last - first;
 			for (iterator it = begin(); first != last; it++, first++)
@@ -79,8 +83,9 @@ class vector
 		}
 
 		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
-		vector( const vector& other )
+		vector( const vector& other ) : _size(0), _capacity(0), _ptr(nullptr)
 		{
+			LOGN("\033[32mCopy Constructor called for Vector\033[0m");
 			*this = other;
 		}
 
@@ -88,12 +93,14 @@ class vector
 		//		Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 		~vector( void )
 		{
+			LOGN("\033[31mDestructor called for Vector\033[0m");
 			this->_alloc.deallocate(this->_ptr, this->_capacity);
 		}
 
 		// (1)	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 		vector	&operator=( const vector& other )
 		{
+			LOGN("\033[34mAssignment Operator called for Vector\033[0m");
 			if (this != &other)
 			{
 				this->_alloc.deallocate(this->_ptr, this->_capacity);
@@ -116,6 +123,7 @@ class vector
 			{
 				this->_ptr[i] = value;
 			}
+			this->_size = count;
 		}
 
 		// (2)	Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argument is an iterator into *this. 
@@ -123,10 +131,13 @@ class vector
 		template< class InputIt >
 		void	assign( InputIt first, InputIt last )
 		{
-			if ((first >= begin() && first <= end())
-				|| (last >= begin() && last <= end()))
+			if ((this->_ptr <= first.base() && this->_ptr + this->_size >= first.base())
+				|| (this->_ptr <= last.base() && this->_ptr + this->_size >= last.base()))
 				return ;
-			reserve(last - first);
+			reserve(last.base() - first.base());
+			this->_size = last.base() - first.base() - 1;
+			if (this->_size == static_cast<size_type>(-1))
+				this->_size = 0;
 			for (size_t i = 0; first != last; i++, first++)
 			{
 				this->_ptr[i] = *first;
@@ -221,28 +232,28 @@ class vector
 		//		If the vector is empty, the returned iterator will be equal to end().
 		iterator	begin( void )
 		{
-			if (this->empty() && ft::vector_iterator<value_type>(this->_ptr) != end())			// this needs to be removed for final version
-				LOGN("\033[31merror in begin(). \033[36m ft::vector_iterator<value_type>(this->_ptr) != end() \033[0m");
-			return (ft::vector_iterator<value_type>(this->_ptr));				// should also work just with return (iterator(this->_ptr));
+			// if (this->empty() && iterator(this->_ptr) != end())			// this needs to be removed for final version
+			// 	LOGN("\033[31merror in begin(). \033[36m iterator(this->_ptr) != end() \033[0m");
+			return (iterator(this->_ptr));
 		}
 
 		const_iterator	begin( void ) const
 		{
-			if (this->empty() && ft::vector_iterator<const value_type>(this->_ptr) != end())	// this needs to be removed for final version
-				LOGN("\033[31merror in begin() const. \033[36m ft::vector_iterator<const value_type>(this->_ptr) != end() \033[0m");
-			return (ft::vector_iterator<const value_type>(this->_ptr));			// should also work just with return (const_iterator(this->_ptr));
+			// if (this->empty() && const_iterator(this->_ptr) != end())	// this needs to be removed for final version
+			// 	LOGN("\033[31merror in begin() const. \033[36m const_iterator(this->_ptr) != end() \033[0m");
+			return (const_iterator(this->_ptr));
 		}
 
 		//		Returns an iterator to the element following the last element of the vector.
 		//		This element acts as a placeholder; attempting to access it results in undefined behavior.
 		iterator	end( void )
 		{
-			return (ft::vector_iterator<value_type>(this->_ptr + this->_capacity));				// should also work just with return (iterator(this->_ptr + this->_capacity));
+			return (iterator(this->_ptr + this->_capacity));
 		}
 
 		const_iterator	end( void ) const
 		{
-			return (ft::vector_iterator<const value_type>(this->_ptr + this->_capacity));		// should also work just with return (iterator(this->_ptr + this->_capacity));
+			return (const_iterator(this->_ptr + this->_capacity));
 		}
 
 		// //		Returns a reverse iterator to the first element of the reversed vector.
@@ -388,30 +399,38 @@ class vector
 		//		(1) Removes the element at pos.
 		iterator	erase( iterator pos )
 		{
-			while (pos++ != this->end())
+			iterator	end = this->end();
+			while (pos != end)
 			{
 				*pos = *(pos + 1);
+				++pos;
 			}
 			this->_size--;
+			return (pos);
 		}
 
 		//		(2) Removes the elements in the range [first, last).
 		iterator	erase( iterator first, iterator last )
 		{
-			while (last <= this->end())
+			iterator	end = this->end();
+			iterator	f	= first;
+			while (last <= end)
 			{
 				*first = *last;
 				++first;
 				++last;
 			}
 			this->_size -= (last - first);
+			return (f);
 		}
 
 		//		Appends the given element value to the end of the container.
 		//		The new element is initialized as a copy of value.
 		void	push_back( const T& value )
 		{
-			if (this->_size >= _capacity)
+			if (this->_capacity == 0)
+				realloc(1);
+			if (this->_size >= this->_capacity)
 				realloc(_capacity * 2);
 			this->_ptr[this->_size] = value;
 			this->_size++;
@@ -469,6 +488,9 @@ class vector
 			delete []_ptr;
 			_ptr = newVector;
 			_capacity = newCapacity;
+			LOG("\033[34mrealloc with ");
+			LOG(newCapacity);
+			LOGN(" memory slots\033[0m");
 		}
 }; // class Vector
 

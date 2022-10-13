@@ -17,15 +17,21 @@ void	printVector(const T& vec)
 int	main(void)
 {
 	ft::vector<int>	vec;
+	ft::vector<int> vec2;
 
-	// vec.push_back(2);
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+	vec2.assign(vec.begin(), vec.end());
+	LOGN(vec2.size());
+
 	// LOGN(vec.size());
 	// LOGN(vec.capacity());
 	// LOGN(vec.max_size());
 	// LOGN(vec.empty());
-	LOGN(vec.front());
+	// LOGN(vec.front());
 	// LOGN(vec.back());
-	printVector(vec);
-
+	printVector(vec2);
+	// system("leaks ft_containers");
 	return (0);
 }
