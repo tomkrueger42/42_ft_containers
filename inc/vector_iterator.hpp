@@ -22,7 +22,7 @@ class vector_iterator
 
 		/* constructors */
 
-		vector_iterator( void ) : _ptr(nullptr) {}
+		vector_iterator( void ) : _ptr(NULL) {}
 
 		vector_iterator( const vector_iterator &vi )
 		{
@@ -116,43 +116,43 @@ class vector_iterator
 // Non-member operators
 
 template < class It1, class It2 >
-bool	operator==( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator==( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() == rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator!=( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator!=( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() != rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator<( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator<( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() < rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator<=( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator<=( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() <= rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator>( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator>( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() > rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator>=( ft::vector_iterator<It1> &lhs,
-					ft::vector_iterator<It2> &rhs )
+bool	operator>=( const ft::vector_iterator<It1> &lhs,
+					const ft::vector_iterator<It2> &rhs )
 {
 	return (lhs.base() >= rhs.base());
 }

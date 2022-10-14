@@ -1,4 +1,5 @@
 #include "vector.hpp"
+#include <vector>
 #include <iostream>
 
 // #define LOG(msg) std::cout << msg
@@ -7,9 +8,9 @@
 template<typename T>
 void	printVector(const T& vec)
 {
-	for (size_t i = 0; i < vec.size(); i++)
+	for (typename T::const_iterator it = vec.begin(); it != vec.end(); it++)
 	{
-		std::cout << vec[i] << std::endl;
+		LOGI(*it);
 	}
 	std::cout << "-------------------------" << std::endl;
 }
@@ -17,21 +18,25 @@ void	printVector(const T& vec)
 int	main(void)
 {
 	ft::vector<int>	vec;
-	ft::vector<int> vec2;
 
 	vec.push_back(1);
-	vec.push_back(2);
-	vec.push_back(3);
-	vec2.assign(vec.begin(), vec.end());
-	LOGN(vec2.size());
+	vec.push_back(10);
+	LOGN(stdvec.size());
+	LOGN(stdvec.capacity());
+	// vec.push_back(2);
+	// for (std::vector<int>::reverse_iterator it = stdvec.rbegin(); it != stdvec.rend(); it++)
+	// {
+	// 	LOGI(*it);
+	// }
+	// vec.push_back(3);
+	// vec2.assign(4, 6);
+	// LOGI(vec2.size());
+	// stdvec.assign((int)2, 45);
 
-	// LOGN(vec.size());
-	// LOGN(vec.capacity());
-	// LOGN(vec.max_size());
-	// LOGN(vec.empty());
-	// LOGN(vec.front());
-	// LOGN(vec.back());
-	printVector(vec2);
+
+	// LOGI(vec.front());
+	// LOGI(vec.back());
+	printVector(vec);
 	// system("leaks ft_containers");
 	return (0);
 }

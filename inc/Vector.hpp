@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+// #include <vector>
 #include <iostream>
 #include <stdexcept>
 
@@ -10,6 +10,7 @@
 
 #define LOG(msg) std::cout << msg
 #define LOGN(msg) std::cout << msg << std::endl;
+#define LOGI(...) std::cout << #__VA_ARGS__ << ": " << __VA_ARGS__ << std::endl;
 
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
@@ -42,7 +43,7 @@ class vector
 		/* ****************************************************************** */
 
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
-		vector( void ) : _size(0), _capacity(0), _ptr(nullptr)
+		vector( void ) : _size(0), _capacity(0), _ptr(NULL)
 		{
 			LOGN("\033[32mDefault Constructor called for Vector\033[0m");
 			this->_ptr = this->_alloc.allocate(0);
@@ -50,7 +51,7 @@ class vector
 
 		// (2)	Constructs an empty container with the given allocator alloc.
 		explicit vector( const Allocator& alloc ) : _size(0), _capacity(0),
-													_ptr(nullptr), _alloc(alloc)
+													_ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mAlloc Constructor called for Vector\033[0m");
 			this->_ptr = this->_alloc.allocate(0);
@@ -58,7 +59,7 @@ class vector
 
 		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
-							const Allocator& alloc = Allocator() ) : _size(0), _capacity(0), _ptr(nullptr), _alloc(alloc)
+							const Allocator& alloc = Allocator() ) : _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mValue initializer Constructor called for Vector\033[0m");
 			this->_ptr = alloc.allocate(count);
@@ -83,7 +84,7 @@ class vector
 		}
 
 		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
-		vector( const vector& other ) : _size(0), _capacity(0), _ptr(nullptr)
+		vector( const vector& other ) : _size(0), _capacity(0), _ptr(NULL)
 		{
 			LOGN("\033[32mCopy Constructor called for Vector\033[0m");
 			*this = other;
@@ -129,10 +130,10 @@ class vector
 		// (2)	Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argument is an iterator into *this. 
 		// 		This overload has the same effect as overload (1) if InputIt is an integral type.
 		template< class InputIt >
-		void	assign( InputIt first, InputIt last )
+		void	assign( InputIt first, InputIt last )							// enable_if missing
 		{
-			if ((this->_ptr <= first.base() && this->_ptr + this->_size >= first.base())
-				|| (this->_ptr <= last.base() && this->_ptr + this->_size >= last.base()))
+			if ((first >= this->begin() && first <= this->end())
+				|| (last >= this->begin() && last <= this->end()))
 				return ;
 			reserve(last.base() - first.base());
 			this->_size = last.base() - first.base() - 1;
@@ -163,7 +164,7 @@ class vector
 			{
 				throw std::out_of_range("index is out of vector bounds");
 			}
-			return (&(_ptr[pos]));
+			return (this->_ptr[pos]);
 		}
 
 		const_reference	at( size_type pos ) const
@@ -172,42 +173,42 @@ class vector
 			{
 				throw std::out_of_range("index is out of vector bounds");
 			}
-			return (&(_ptr[pos]));
+			return (this->_ptr[pos]);
 		}
 
 		//		Returns a reference to the element at specified location pos. No bounds checking is performed.
 		T	&operator[]( size_t index )
 		{
-			return (_ptr[index]);
+			return (this->_ptr[index]);
 		}
 
 		const T	&operator[]( size_t index ) const
 		{
-			return (_ptr[index]);
+			return (this->_ptr[index]);
 		}
 
 		//		Returns a reference to the first element in the container.
 		//		Calling front on an empty container is undefined.
 		reference	front()
 		{
-			return (*begin());
+			return (*(this->begin()));
 		}
 
 		const_reference	front() const
 		{
-			return (*begin());
+			return (*(this->begin()));
 		}
 
 		//		Returns a reference to the last element in the container.
 		//		Calling back on an empty container causes undefined behavior.
 		reference	back()
 		{
-			return (*(end() - 1));
+			return (*(this->end() - 1));
 		}
 
 		const_reference	back() const
 		{
-			return (*(end() - 1));
+			return (*(this->end() - 1));
 		}
 
 		//		Returns pointer to the underlying array serving as element storage.
@@ -232,15 +233,11 @@ class vector
 		//		If the vector is empty, the returned iterator will be equal to end().
 		iterator	begin( void )
 		{
-			// if (this->empty() && iterator(this->_ptr) != end())			// this needs to be removed for final version
-			// 	LOGN("\033[31merror in begin(). \033[36m iterator(this->_ptr) != end() \033[0m");
 			return (iterator(this->_ptr));
 		}
 
 		const_iterator	begin( void ) const
 		{
-			// if (this->empty() && const_iterator(this->_ptr) != end())	// this needs to be removed for final version
-			// 	LOGN("\033[31merror in begin() const. \033[36m const_iterator(this->_ptr) != end() \033[0m");
 			return (const_iterator(this->_ptr));
 		}
 
@@ -248,12 +245,12 @@ class vector
 		//		This element acts as a placeholder; attempting to access it results in undefined behavior.
 		iterator	end( void )
 		{
-			return (iterator(this->_ptr + this->_capacity));
+			return (iterator(this->_ptr + this->_size));
 		}
 
 		const_iterator	end( void ) const
 		{
-			return (const_iterator(this->_ptr + this->_capacity));
+			return (const_iterator(this->_ptr + this->_size));
 		}
 
 		// //		Returns a reverse iterator to the first element of the reversed vector.
@@ -261,15 +258,11 @@ class vector
 		// //		If the vector is empty, the returned iterator is equal to rend().
 		// reverse_iterator	rbegin( void )
 		// {
-		// 	if (this->empty() && ft::reverse_iterator<value_type>(this->end()) != begin())	// this needs to be removed for final version
-		// 		LOGN("\033[31merror in rbegin(). \033[36m ft::reverse_iterator<value_type>(this->end()) != begin() \033[0m");
 		// 	return (ft::reverse_iterator<value_type>(this->end()));
 		// }
 		
 		// const_reverse_iterator	rbegin( void ) const
 		// {
-		// 	if (this->empty() && ft::reverse_iterator<const value_type>(this->end()) != begin())	// this needs to be removed for final version
-		// 		LOGN("\033[31merror in begin() const. \033[36m ft::reverse_iterator<const value_type>(this->end()) != begin() \033[0m");
 		// 	return (ft::reverse_iterator<const value_type>(this->end()));
 		// }
 
@@ -304,20 +297,20 @@ class vector
 		//		or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container.
 		size_type	max_size() const
 		{
-			return (std::numeric_limits<difference_type>::max());				// is this correct??
+			return (std::numeric_limits<difference_type>::max() / 2);				// is this correct??
 		}
 
 		//		Increase the capacity of the vector to a value that's greater or equal to new_cap.
 		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 		void reserve( size_type newCapacity )
 		{
-			if (newCapacity > _capacity)
+			if (newCapacity > this->_capacity)
 				realloc(newCapacity);
 		}
 
 		size_t	capacity( void ) const
 		{
-			return (_capacity);
+			return (this->_capacity);
 		}
 
 		//	Modifiers:
