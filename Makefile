@@ -9,13 +9,13 @@ OBJS		=	$(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 
 SRCS		=	main.cpp
-INCS		=	equal.hpp iterator_traits.hpp iterator.hpp lexicographical_compare.hpp vector_iterator.hpp vector.hpp
+INCS		=	algorithm.hpp iterator_traits.hpp iterator.hpp type_traits.hpp vector_iterator.hpp vector.hpp
 
 .PHONY: all clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(PREP) $(OBJS)
+$(NAME): $(PREP) $(OBJS) $(DEPS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp $(DEPS)

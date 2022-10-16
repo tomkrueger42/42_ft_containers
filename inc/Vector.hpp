@@ -1,12 +1,11 @@
 #pragma once
-// #include <vector>
 #include <iostream>
 #include <stdexcept>
 
 #include "vector_iterator.hpp"
 #include "iterator.hpp"
-#include "lexicographical_compare.hpp"
-#include "equal.hpp"
+#include "algorithm.hpp"
+#include "type_traits.hpp"
 
 #define LOG(msg) std::cout << msg
 #define LOGN(msg) std::cout << msg << std::endl;
@@ -16,6 +15,10 @@ namespace ft {
 template < class T, class Allocator = std::allocator<T> >
 class vector
 {
+
+/* ************************************************************************** */
+/*	Member types															  */
+/* ************************************************************************** */
 
 	public:
 		typedef T												value_type;
@@ -28,7 +31,7 @@ class vector
 		typedef typename Allocator::const_pointer				const_pointer;
 		typedef typename ft::vector_iterator<value_type>		iterator;
 		typedef typename ft::vector_iterator<const value_type>	const_iterator;
-		// typedef typename ft::reverse_iterator<value_type>		reverse_iterator;		// reverse_iterator is still missing
+		// typedef typename ft::reverse_iterator<value_type>		reverse_iterator;
 		// typedef typename ft::reverse_iterator<const value_type>	const_reverse_iterator;
 
 	private:
@@ -38,9 +41,12 @@ class vector
 		allocator_type	_alloc;
 
 	public:
-		/* ****************************************************************** */
-		/*	Member functions												  */
-		/* ****************************************************************** */
+
+/* ************************************************************************** */
+/*	Public member functions													  */
+/* ************************************************************************** */
+
+/* =================	Constructors						================= */
 
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
 		vector( void ) : _size(0), _capacity(0), _ptr(NULL)
@@ -72,8 +78,8 @@ class vector
 		// (5)	Constructs the container with the contents of the range [first, last).
 		//		This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a) if InputIt is an integral type.
 		template < class InputIt >
-		vector( InputIt first, InputIt last,
-				const Allocator& alloc = Allocator() )
+		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator(),
+				 typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
 			LOGN("\033[32mRange Constructor called for Vector\033[0m");
 			this->_ptr = alloc.allocate(last - first);
@@ -130,13 +136,14 @@ class vector
 		// (2)	Replaces the contents with copies of those in the range [first, last). The behavior is undefined if either argument is an iterator into *this. 
 		// 		This overload has the same effect as overload (1) if InputIt is an integral type.
 		template< class InputIt >
-		void	assign( InputIt first, InputIt last )							// enable_if missing
+		void	assign( InputIt first, InputIt last,
+						typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
 			if ((first >= this->begin() && first <= this->end())
 				|| (last >= this->begin() && last <= this->end()))
 				return ;
-			reserve(last.base() - first.base());
-			this->_size = last.base() - first.base() - 1;
+			reserve(first - last);
+			this->_size = first - last;
 			if (this->_size == static_cast<size_type>(-1))
 				this->_size = 0;
 			for (size_t i = 0; first != last; i++, first++)
@@ -152,9 +159,7 @@ class vector
 		}
 
 
-		/* ****************************************************************** */
-		/*	Element access													  */
-		/* ****************************************************************** */
+/* =================	Element access						================= */
 
 		//		Returns a reference to the element at specified location pos, with bounds checking.
 		//		If pos is not within the range of the container, an exception of type std::out_of_range is thrown.
@@ -225,9 +230,7 @@ class vector
 		}
 
 
-		/* ****************************************************************** */
-		/*	Iterators														  */
-		/* ****************************************************************** */
+/* =================	Iterators								================= */
 
 		//		Returns an iterator to the first element of the vector.
 		//		If the vector is empty, the returned iterator will be equal to end().
@@ -297,7 +300,7 @@ class vector
 		//		or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container.
 		size_type	max_size() const
 		{
-			return (std::numeric_limits<difference_type>::max() / 2);				// is this correct??
+			return (this->_alloc.max_size());
 		}
 
 		//		Increase the capacity of the vector to a value that's greater or equal to new_cap.
@@ -313,7 +316,8 @@ class vector
 			return (this->_capacity);
 		}
 
-		//	Modifiers:
+
+/* =================	Modifiers							================= */
 
 		//		Erases all elements from the container. After this call, size() returns zero.
 		void	clear( void )
@@ -366,7 +370,8 @@ class vector
 		//		(4)	inserts elements from range [first, last) before pos.
 		//		This overload has the same effect as overload (3) if InputIt is an integral type.
 		template< class InputIt >
-		iterator	insert( const_iterator pos, InputIt first, InputIt last )
+		iterator	insert( const_iterator pos, InputIt first, InputIt last,
+							typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true )
 		{
 			while ( this->_size + last - first >= this->_capacity )
 				this->realloc(this->_capacity * 2);
@@ -487,9 +492,9 @@ class vector
 		}
 }; // class Vector
 
-/* ****************************************************************** */
-/*	Non-member functions											  */
-/* ****************************************************************** */
+/* ************************************************************************** */
+/*	Non-member functions													  */
+/* ************************************************************************** */
 
 template< class T, class Alloc >
 bool	operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
@@ -502,9 +507,7 @@ bool	operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs 
 template< class T, class Alloc >
 bool	operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
 {
-	if (lhs == rhs)
-		return (false);
-	return (true);
+	return (!(lhs == rhs));
 }
 
 template< class T, class Alloc >

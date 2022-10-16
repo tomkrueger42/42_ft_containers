@@ -17,26 +17,29 @@ void	printVector(const T& vec)
 
 int	main(void)
 {
-	ft::vector<int>	vec;
+	{
+		ft::vector<int> vec;
 
-	vec.push_back(1);
-	vec.push_back(10);
-	LOGN(stdvec.size());
-	LOGN(stdvec.capacity());
-	// vec.push_back(2);
-	// for (std::vector<int>::reverse_iterator it = stdvec.rbegin(); it != stdvec.rend(); it++)
-	// {
-	// 	LOGI(*it);
-	// }
-	// vec.push_back(3);
-	// vec2.assign(4, 6);
-	// LOGI(vec2.size());
-	// stdvec.assign((int)2, 45);
+		vec.push_back(1);
+		vec.push_back(2);
+		vec.push_back(3);
+		ft::vector<int> vec2;
 
+		vec2.assign(vec.begin(), vec.end());
+		printVector(vec2);
+		LOGI(vec.max_size());
+	}
+	{
+		std::vector<int> vec;
 
-	// LOGI(vec.front());
-	// LOGI(vec.back());
-	printVector(vec);
-	// system("leaks ft_containers");
+		vec.push_back(1);
+		vec.push_back(2);
+		vec.push_back(3);
+		std::vector<int> vec2;
+
+		vec2.assign(vec.begin(), vec.end());
+		printVector(vec2);
+		LOGI(vec.max_size());
+	}
 	return (0);
 }

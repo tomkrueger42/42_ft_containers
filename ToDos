@@ -1,6 +1,1 @@
-max_size()
-
-enable_if()
-	assign overload fix
-
-
+allocator.construct() and allocator.destruct()?
