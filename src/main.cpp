@@ -5,6 +5,7 @@
 // #define LOG(msg) std::cout << msg
 // #define LOGN(msg) std::cout << msg << std::endl
 
+
 template<typename T>
 void	printVector(const T& vec)
 {
@@ -12,34 +13,57 @@ void	printVector(const T& vec)
 	{
 		LOGI(*it);
 	}
+	LOGI(vec.size());
+	LOGI(vec.capacity());
 	std::cout << "-------------------------" << std::endl;
+}
+
+void	insert_test(int overload)
+{
+	if (overload == 1)
+	{
+		{
+			ft::vector<int>	vec;
+			vec.insert(vec.begin(), 3);
+			vec.insert(vec.end(), 5);
+			printVector(vec);
+
+			ft::vector<int> vec2;
+			vec2.insert(vec2.end(), 3);
+			vec2.insert(vec2.begin(), 5);
+			vec2.insert(vec2.end() - 1, 4);
+			printVector(vec2);
+		}
+	}
+	else if (overload == 3)
+	{
+		{
+			ft::vector<int>	vec;
+			vec.insert(vec.begin(), 2, 27);
+			vec.insert(vec.end(), 2, 29);
+			LOGI(vec.insert(vec.begin() + 2, 2, 28).base());
+			LOGI(vec.data());
+			printVector(vec);
+		}
+	}
+	else if (overload == 4)
+	{
+		{
+			ft::vector<int>	vec(3, 4);
+			ft::vector<int>	vec2;
+			vec2.insert(vec2.begin(), vec.begin(), vec.end());
+			
+			ft::vector<int>	vec3(2, 7);
+			vec2.insert(vec2.end(), vec3.begin(), vec3.end());
+			printVector(vec2);
+		}
+	}
 }
 
 int	main(void)
 {
 	{
-		ft::vector<int> vec;
-
-		vec.push_back(1);
-		vec.push_back(2);
-		vec.push_back(3);
-		ft::vector<int> vec2;
-
-		vec2.assign(vec.begin(), vec.end());
-		printVector(vec2);
-		LOGI(vec.max_size());
-	}
-	{
-		std::vector<int> vec;
-
-		vec.push_back(1);
-		vec.push_back(2);
-		vec.push_back(3);
-		std::vector<int> vec2;
-
-		vec2.assign(vec.begin(), vec.end());
-		printVector(vec2);
-		LOGI(vec.max_size());
+		insert_test(4);
 	}
 	return (0);
 }

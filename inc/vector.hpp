@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
 #include "vector_iterator.hpp"
@@ -52,7 +53,7 @@ class vector
 		vector( void ) : _size(0), _capacity(0), _ptr(NULL)
 		{
 			LOGN("\033[32mDefault Constructor called for Vector\033[0m");
-			this->_ptr = this->_alloc.allocate(0);
+			this->realloc(0);
 		}
 
 		// (2)	Constructs an empty container with the given allocator alloc.
@@ -60,7 +61,7 @@ class vector
 													_ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mAlloc Constructor called for Vector\033[0m");
-			this->_ptr = this->_alloc.allocate(0);
+			this->realloc(0);
 		}
 
 		// (3)	Constructs the container with count copies of elements with value value.
@@ -68,10 +69,9 @@ class vector
 							const Allocator& alloc = Allocator() ) : _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mValue initializer Constructor called for Vector\033[0m");
-			this->_ptr = alloc.allocate(count);
-			this->_capacity = count;
-			for (iterator it = begin(); it != end(); it++)
-				*it = value;
+			this->realloc(count);
+			for (size_type i = 0; i < count; i++)
+				this->_alloc.construct(&(this->_ptr[i]), value);
 			this->_size = count;
 		}
 
@@ -79,14 +79,13 @@ class vector
 		//		This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a) if InputIt is an integral type.
 		template < class InputIt >
 		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator(),
-				 typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+				 typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true) : _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mRange Constructor called for Vector\033[0m");
-			this->_ptr = alloc.allocate(last - first);
-			this->_capacity = last - first;
-			for (iterator it = begin(); first != last; it++, first++)
-				*it = *first;
-			this->_size = last - first;
+			this->realloc(distance(first, last));
+			for (size_type i = 0; first != last; i++, first++)
+				this->_alloc.construct(&(this->_ptr[i]), *first);
+			this->_size = distance(first, last);
 		}
 
 		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
@@ -110,14 +109,14 @@ class vector
 			LOGN("\033[34mAssignment Operator called for Vector\033[0m");
 			if (this != &other)
 			{
+				for (size_type i = 0; i < this->_size; i++)
+					this->_alloc.destroy(&(this->_ptr[i]));
 				this->_alloc.deallocate(this->_ptr, this->_capacity);
 				this->_ptr = this->_alloc.allocate(other._capacity);
-				this->_size = other._size;
 				this->_capacity = other._capacity;
-				for (size_t i = 0; i < this->_size; i++)
-				{
-					this->_ptr[i] = other._ptr[i];						// maybe also possible with insert()
-				}
+				for (size_type i = 0; i < other._size; i++)
+					this->_alloc.construct(&(this->_ptr[i]), other._ptr[i]);
+				this->_size = other._size;
 			}
 			return (*this);
 		}
@@ -126,9 +125,10 @@ class vector
 		void	assign( size_type count, const T& value )
 		{
 			reserve(count);
-			for (size_t i = 0; i < count; i++)
+			for (size_type i = 0; i < count; i++)
 			{
-				this->_ptr[i] = value;
+				this->_alloc.destroy(&(this->_ptr[i]));
+				this->_alloc.construct(&(this->_ptr[i]), value);
 			}
 			this->_size = count;
 		}
@@ -142,13 +142,14 @@ class vector
 			if ((first >= this->begin() && first <= this->end())
 				|| (last >= this->begin() && last <= this->end()))
 				return ;
-			reserve(first - last);
-			this->_size = first - last;
-			if (this->_size == static_cast<size_type>(-1))
+			reserve(distance(first, last));
+			this->_size = distance(first, last);
+			if (this->_size == static_cast<size_type>(-1))						// protection for when first == last
 				this->_size = 0;
-			for (size_t i = 0; first != last; i++, first++)
+			for (size_type i = 0; first != last; i++, first++)
 			{
-				this->_ptr[i] = *first;
+				this->_alloc.destroy(&(this->_ptr[i]));
+				this->_alloc.construct(&(this->_ptr[i], *first));
 			}
 		}
 
@@ -166,54 +167,50 @@ class vector
 		reference	at( size_type pos )
 		{
 			if (pos >= this->_size)
-			{
-				throw std::out_of_range("index is out of vector bounds");
-			}
+				throw std::out_of_range("pos is out of vector bounds");
 			return (this->_ptr[pos]);
 		}
 
 		const_reference	at( size_type pos ) const
 		{
 			if (pos >= this->_size)
-			{
-				throw std::out_of_range("index is out of vector bounds");
-			}
+				throw std::out_of_range("pos is out of vector bounds");
 			return (this->_ptr[pos]);
 		}
 
 		//		Returns a reference to the element at specified location pos. No bounds checking is performed.
-		T	&operator[]( size_t index )
+		T	&operator[]( size_type pos )
 		{
-			return (this->_ptr[index]);
+			return (this->_ptr[pos]);
 		}
 
-		const T	&operator[]( size_t index ) const
+		const T	&operator[]( size_type pos ) const
 		{
-			return (this->_ptr[index]);
+			return (this->_ptr[pos]);
 		}
 
 		//		Returns a reference to the first element in the container.
 		//		Calling front on an empty container is undefined.
 		reference	front()
 		{
-			return (*(this->begin()));
+			return (this->_ptr[0]);
 		}
 
 		const_reference	front() const
 		{
-			return (*(this->begin()));
+			return (this->_ptr[0]);
 		}
 
 		//		Returns a reference to the last element in the container.
 		//		Calling back on an empty container causes undefined behavior.
 		reference	back()
 		{
-			return (*(this->end() - 1));
+			return (this->_ptr[this->_size - 1]);
 		}
 
 		const_reference	back() const
 		{
-			return (*(this->end() - 1));
+			return (this->_ptr[this->_size - 1]);
 		}
 
 		//		Returns pointer to the underlying array serving as element storage.
@@ -305,7 +302,7 @@ class vector
 
 		//		Increase the capacity of the vector to a value that's greater or equal to new_cap.
 		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
-		void reserve( size_type newCapacity )
+		void	reserve( size_type newCapacity )
 		{
 			if (newCapacity > this->_capacity)
 				realloc(newCapacity);
@@ -322,6 +319,8 @@ class vector
 		//		Erases all elements from the container. After this call, size() returns zero.
 		void	clear( void )
 		{
+			for (size_type i = 0; i < this->_size; i++)
+				this->_alloc.destroy(&(this->_ptr[i]));
 			this->_alloc.deallocate(this->_ptr, this->_capacity);
 			this->_ptr = this->_alloc.allocate(this->_capacity);
 			this->_size = 0;
@@ -329,68 +328,54 @@ class vector
 
 		//		Inserts elements at the specified location in the container.
 		//		(1)	inserts value before pos.
-		iterator	insert( const_iterator pos, const T& value )
+		iterator	insert( iterator pos, const T& value )						// pos needs to be fucking const_iterator!!!
 		{
-			while (this->_size + 1 >= this->_capacity)
+			size_type	position = distance(begin(), pos);
+			this->reserve(1);
+			if (this->_size == this->_capacity)
 				this->realloc(this->_capacity * 2);
-
-			iterator	it = this->end();
-			while ( it != pos )
-			{
-				*it = *(it - 1);
-				--it;
-			}
-			*pos = value;
-			this->_size++;
+			for (size_type i = this->_size; i > position; i--)
+				this->_ptr[i] = this->_ptr[i - 1];
+			this->_alloc.construct(&(this->_ptr[position]), value);
+			++this->_size;
+			return (iterator(&(this->_ptr[position])));
 		}
 
 		//		(3)	inserts count copies of the value before pos.
-		iterator	insert( const_iterator pos, size_type count, const T& value )
+		iterator	insert( iterator pos, size_type count, const T& value )		// pos needs to be fucking const_iterator!!!
 		{
-			while ( this->_size + count >= this->_capacity )
-				this->realloc(this->_capacity * 2);
-
-			iterator	it = this->end() - 1;
-			iterator	it2(it + count);
-
-			while ( it != pos )
+			size_type	position = distance(begin(), pos);
+			this->reserve(this->_size + count);
+			for (size_type i = this->_size; i > position; i--)
 			{
-				*it2 = *it;
-				--it;
-				--it2;
+				this->_ptr[i + count - 1] = this->_ptr[i - 1];
 			}
-			while ( it != it2 )
+			for (size_type i = 0; i < count; i++)
 			{
-				*it = value;
-				++it;
+				this->_alloc.construct(&(this->_ptr[position + i]), value);
+				++this->_size;
 			}
-			this->_size += count;
+			return (iterator(&(this->_ptr[position])));
 		}
 
 		//		(4)	inserts elements from range [first, last) before pos.
 		//		This overload has the same effect as overload (3) if InputIt is an integral type.
 		template< class InputIt >
-		iterator	insert( const_iterator pos, InputIt first, InputIt last,
+		iterator	insert( iterator pos, InputIt first, InputIt last,			// pos needs to be fucking const_iterator!!!
 							typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true )
 		{
-			while ( this->_size + last - first >= this->_capacity )
-				this->realloc(this->_capacity * 2);
-
-			iterator	it = this->end() - 1;
-			iterator	it2(it + (last - first));
-			while ( it != pos )
+			size_type	position = distance(begin(), pos);
+			this->reserve(this->_size + distance(first, last));
+			for (size_type i = this->_size; i > position; i--)
 			{
-				*it2 = *it;
-				--it;
-				--it2;
+				this->_ptr[i + distance(first, last) - 1] = this->_ptr[i - 1];
 			}
-			while ( it != last )
+			for ( ; first != last; position++, first++)
 			{
-				*it = *first;
-				++it;
-				++first;
+				this->_alloc.construct(&(this->_ptr[position]), *first);
+				++this->_size;
 			}
-			this->_size += (last - first);
+			return (iterator(&(this->_ptr[position])));
 		}
 
 		//		Erases the specified elements from the container.
@@ -473,15 +458,19 @@ class vector
 		}
 
 	private:
-		void	realloc( size_t newCapacity )
+		void	realloc( size_type newCapacity )
 		{
-			if (newCapacity > max_size())
+			if (this->max_size() < newCapacity)									// does not increase _capacity to max_size()
 				throw std::length_error("maximum capacity has been reached");
-			T	*newVector = new T[newCapacity]; // malloc protection??
+			// if (this->_capacity == this->max_size() && newCapacity > this->_capacity)
+			// 	throw std::length_error("maximum capacity has been reached");
+			// if (newCapacity > this->max_size())
+			// 	newCapacity = this->max_size();
+			T	*newVector = new T[newCapacity];
 			if (newCapacity < this->_size)
 				this->_size = newCapacity;
 			std::memmove(newVector, _ptr, this->_size * sizeof(T));		// memmove or just plain copying??
-			// for (size_t i = 0; i < this->_size; i++)
+			// for (size_type i = 0; i < this->_size; i++)
 			// 	NewVector[i] = _ptr[i];
 			delete []_ptr;
 			_ptr = newVector;
@@ -490,6 +479,7 @@ class vector
 			LOG(newCapacity);
 			LOGN(" memory slots\033[0m");
 		}
+
 }; // class Vector
 
 /* ************************************************************************** */

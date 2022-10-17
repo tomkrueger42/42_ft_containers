@@ -59,7 +59,7 @@ class vector_iterator
 			return (&(*_ptr));
 		}
 
-		reference	operator[]( difference_type n ) const					// does this need to return the reference or a new iterator at position n??
+		reference	operator[]( difference_type n ) const
 		{
 			return (*(_ptr + n));
 		}
@@ -168,7 +168,7 @@ template < class It >
 typename vector_iterator<It>::difference_type
 	operator-( const vector_iterator<It>& lhs, const vector_iterator<It>& rhs )
 {
-	return (rhs.base() - lhs.base());
+	return (rhs.base() - lhs.base());											// maybe lhs.base() - rhs.base()??
 }
 
 // Operations

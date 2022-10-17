@@ -2,6 +2,7 @@
 ./obj/
 ft_containers
 .vs_code
+.vscode
 
 # Prerequisites
 *.d
