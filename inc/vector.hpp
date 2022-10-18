@@ -53,39 +53,33 @@ class vector
 		vector( void ) : _size(0), _capacity(0), _ptr(NULL)
 		{
 			LOGN("\033[32mDefault Constructor called for Vector\033[0m");
-			this->realloc(0);
 		}
 
 		// (2)	Constructs an empty container with the given allocator alloc.
-		explicit vector( const Allocator& alloc ) : _size(0), _capacity(0),
-													_ptr(NULL), _alloc(alloc)
+		explicit vector( const Allocator& alloc )
+					: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mAlloc Constructor called for Vector\033[0m");
-			this->realloc(0);
 		}
 
 		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
-							const Allocator& alloc = Allocator() ) : _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
+							const Allocator& alloc = Allocator() )
+							: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mValue initializer Constructor called for Vector\033[0m");
-			this->realloc(count);
-			for (size_type i = 0; i < count; i++)
-				this->_alloc.construct(&(this->_ptr[i]), value);
-			this->_size = count;
+			this->assign(count, value);
 		}
 
 		// (5)	Constructs the container with the contents of the range [first, last).
 		//		This constructor has the same effect as vector(static_cast<size_type>(first), static_cast<value_type>(last), a) if InputIt is an integral type.
 		template < class InputIt >
 		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator(),
-				 typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true) : _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
+				typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
+				: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
 			LOGN("\033[32mRange Constructor called for Vector\033[0m");
-			this->realloc(distance(first, last));
-			for (size_type i = 0; first != last; i++, first++)
-				this->_alloc.construct(&(this->_ptr[i]), *first);
-			this->_size = distance(first, last);
+			this->assign<InputIt>(first, last);
 		}
 
 		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
@@ -100,7 +94,14 @@ class vector
 		~vector( void )
 		{
 			LOGN("\033[31mDestructor called for Vector\033[0m");
+			for (size_type i = 0; i < this->_size; i++)
+			{
+				this->_alloc.destroy(&(this->_ptr[i]));
+			}
 			this->_alloc.deallocate(this->_ptr, this->_capacity);
+			this->_ptr = NULL;
+			this->_size = 0;
+			this->_capacity = 0;
 		}
 
 		// (1)	Copy assignment operator. Replaces the contents with a copy of the contents of other.
@@ -109,14 +110,7 @@ class vector
 			LOGN("\033[34mAssignment Operator called for Vector\033[0m");
 			if (this != &other)
 			{
-				for (size_type i = 0; i < this->_size; i++)
-					this->_alloc.destroy(&(this->_ptr[i]));
-				this->_alloc.deallocate(this->_ptr, this->_capacity);
-				this->_ptr = this->_alloc.allocate(other._capacity);
-				this->_capacity = other._capacity;
-				for (size_type i = 0; i < other._size; i++)
-					this->_alloc.construct(&(this->_ptr[i]), other._ptr[i]);
-				this->_size = other._size;
+				this->assign(other.begin(), other.end());
 			}
 			return (*this);
 		}
@@ -124,10 +118,13 @@ class vector
 		// (1)	Replaces the contents with count copies of value value
 		void	assign( size_type count, const T& value )
 		{
-			reserve(count);
-			for (size_type i = 0; i < count; i++)
+			this->reserve(count);
+			for (size_type i = 0; i < this->_size; i++)
 			{
 				this->_alloc.destroy(&(this->_ptr[i]));
+			}
+			for (size_type i = 0; i < count; i++)
+			{
 				this->_alloc.construct(&(this->_ptr[i]), value);
 			}
 			this->_size = count;
@@ -142,14 +139,17 @@ class vector
 			if ((first >= this->begin() && first <= this->end())
 				|| (last >= this->begin() && last <= this->end()))
 				return ;
-			reserve(distance(first, last));
+			this->reserve(distance(first, last));
+			for (size_type i = 0; i < this->_size; i++)
+			{
+				this->_alloc.destroy(&(this->_ptr[i]));
+			}
 			this->_size = distance(first, last);
-			if (this->_size == static_cast<size_type>(-1))						// protection for when first == last
+			if (first == last)
 				this->_size = 0;
 			for (size_type i = 0; first != last; i++, first++)
 			{
-				this->_alloc.destroy(&(this->_ptr[i]));
-				this->_alloc.construct(&(this->_ptr[i], *first));
+				this->_alloc.construct(&(this->_ptr[i]), *first);
 			}
 		}
 
@@ -179,12 +179,12 @@ class vector
 		}
 
 		//		Returns a reference to the element at specified location pos. No bounds checking is performed.
-		T	&operator[]( size_type pos )
+		reference	operator[]( size_type pos )
 		{
 			return (this->_ptr[pos]);
 		}
 
-		const T	&operator[]( size_type pos ) const
+		const_reference	operator[]( size_type pos ) const
 		{
 			return (this->_ptr[pos]);
 		}
@@ -227,7 +227,7 @@ class vector
 		}
 
 
-/* =================	Iterators								================= */
+/* =================	Iterators							================= */
 
 		//		Returns an iterator to the first element of the vector.
 		//		If the vector is empty, the returned iterator will be equal to end().
@@ -279,7 +279,7 @@ class vector
 		// 	return (ft::reverse_iterator<const value_type>(this->begin()));
 		// }
 
-		//	Capacity:
+/* =================	Capacity							================= */
 
 		//		Checks if the container has no elements, i.e. whether begin() == end().
 		bool	empty( void ) const
@@ -304,6 +304,8 @@ class vector
 		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 		void	reserve( size_type newCapacity )
 		{
+			if (newCapacity > this->max_size())									// is vector able to be filled with max_size() elements when newCapacity ist larger than max_size()
+				throw std::length_error("vector");
 			if (newCapacity > this->_capacity)
 				realloc(newCapacity);
 		}
@@ -320,9 +322,9 @@ class vector
 		void	clear( void )
 		{
 			for (size_type i = 0; i < this->_size; i++)
+			{
 				this->_alloc.destroy(&(this->_ptr[i]));
-			this->_alloc.deallocate(this->_ptr, this->_capacity);
-			this->_ptr = this->_alloc.allocate(this->_capacity);
+			}
 			this->_size = 0;
 		}
 
@@ -333,9 +335,11 @@ class vector
 			size_type	position = distance(begin(), pos);
 			this->reserve(1);
 			if (this->_size == this->_capacity)
-				this->realloc(this->_capacity * 2);
+				this->reserve(this->_capacity * 2);
 			for (size_type i = this->_size; i > position; i--)
+			{
 				this->_ptr[i] = this->_ptr[i - 1];
+			}
 			this->_alloc.construct(&(this->_ptr[position]), value);
 			++this->_size;
 			return (iterator(&(this->_ptr[position])));
@@ -382,48 +386,48 @@ class vector
 		//		(1) Removes the element at pos.
 		iterator	erase( iterator pos )
 		{
-			iterator	end = this->end();
-			while (pos != end)
+			this->_alloc.destroy(pos.base());
+			for (iterator it = pos; it != end(); it++)
 			{
-				*pos = *(pos + 1);
-				++pos;
+				*it = *(it + 1);
 			}
-			this->_size--;
+			if (pos != this->end())
+				--this->_size;
 			return (pos);
 		}
 
 		//		(2) Removes the elements in the range [first, last).
 		iterator	erase( iterator first, iterator last )
 		{
-			iterator	end = this->end();
-			iterator	f	= first;
-			while (last <= end)
+			difference_type	n = distance(first, last);
+			for (iterator it = first; it < last; it++)
 			{
-				*first = *last;
-				++first;
-				++last;
+				this->_alloc.destroy(it.base());
 			}
-			this->_size -= (last - first);
-			return (f);
+			for (iterator it = first; last < this->end(); it++, last++)
+			{
+				*it = *last;
+			}
+			this->_size -= n;
+			return (first);
 		}
 
 		//		Appends the given element value to the end of the container.
 		//		The new element is initialized as a copy of value.
 		void	push_back( const T& value )
 		{
-			if (this->_capacity == 0)
-				realloc(1);
-			if (this->_size >= this->_capacity)
-				realloc(_capacity * 2);
-			this->_ptr[this->_size] = value;
-			this->_size++;
+			this->reserve(1);
+			if (this->_size == this->_capacity)
+				this->reserve(this->_capacity * 2);
+			this->_alloc.construct(&(this->_ptr[this->_size]), value);
+			++this->_size;
 		}
 
 		//		Removes the last element of the container. 
 		void	pop_back( void )
 		{
-			*(this->end() - 1) = *(this->end());
-			this->_size--;
+			this->_alloc.destroy(&(this->_ptr[this->_size - 1]));
+			--this->_size;
 		}
 
 		//		Resizes the container to contain count elements. If the current
@@ -431,6 +435,10 @@ class vector
 		//		If the current size is less than count, additional copies of value are appended.
 		void	resize( size_type count, T value = T() )
 		{
+			if (count > this->max_size())
+				throw std::length_error("vector");
+			if (this->_capacity == 0)
+				this->reserve(count);
 			while (this->_size < count)
 			{
 				this->push_back(value);
@@ -461,23 +469,18 @@ class vector
 		void	realloc( size_type newCapacity )
 		{
 			if (this->max_size() < newCapacity)									// does not increase _capacity to max_size()
-				throw std::length_error("maximum capacity has been reached");
-			// if (this->_capacity == this->max_size() && newCapacity > this->_capacity)
-			// 	throw std::length_error("maximum capacity has been reached");
-			// if (newCapacity > this->max_size())
-			// 	newCapacity = this->max_size();
-			T	*newVector = new T[newCapacity];
+				throw std::length_error("vector");
+			T	*newPTR = this->_alloc.allocate(newCapacity);
+			for (size_type i = newCapacity; newCapacity < this->_size; i++)
+			{
+				this->_alloc.destroy(&(this->_ptr[i]));
+			}
 			if (newCapacity < this->_size)
 				this->_size = newCapacity;
-			std::memmove(newVector, _ptr, this->_size * sizeof(T));		// memmove or just plain copying??
-			// for (size_type i = 0; i < this->_size; i++)
-			// 	NewVector[i] = _ptr[i];
-			delete []_ptr;
-			_ptr = newVector;
-			_capacity = newCapacity;
-			LOG("\033[34mrealloc with ");
-			LOG(newCapacity);
-			LOGN(" memory slots\033[0m");
+			std::memmove(newPTR, this->_ptr, this->_size * sizeof(T));
+			this->_alloc.deallocate(this->_ptr, this->_capacity);
+			this->_ptr = newPTR;
+			this->_capacity = newCapacity;
 		}
 
 }; // class Vector
@@ -486,28 +489,38 @@ class vector
 /*	Non-member functions													  */
 /* ************************************************************************** */
 
+//		Checks if the contents of lhs and rhs are equal, that is, they have the same number of elements
+//		and each element in lhs compares equal with the element in rhs at the same position.
 template< class T, class Alloc >
-bool	operator==( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator==( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
-	if (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+	if (lhs.size() == rhs.size()
+		&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
 		return (true);
 	return (false);
 }
 
 template< class T, class Alloc >
-bool	operator!=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator!=( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
 	return (!(lhs == rhs));
 }
 
+//		Compares the contents of lhs and rhs lexicographically.
+//		The comparison is performed by a function equivalent to std::lexicographical_compare.
 template< class T, class Alloc >
-bool	operator<( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator<( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
-	return (ft::lexicographical_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end()));
+	return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
+										rhs.begin(), rhs.end()));
 }
 
 template< class T, class Alloc >
-bool	operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator<=( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
 	if (lhs == rhs || lhs < rhs)
 		return (true);
@@ -515,13 +528,16 @@ bool	operator<=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs 
 }
 
 template< class T, class Alloc >
-bool	operator>( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator>( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
-	return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+	return (ft::lexicographical_compare(rhs.begin(), rhs.end(),
+										lhs.begin(), lhs.end()));
 }
 
 template< class T, class Alloc >
-bool	operator>=( const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs )
+bool	operator>=( const ft::vector<T,Alloc>& lhs,
+					const ft::vector<T,Alloc>& rhs )
 {
 	if (lhs == rhs || lhs > rhs)
 		return (true);

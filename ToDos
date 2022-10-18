@@ -1,1 +1,5 @@
-allocator.construct() and allocator.destruct()?
+newCapacity with length_error in reserve()
+
+all three insert() overloads needs to have a const_iterator not only iterator
+
+comment logging in constructors / destructor / assignment operator

@@ -16,100 +16,110 @@ class vector_iterator
 		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::iterator_category	iterator_category;
 
 	private:
-		pointer	_ptr;
+		pointer	_current;
 
 	public:
 
-		/* constructors */
+/* =================	Constructors						================= */
 
-		vector_iterator( void ) : _ptr(NULL) {}
+		vector_iterator( void ) : _current(NULL) {}								// STL initializes the _current pointer differently but it is not dereferencable
 
 		vector_iterator( const vector_iterator &vi )
 		{
 			*this = vi;
 		}
 
-		vector_iterator( pointer ptr ) : _ptr(ptr) {}
+		vector_iterator( pointer ptr ) : _current(ptr) {}						// this is in STL a private constructor
 
-		/* destructors */
+		// //	these are the constructors of reverse_iterator
+		// reverse_iterator();
+		// explicit reverse_iterator( iterator_type x );
+		// template< class U >
+		// reverse_iterator( const reverse_iterator<U>& other );
+
+
+/* =================	Destructor							================= */
 
 		~vector_iterator( void ) {}
+
+
+/* =================	Accessors							================= */
+
+		pointer	base( void ) const
+		{
+			return (_current);
+		}
+
+/* =================	Operator overloads					================= */
 
 		vector_iterator	&operator=( const vector_iterator &vi )
 		{
 			if (this != &vi)
-			{
-				this->_ptr = vi._ptr;
-			}
+				this->_current = vi._current;
 			return (*this);
-		}
-
-		pointer	base( void ) const
-		{
-			return (_ptr);
 		}
 
 		reference	operator*( void ) const
 		{
-			return (*_ptr);
+			return (*_current);
 		}
 
-		pointer			operator->( void ) const
+		pointer	operator->( void ) const										// what is this for and how do I use it?
 		{
-			return (&(*_ptr));
+			return (&(*_current));
 		}
 
 		reference	operator[]( difference_type n ) const
 		{
-			return (*(_ptr + n));
+			return (*(_current + n));
 		}
 
 		vector_iterator	&operator++( void )
 		{
-			_ptr++;
+			_current++;
 			return (*this);
 		}
 
 		vector_iterator	operator++( int )
 		{
-			vector_iterator	tmp(_ptr);
-			_ptr++;
+			vector_iterator	tmp(_current);
+			_current++;
 			return (tmp);
 		}
 
 		vector_iterator	&operator+=( difference_type n )
 		{
-			_ptr += n;
+			_current += n;
 			return (*this);
 		}
 
 		vector_iterator	&operator--( void )
 		{
-			--_ptr;
+			--_current;
 			return (*this);
 		}
 
 		vector_iterator	operator--( int )
 		{
-			vector_iterator	tmp(_ptr);
-			--_ptr;
+			vector_iterator	tmp(_current);
+			--_current;
 			return (tmp);
 		}
 
 		vector_iterator	&operator-=( difference_type n )
 		{
-			_ptr -= n;
+			_current -= n;
 			return (*this);
 		}
 		
 		vector_iterator	operator+( difference_type n ) const
 		{
-			return (vector_iterator(_ptr + n));
+			return (vector_iterator(_current + n));
 		}
 		
 		vector_iterator	operator-( difference_type n ) const
 		{
-			return (vector_iterator(_ptr - n));
+			return (vector_iterator(_current - n));
 		}
 };
 
@@ -168,7 +178,7 @@ template < class It >
 typename vector_iterator<It>::difference_type
 	operator-( const vector_iterator<It>& lhs, const vector_iterator<It>& rhs )
 {
-	return (rhs.base() - lhs.base());											// maybe lhs.base() - rhs.base()??
+	return (lhs.base() - rhs.base());
 }
 
 // Operations
@@ -184,11 +194,10 @@ typename ft::iterator_traits<InputIt>::difference_type
 			distance( InputIt first, InputIt last )
 {
 	typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
-	while (first < last)														// first can only be greater than last for random_access_iterators in c++11 and later
-	{
-		++hops;
-		++first;
-	}
+	for ( ; first > last; --first, --hops)
+		;
+	for ( ; first < last; ++first, ++hops)
+		;
 	return (hops);
 }
 
