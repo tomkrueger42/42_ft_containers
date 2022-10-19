@@ -9,7 +9,13 @@ OBJS		=	$(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 
 SRCS		=	main.cpp
-INCS		=	algorithm.hpp iterator_traits.hpp iterator.hpp type_traits.hpp vector_iterator.hpp vector.hpp
+INCS		=	algorithm.hpp \
+				iterator_traits.hpp \
+				iterator.hpp \
+				reverse_iterator.hpp \
+				type_traits.hpp \
+				vector_iterator.hpp \
+				vector.hpp
 
 .PHONY: all clean fclean re
 

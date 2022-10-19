@@ -2,9 +2,9 @@
 #include <vector>
 #include <iostream>
 
-// #define LOG(msg) std::cout << msg
-// #define LOGN(msg) std::cout << msg << std::endl
-
+#define LOG(msg) std::cout << msg
+#define LOGN(msg) std::cout << msg << std::endl;
+#define LOGI(...) std::cout << #__VA_ARGS__ << ": " << __VA_ARGS__ << std::endl;
 
 template<typename T>
 void	printVector(const T& vec)
@@ -276,6 +276,20 @@ void	iterator_test()
 	LOGI(distance(it2, it3));
 	LOGI(distance(it3, it2));
 }
+#include <string>
+void	reverse_iterator_test()
+{
+	ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit;
+	// LOGI(rit.base());
+
+	ft::vector<int>	vec;
+	vec.push_back(1);
+	vec.push_back(2);
+	vec.push_back(3);
+	vec.push_back(4);
+	ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit2(vec.rbegin());
+	// ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit3(vec.rend());
+}
 
 void	empty_test()
 {
@@ -500,6 +514,6 @@ void	non_member_swap_test()
 
 int	main(void)
 {
-	non_member_swap_test();
+	reverse_iterator_test();
 	return (0);
 }

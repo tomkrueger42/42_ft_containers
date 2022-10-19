@@ -1,16 +1,12 @@
 #pragma once
-#include <iostream>
+
 #include <memory>
 #include <stdexcept>
 
-#include "vector_iterator.hpp"
-#include "iterator.hpp"
 #include "algorithm.hpp"
+#include "reverse_iterator.hpp"
 #include "type_traits.hpp"
-
-#define LOG(msg) std::cout << msg
-#define LOGN(msg) std::cout << msg << std::endl;
-#define LOGI(...) std::cout << #__VA_ARGS__ << ": " << __VA_ARGS__ << std::endl;
+#include "vector_iterator.hpp"
 
 namespace ft {
 template < class T, class Allocator = std::allocator<T> >
@@ -32,8 +28,8 @@ class vector
 		typedef typename Allocator::const_pointer				const_pointer;
 		typedef typename ft::vector_iterator<value_type>		iterator;
 		typedef typename ft::vector_iterator<const value_type>	const_iterator;
-		// typedef typename ft::reverse_iterator<value_type>		reverse_iterator;
-		// typedef typename ft::reverse_iterator<const value_type>	const_reverse_iterator;
+		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
+		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 	private:
 		size_type		_size;
@@ -50,24 +46,17 @@ class vector
 /* =================	Constructors						================= */
 
 		// (1)	Default constructor. Constructs an empty container with a default-constructed allocator.
-		vector( void ) : _size(0), _capacity(0), _ptr(NULL)
-		{
-			LOGN("\033[32mDefault Constructor called for Vector\033[0m");
-		}
+		vector( void ) : _size(0), _capacity(0), _ptr(NULL) {}
 
 		// (2)	Constructs an empty container with the given allocator alloc.
 		explicit vector( const Allocator& alloc )
-					: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
-		{
-			LOGN("\033[32mAlloc Constructor called for Vector\033[0m");
-		}
+					: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc) {}
 
 		// (3)	Constructs the container with count copies of elements with value value.
 		explicit vector( size_type count, const T& value = T(),
 							const Allocator& alloc = Allocator() )
 							: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
-			LOGN("\033[32mValue initializer Constructor called for Vector\033[0m");
 			this->assign(count, value);
 		}
 
@@ -78,14 +67,12 @@ class vector
 				typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 				: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
-			LOGN("\033[32mRange Constructor called for Vector\033[0m");
 			this->assign<InputIt>(first, last);
 		}
 
 		// (6)	Copy constructor. Constructs the container with the copy of the contents of other.
 		vector( const vector& other ) : _size(0), _capacity(0), _ptr(NULL)
 		{
-			LOGN("\033[32mCopy Constructor called for Vector\033[0m");
 			*this = other;
 		}
 
@@ -93,7 +80,6 @@ class vector
 		//		Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 		~vector( void )
 		{
-			LOGN("\033[31mDestructor called for Vector\033[0m");
 			for (size_type i = 0; i < this->_size; i++)
 			{
 				this->_alloc.destroy(&(this->_ptr[i]));
@@ -107,7 +93,6 @@ class vector
 		// (1)	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 		vector	&operator=( const vector& other )
 		{
-			LOGN("\033[34mAssignment Operator called for Vector\033[0m");
 			if (this != &other)
 			{
 				this->assign(other.begin(), other.end());
@@ -167,14 +152,14 @@ class vector
 		reference	at( size_type pos )
 		{
 			if (pos >= this->_size)
-				throw std::out_of_range("pos is out of vector bounds");
+				throw std::out_of_range("vector");
 			return (this->_ptr[pos]);
 		}
 
 		const_reference	at( size_type pos ) const
 		{
 			if (pos >= this->_size)
-				throw std::out_of_range("pos is out of vector bounds");
+				throw std::out_of_range("vector");
 			return (this->_ptr[pos]);
 		}
 
@@ -253,31 +238,31 @@ class vector
 			return (const_iterator(this->_ptr + this->_size));
 		}
 
-		// //		Returns a reverse iterator to the first element of the reversed vector.
-		// //		It corresponds to the last element of the non-reversed vector.
-		// //		If the vector is empty, the returned iterator is equal to rend().
-		// reverse_iterator	rbegin( void )
-		// {
-		// 	return (ft::reverse_iterator<value_type>(this->end()));
-		// }
+		//		Returns a reverse iterator to the first element of the reversed vector.
+		//		It corresponds to the last element of the non-reversed vector.
+		//		If the vector is empty, the returned iterator is equal to rend().
+		reverse_iterator	rbegin( void )
+		{
+			return (reverse_iterator(this->end()));
+		}
 		
-		// const_reverse_iterator	rbegin( void ) const
-		// {
-		// 	return (ft::reverse_iterator<const value_type>(this->end()));
-		// }
+		const_reverse_iterator	rbegin( void ) const
+		{
+			return (const_reverse_iterator(this->end()));
+		}
 
-		// //		Returns a reverse iterator to the element following the last element of the reversed vector.
-		// //		It corresponds to the element preceding the first element of the non-reversed vector.
-		// //		This element acts as a placeholder, attempting to access it results in undefined behavior.
-		// reverse_iterator	rend( void )
-		// {
-		// 	return (ft::reverse_iterator<value_type>(this->begin()));
-		// }
+		//		Returns a reverse iterator to the element following the last element of the reversed vector.
+		//		It corresponds to the element preceding the first element of the non-reversed vector.
+		//		This element acts as a placeholder, attempting to access it results in undefined behavior.
+		reverse_iterator	rend( void )
+		{
+			return (reverse_iterator(this->begin()));
+		}
 
-		// const_reverse_iterator	rend( void ) const
-		// {
-		// 	return (ft::reverse_iterator<const value_type>(this->begin()));
-		// }
+		const_reverse_iterator	rend( void ) const
+		{
+			return (const_reverse_iterator(this->begin()));
+		}
 
 /* =================	Capacity							================= */
 
@@ -304,7 +289,7 @@ class vector
 		//		If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 		void	reserve( size_type newCapacity )
 		{
-			if (newCapacity > this->max_size())									// is vector able to be filled with max_size() elements when newCapacity ist larger than max_size()
+			if (newCapacity > this->max_size())
 				throw std::length_error("vector");
 			if (newCapacity > this->_capacity)
 				realloc(newCapacity);
@@ -330,7 +315,7 @@ class vector
 
 		//		Inserts elements at the specified location in the container.
 		//		(1)	inserts value before pos.
-		iterator	insert( iterator pos, const T& value )						// pos needs to be fucking const_iterator!!!
+		iterator	insert( iterator pos, const T& value )
 		{
 			size_type	position = distance(begin(), pos);
 			this->reserve(1);
@@ -346,7 +331,7 @@ class vector
 		}
 
 		//		(3)	inserts count copies of the value before pos.
-		iterator	insert( iterator pos, size_type count, const T& value )		// pos needs to be fucking const_iterator!!!
+		iterator	insert( iterator pos, size_type count, const T& value )
 		{
 			size_type	position = distance(begin(), pos);
 			this->reserve(this->_size + count);
@@ -365,7 +350,7 @@ class vector
 		//		(4)	inserts elements from range [first, last) before pos.
 		//		This overload has the same effect as overload (3) if InputIt is an integral type.
 		template< class InputIt >
-		iterator	insert( iterator pos, InputIt first, InputIt last,			// pos needs to be fucking const_iterator!!!
+		iterator	insert( iterator pos, InputIt first, InputIt last,
 							typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true )
 		{
 			size_type	position = distance(begin(), pos);
@@ -468,7 +453,7 @@ class vector
 	private:
 		void	realloc( size_type newCapacity )
 		{
-			if (this->max_size() < newCapacity)									// does not increase _capacity to max_size()
+			if (this->max_size() < newCapacity)
 				throw std::length_error("vector");
 			T	*newPTR = this->_alloc.allocate(newCapacity);
 			for (size_type i = newCapacity; newCapacity < this->_size; i++)

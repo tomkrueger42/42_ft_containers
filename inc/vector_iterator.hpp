@@ -29,14 +29,7 @@ class vector_iterator
 			*this = vi;
 		}
 
-		vector_iterator( pointer ptr ) : _current(ptr) {}						// this is in STL a private constructor
-
-		// //	these are the constructors of reverse_iterator
-		// reverse_iterator();
-		// explicit reverse_iterator( iterator_type x );
-		// template< class U >
-		// reverse_iterator( const reverse_iterator<U>& other );
-
+		vector_iterator( pointer ptr ) : _current(ptr) {}
 
 /* =================	Destructor							================= */
 
@@ -64,7 +57,7 @@ class vector_iterator
 			return (*_current);
 		}
 
-		pointer	operator->( void ) const										// what is this for and how do I use it?
+		pointer	operator->( void ) const
 		{
 			return (&(*_current));
 		}
@@ -76,14 +69,14 @@ class vector_iterator
 
 		vector_iterator	&operator++( void )
 		{
-			_current++;
+			++_current;
 			return (*this);
 		}
 
 		vector_iterator	operator++( int )
 		{
 			vector_iterator	tmp(_current);
-			_current++;
+			++_current;
 			return (tmp);
 		}
 
@@ -121,9 +114,15 @@ class vector_iterator
 		{
 			return (vector_iterator(_current - n));
 		}
+
+	private:
+
+		//		This constructor overload is priva
 };
 
-// Non-member operators
+/* ************************************************************************** */
+/*	Non-member functions													  */
+/* ************************************************************************** */
 
 template < class It1, class It2 >
 bool	operator==( const ft::vector_iterator<It1> &lhs,
@@ -181,7 +180,7 @@ typename vector_iterator<It>::difference_type
 	return (lhs.base() - rhs.base());
 }
 
-// Operations
+/* =================	Operations							================= */
 
 template < class InputIt, class Distance >
 void	advance( InputIt& it, Distance n )
