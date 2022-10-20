@@ -60,7 +60,7 @@ class reverse_iterator
 		reverse_iterator&	operator=( const reverse_iterator<U>& other )
 		{
 			if (this != &other)
-				*this->_current = other._current;
+				*this->_current = other.base();
 			return (*this);
 		}
 
@@ -159,7 +159,7 @@ template< class Iterator1, class Iterator2 >
 bool operator!=( const ft::reverse_iterator<Iterator1>& lhs,
 				 const ft::reverse_iterator<Iterator2>& rhs )
 {
-	return (lhs.base() != rhs.base());
+	return (!(lhs == rhs));
 }
 
 template< class Iterator1, class Iterator2 >
@@ -173,21 +173,21 @@ template< class Iterator1, class Iterator2 >
 bool operator<=( const ft::reverse_iterator<Iterator1>& lhs,
 				 const ft::reverse_iterator<Iterator2>& rhs )
 {
-	return (lhs.base() >= rhs.base());
+	return (!(rhs < lhs));
 }
 
 template< class Iterator1, class Iterator2 >
 bool operator>( const ft::reverse_iterator<Iterator1>& lhs,
 				const ft::reverse_iterator<Iterator2>& rhs )
 {
-	return (lhs.base() < rhs.base());
+	return (rhs < lhs);
 }
 
 template< class Iterator1, class Iterator2 >
 bool operator>=( const ft::reverse_iterator<Iterator1>& lhs,
 				 const ft::reverse_iterator<Iterator2>& rhs )
 {
-	return (lhs.base() <= rhs.base());
+	return (!(lhs < rhs));
 }
 
 //		Returns the iterator it incremented by n.

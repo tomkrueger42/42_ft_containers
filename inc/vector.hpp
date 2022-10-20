@@ -480,10 +480,8 @@ template< class T, class Alloc >
 bool	operator==( const ft::vector<T,Alloc>& lhs,
 					const ft::vector<T,Alloc>& rhs )
 {
-	if (lhs.size() == rhs.size()
-		&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
-		return (true);
-	return (false);
+	return (lhs.size() == rhs.size()
+		&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template< class T, class Alloc >
@@ -507,26 +505,21 @@ template< class T, class Alloc >
 bool	operator<=( const ft::vector<T,Alloc>& lhs,
 					const ft::vector<T,Alloc>& rhs )
 {
-	if (lhs == rhs || lhs < rhs)
-		return (true);
-	return (false);
+	return (!(rhs < lhs));
 }
 
 template< class T, class Alloc >
 bool	operator>( const ft::vector<T,Alloc>& lhs,
 					const ft::vector<T,Alloc>& rhs )
 {
-	return (ft::lexicographical_compare(rhs.begin(), rhs.end(),
-										lhs.begin(), lhs.end()));
+	return (rhs < lhs);
 }
 
 template< class T, class Alloc >
 bool	operator>=( const ft::vector<T,Alloc>& lhs,
 					const ft::vector<T,Alloc>& rhs )
 {
-	if (lhs == rhs || lhs > rhs)
-		return (true);
-	return (false);
+	return (!(lhs < rhs));
 }
 
 //		Specializes the ft::swap algorithm for ft::vector. Swaps the contents of lhs and rhs. Calls lhs.swap(rhs).

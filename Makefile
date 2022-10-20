@@ -14,6 +14,7 @@ INCS		=	algorithm.hpp \
 				iterator.hpp \
 				reverse_iterator.hpp \
 				type_traits.hpp \
+				utility.hpp \
 				vector_iterator.hpp \
 				vector.hpp
 

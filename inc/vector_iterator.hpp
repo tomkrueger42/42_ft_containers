@@ -135,7 +135,7 @@ template < class It1, class It2 >
 bool	operator!=( const ft::vector_iterator<It1> &lhs,
 					const ft::vector_iterator<It2> &rhs )
 {
-	return (lhs.base() != rhs.base());
+	return (!(lhs == rhs));
 }
 
 template < class It1, class It2 >
@@ -149,21 +149,21 @@ template < class It1, class It2 >
 bool	operator<=( const ft::vector_iterator<It1> &lhs,
 					const ft::vector_iterator<It2> &rhs )
 {
-	return (lhs.base() <= rhs.base());
+	return (!(rhs < lhs));
 }
 
 template < class It1, class It2 >
 bool	operator>( const ft::vector_iterator<It1> &lhs,
 					const ft::vector_iterator<It2> &rhs )
 {
-	return (lhs.base() > rhs.base());
+	return (rhs > lhs);
 }
 
 template < class It1, class It2 >
 bool	operator>=( const ft::vector_iterator<It1> &lhs,
 					const ft::vector_iterator<It2> &rhs )
 {
-	return (lhs.base() >= rhs.base());
+	return (!(lhs < rhs));
 }
 
 template < class It >

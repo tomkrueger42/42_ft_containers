@@ -1,3 +1,5 @@
-all three insert() overloads needs to have a const_iterator not only iterator
+vector:
+	all three insert() overloads needs to have a const_iterator not only iterator
 
-comment logging in constructors / destructor / assignment operator
+iterators:
+	reverse_iterator testing

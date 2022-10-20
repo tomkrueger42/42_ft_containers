@@ -2,6 +2,7 @@
 #include <cstddef>																// for std::ptrdiff_t
 
 namespace ft {
+
 template <
 		class Category,
 		class T,
@@ -17,4 +18,5 @@ template <
 		typedef Pointer		pointer;
 		typedef Reference	reference;
 }; // struct iterator
+
 } // namespace ft
