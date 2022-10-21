@@ -11,8 +11,8 @@ class vector_iterator
 	public:
 		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::value_type			value_type;
 		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::difference_type		difference_type;
-		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::pointer				pointer;
 		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::reference			reference;
+		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::pointer				pointer;
 		typedef typename ft::iterator<ft::random_access_iterator_tag, it>::iterator_category	iterator_category;
 
 	private:
@@ -22,13 +22,14 @@ class vector_iterator
 
 /* =================	Constructors						================= */
 
-		vector_iterator( void ) : _current(NULL) {}								// STL initializes the _current pointer differently but it is not dereferencable
+		vector_iterator( void ) : _current(pointer()) {}								// STL initializes the _current pointer differently but it is not dereferencable
 
-		vector_iterator( const vector_iterator &vi )
+		vector_iterator( const vector_iterator &other )
 		{
-			*this = vi;
+			*this = other;
 		}
 
+		// THIS CONSTRUCTOR SHOULD BE PRIVATE!!1!
 		vector_iterator( pointer ptr ) : _current(ptr) {}
 
 /* =================	Destructor							================= */
@@ -45,10 +46,10 @@ class vector_iterator
 
 /* =================	Operator overloads					================= */
 
-		vector_iterator	&operator=( const vector_iterator &vi )
+		vector_iterator	&operator=( const vector_iterator &other )
 		{
-			if (this != &vi)
-				this->_current = vi._current;
+			if (this != &other)
+				this->_current = other._current;
 			return (*this);
 		}
 
@@ -113,6 +114,13 @@ class vector_iterator
 		vector_iterator	operator-( difference_type n ) const
 		{
 			return (vector_iterator(_current - n));
+		}
+
+		void	swap( vector_iterator& other )
+		{
+			pointer	tmp = this->_current;
+			this->_current = other._current;
+			other._current = tmp;
 		}
 
 	private:
@@ -198,6 +206,13 @@ typename ft::iterator_traits<InputIt>::difference_type
 	for ( ; first < last; ++first, ++hops)
 		;
 	return (hops);
+}
+
+//	Specializes the ft::swap algorithm for ft::vector_iterator. Swaps the contents of lhs and rhs.
+template < class InputIt >
+void	swap( InputIt& lhs, InputIt& rhs )
+{
+	lhs.swap(rhs);
 }
 
 } // namespace ft
