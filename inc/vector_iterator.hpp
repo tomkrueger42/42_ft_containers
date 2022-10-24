@@ -22,7 +22,7 @@ class vector_iterator
 
 /* =================	Constructors						================= */
 
-		vector_iterator( void ) : _current(pointer()) {}								// STL initializes the _current pointer differently but it is not dereferencable
+		vector_iterator( void ) : _current() {}									// STL initializes the _current pointer differently but it is not dereferencable
 
 		vector_iterator( const vector_iterator &other )
 		{

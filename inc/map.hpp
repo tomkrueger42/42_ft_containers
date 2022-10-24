@@ -31,7 +31,7 @@ template<
 		typedef typename Allocator::const_reference				const_reference;
 		typedef typename Allocator::pointer						pointer;
 		typedef typename Allocator::const_pointer				const_pointer;
-		typedef typename ft::map_iterator<value_type>			iterator;	// no map_iterator implemented, yet
+		typedef typename ft::map_iterator<value_type>			iterator;		// they will need to be rb_tree iterators
 		typedef typename ft::map_iterator<const value_type>		const_iterator;
 		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
@@ -42,7 +42,8 @@ template<
 /* =================	Member objects						================= */
 
 		Allocator	_alloc;
-
+		rb_tree		*_root;
+		size_type	_size;
 
 
 	public:
@@ -68,7 +69,7 @@ template<
 
 /* =================	Constructors						================= */
 
-		//	(1) Constructs an empty constainer.
+		//	(1) Constructs an empty container.
 		map( void );
 
 		//	(2) Constructs an empty container.
