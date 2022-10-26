@@ -6,7 +6,7 @@
 namespace ft {
 
 template < class it >
-class map_iterator
+class red_black_tree_iterator
 {
 
 	public:
@@ -31,20 +31,20 @@ class map_iterator
 
 /* =================	Constructors						================= */
 
-		map_iterator( void ) : _current(pointer()) {}								// STL initializes the _current pointer differently but it is not dereferencable
+		red_black_tree_iterator( void ) : _current(pointer()) {}								// STL initializes the _current pointer differently but it is not dereferencable
 
-		map_iterator( const map_iterator &other )
+		red_black_tree_iterator( const red_black_tree_iterator &other )
 		{
 			*this = other;
 		}
 
 		// THIS CONSTRUCTOR MIGHT SHOULD BE PRIVATE (MAYBE)
-		map_iterator( pointer ptr ) : _current(ptr) {}
+		red_black_tree_iterator( pointer ptr ) : _current(ptr) {}
 
 
 /* =================	Destructor							================= */
 
-		~map_iterator( void ) {}
+		~red_black_tree_iterator( void ) {}
 
 
 /* =================	Accessors							================= */
@@ -57,7 +57,7 @@ class map_iterator
 
 /* =================	Operator overloads					================= */
 
-		map_iterator	&operator=( const map_iterator &other )
+		red_black_tree_iterator	&operator=( const red_black_tree_iterator &other )
 		{
 			if (this != &other)
 				this->_current = other._current;
@@ -79,28 +79,28 @@ class map_iterator
 			return (*(_current + n));
 		}
 
-		map_iterator	&operator++( void )
+		red_black_tree_iterator	&operator++( void )
 		{
 			++_current;
 			return (*this);
 		}
 
-		map_iterator	operator++( int )
+		red_black_tree_iterator	operator++( int )
 		{
-			map_iterator	tmp(_current);
+			red_black_tree_iterator	tmp(_current);
 			++_current;
 			return (tmp);
 		}
 
-		map_iterator	&operator--( void )
+		red_black_tree_iterator	&operator--( void )
 		{
 			--_current;
 			return (*this);
 		}
 
-		map_iterator	operator--( int )
+		red_black_tree_iterator	operator--( int )
 		{
-			map_iterator	tmp(_current);
+			red_black_tree_iterator	tmp(_current);
 			--_current;
 			return (tmp);
 		}
@@ -114,15 +114,15 @@ class map_iterator
 
 
 template < class It1, class It2 >
-bool	operator==( const ft::map_iterator<It1> &lhs,
-					const ft::map_iterator<It2> &rhs )
+bool	operator==( const ft::red_black_tree_iterator<It1> &lhs,
+					const ft::red_black_tree_iterator<It2> &rhs )
 {
 	return (lhs.base() == rhs.base());
 }
 
 template < class It1, class It2 >
-bool	operator!=( const ft::map_iterator<It1> &lhs,
-					const ft::map_iterator<It2> &rhs )
+bool	operator!=( const ft::red_black_tree_iterator<It1> &lhs,
+					const ft::red_black_tree_iterator<It2> &rhs )
 {
 	return (!(lhs == rhs));
 }

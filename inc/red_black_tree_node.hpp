@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+#include "utility.hpp"
+
 namespace ft {
 
 	enum COLOR {
@@ -7,24 +10,23 @@ namespace ft {
 		RED
 	};
 
-	template< class T >
-	class rb_node
+	template< 
+		class value_type
+	> class rb_node
 	{
 		public:
-			typename T	value_type;
+			rb_node*	parent;
+			rb_node*	left;
+			rb_node*	right;
+			value_type	value_pair;
+			bool		color;
 
-			rb_node*	_parent;
-			rb_node*	_left;
-			rb_node*	_right;
-			value_type	_value;
-			bool		_color;
+			rb_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(), color(RED) {}
 
-			rb_node( void ) : _parent(NULL), _left(NULL), _right(NULL), _value(), _color(BLACK) {}
-
-			rb_node( const value_type& value ) : _parent(NULL), _left(NULL), _right(NULL), _value(value), _color(BLACK) {}
+			rb_node( const value_type& value ) : parent(NULL), left(NULL), right(NULL), value_pair(value), color(RED) {}
 
 			rb_node( const rb_node* parent, const rb_node* left, const rb_node* right, const value_type& value, bool color )
-				: _parent(parent), _left(left), _right(right), value(value), _color(color) {}
+				: parent(parent), left(left), right(right), value_pair(value), color(color) {}
 
 			rb_node( const rb_node& other )
 			{
@@ -37,26 +39,13 @@ namespace ft {
 			{
 				if (this != &other )
 				{
-					_parent = other._parent;
-					_left = other._left;
-					_right = other._right;
-					_value = other._value;
-					_color = other._color;
+					parent = other.parent;
+					left = other.left;
+					right = other.right;
+					value_pair = other.value_pair;
+					color = other.color;
 				}
 				return (*this);
-			}
-
-			void	swap_family( rb_node& other )
-			{
-			rb_node*	tmp_parent = other._parent;
-			rb_node*	tmp_left = other._left;
-			rb_node*	tmp_right = other._right;
-			other._parent = _parent;
-			other._left = _left;
-			other._right = _right; 
-			_parent = tmp_parent;
-			_left = tmp_left;
-			_right = tmp_right;
 			}
 	};
 

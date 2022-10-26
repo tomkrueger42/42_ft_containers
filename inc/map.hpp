@@ -4,7 +4,6 @@
 
 #include <functional>															// for std::less<> and maybe also std::binary_function
 #include "utility.hpp"
-#include "map_iterator.hpp"
 
 namespace ft {
 
@@ -31,8 +30,8 @@ template<
 		typedef typename Allocator::const_reference				const_reference;
 		typedef typename Allocator::pointer						pointer;
 		typedef typename Allocator::const_pointer				const_pointer;
-		typedef typename ft::map_iterator<value_type>			iterator;		// they will need to be rb_tree iterators
-		typedef typename ft::map_iterator<const value_type>		const_iterator;
+		typedef typename ft::red_black_tree_iterator<value_type>		iterator;		// they will need to be rb_tree iterators
+		typedef typename ft::red_black_tree_iterator<const value_type>	const_iterator;
 		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
@@ -42,7 +41,7 @@ template<
 /* =================	Member objects						================= */
 
 		Allocator	_alloc;
-		rb_tree		*_root;
+		rb_tree		*_tree;
 		size_type	_size;
 
 
@@ -156,7 +155,10 @@ template<
 
 		//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
 		//	(1) Inserts value.
-		ft::pair<iterator, bool>	insert( const value_type& value );
+		ft::pair<iterator, bool>	insert( const value_type& value )
+		{
+			return (_tree->insert(value));
+		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value );
