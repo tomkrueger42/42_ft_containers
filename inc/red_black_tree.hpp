@@ -13,12 +13,12 @@ namespace ft {
 		class T,
 		class value_type = ft::pair< const Key, T >,
 		class Allocator = std::allocator< value_type >
-	> class rb_tree
+	> class red_black_tree
 	{
 		public:
 			typedef Allocator												allocator_type;
 			typedef rb_node<value_type>										node;
-			typedef typename ft::red_black_tree_iterator<value_type>		iterator;		// they will need to be rb_tree iterators
+			typedef typename ft::red_black_tree_iterator<value_type>		iterator;		// they will need to be red_black_tree iterators
 			typedef typename ft::red_black_tree_iterator<const value_type>	const_iterator;
 			typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
 			typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
@@ -28,16 +28,16 @@ namespace ft {
 			node*	_root;
 
 		public:
-			rb_tree( void ) : _root(NULL) {}
+			red_black_tree( void ) : _root(NULL) {}
 
-			rb_tree( const rb_tree& other ) : _root(NULL)
+			red_black_tree( const red_black_tree& other ) : _root(NULL)
 			{
 				*this = other;
 			}
 
-			~rb_tree( void ) {}
+			~red_black_tree( void ) {}
 
-			rb_tree&	operator=( const rb_tree& other )
+			red_black_tree&	operator=( const red_black_tree& other )
 			{
 				if (this != &other)
 				{
@@ -48,7 +48,7 @@ namespace ft {
 			//	Finds an element with key equivalent to key.
 			iterator	find( const Key& key )
 			{
-				for (iterator it = _root; n != NULL; )
+				for (node *n = _root; n != NULL; )
 				{
 					if (n.value_pair.first == key)
 						return (iterator(n));
@@ -62,7 +62,7 @@ namespace ft {
 
 			const_iterator find( const Key& key ) const
 			{
-				for (node n = _root; n != NULL; )
+				for (node *n = _root; n != NULL; )
 				{
 					if (n.value_pair.first == key)
 						return (iterator(n));
@@ -74,12 +74,25 @@ namespace ft {
 				return (end());
 			}
 
+			//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
+			//	(1) Returns a pair consisting of an iterator to the inserted element (or to the element that prevented the insertion) and a bool denoting whether the insertion took place.
 			ft::pair<map_iterator, bool>	insert( const T& value )
 			{
-				if (find())
+				return (_insert(_root, value));
 			}
 
 
-	}; //	class rb_tree
+		private:
+
+			ft::pair<map_iterator, bool>	_insert( node *root, const T& value )
+			{
+				if (root == NULL)
+				{
+					return ()
+				}
+			}
+
+
+	}; //	class red_black_tree
 
 } //	namespace ft

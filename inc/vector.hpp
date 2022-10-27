@@ -43,7 +43,7 @@ class vector
 /* =================	Constructors						================= */
 
 		//	(1)	Default constructor. Constructs an empty container with a default-constructed allocator.
-		vector( void ) : _size(0), _capacity(0), _ptr(NULL) {}
+		vector( void ) : _size(0), _capacity(0), _ptr(NULL), _alloc() {}
 
 		//	(2)	Constructs an empty container with the given allocator alloc.
 		explicit vector( const Allocator& alloc )
@@ -68,7 +68,7 @@ class vector
 		}
 
 		//	(6)	Copy constructor. Constructs the container with the copy of the contents of other.
-		vector( const vector& other ) : _size(0), _capacity(0), _ptr(NULL)
+		vector( const vector& other ) : _size(0), _capacity(0), _ptr(NULL)		// does _alloc need to be copied somehow??
 		{
 			*this = other;
 		}

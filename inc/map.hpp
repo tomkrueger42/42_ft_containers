@@ -4,6 +4,8 @@
 
 #include <functional>															// for std::less<> and maybe also std::binary_function
 #include "utility.hpp"
+#include "red_black_tree.hpp"
+#include "red_black_tree_iterator.hpp"
 
 namespace ft {
 
@@ -36,14 +38,15 @@ template<
 		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 
+
 	private:
 
 /* =================	Member objects						================= */
 
 		Allocator	_alloc;
-		rb_tree		*_tree;
+		rb_tree		_tree;
 		size_type	_size;
-
+		key_compare	_comp;
 
 	public:
 
@@ -69,23 +72,47 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void );
+		map( void ) : _size(0), _tree(NULL), _alloc(), _comp() {}
 
 		//	(2) Constructs an empty container.
-		explicit map( const Compare& comp, const Allocator& alloc = Allocator() );
+		explicit map( const Compare& comp, const Allocator& alloc = Allocator() ) : _comp(comp), _alloc(alloc), _size(0), _tree(NULL) {}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
-		map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() );
+		map( InputIt first, InputIt last, const Compare& comp = Compare(), const Allocator& alloc = Allocator() ) : _comp(comp), _alloc(alloc), _size(0), _tree(NULL)
+		{
+			for ( ; first != last; first++)
+			{
+				insert(*first);
+			}
+		}
 
 		//	(6) Copy constructor. Constructs the container with the copy of the contents of other.
-		map( const map& other );
+		map( const map& other )
+		{
+			*this = other;
+		}
 
 		//	Destructs the map. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
-		~map( void );
+		~map( void )
+		{
+			// delete _tree??
+			// _alloc.deallocate(_tree)??
+			// _alloc.destroy(_tree)??
+		}
 
 		//	Copy assignment operator. Replaces the contents with a copy of the contents of other.
-		map&	operator=( const map& other );
+		map&	operator=( const map& other )
+		{
+			if (this != &other)
+			{
+				_alloc = other.get_allocator();
+				_tree = other._tree;
+				_size = other._size;
+				_comp = other._comp;
+			}
+			return (*this);
+		}
 
 		//	Returns the allocator associated with the container.
 		allocator_type	get_allocator( void ) const
@@ -97,7 +124,10 @@ template<
 /* =================	Element access						================= */
 
 		//	Returns a reference to the mapped value of the element with key equivalent to key. If no such element exists, an exception of type std::out_of_range is thrown.
-		T&	at( const Key& key );
+		T&	at( const Key& key )
+		{
+			// iterator
+		}
 
 		//	Returns a reference to the value that is mapped to a key equivalent to key, performing an insertion if such key does not already exist.
 		//	More information is on cppreference!!
