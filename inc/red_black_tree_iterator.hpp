@@ -66,12 +66,12 @@ class red_black_tree_iterator
 
 		reference	operator*( void ) const
 		{
-			return (*_current);
+			return (_current->value_pair);
 		}
 
 		pointer	operator->( void ) const
 		{
-			return (&(*_current));
+			return (&(_current->value_pair));
 		}
 
 		reference	operator[]( difference_type n ) const						// is this needed for the bidirectional_iterator??

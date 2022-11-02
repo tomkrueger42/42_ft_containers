@@ -17,8 +17,16 @@ void	mapMeta(T& map)
 
 int main(void )
 {
-	// std::map<int, std::string> m;
-	// mapMeta(m);
+	std::map<int, std::string> m;
+	m.insert(std::pair<int, std::string>(2, "hi"));
+	std::map<int, std::string> m2;
+	m2.insert(std::pair<int, std::string>(2, "hi"));
+	mapMeta(m);
+
+	std::map<int, std::string>::iterator it = m.begin();
+	LOGI(it->first);
+	LOGI(it->second);
+	LOGI((m == m2));
 	// m.insert(std::pair<int, std::string>(4, "hello"));
 	// mapMeta(m);
 	// m.insert(std::pair<int, std::string>(5, "heya"));
