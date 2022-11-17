@@ -1,6 +1,7 @@
 .DS_Store
 ./obj/
 ft_containers
+std_containers
 .vs_code
 .vscode
 

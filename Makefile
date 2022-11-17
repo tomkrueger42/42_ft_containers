@@ -46,6 +46,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f std_containers
 	rm -f a.out
 
 re: fclean all
