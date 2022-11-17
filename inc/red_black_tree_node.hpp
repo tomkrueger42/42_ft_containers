@@ -10,37 +10,33 @@ namespace ft {
 		RED
 	};
 
-	template< 
-		class value_type
-	> class red_black_tree_node
+	template< class T >
+	class red_black_tree_node
 	{
 		public:
 
-			typename red_black_tree_node	node;
-			typename node&					reference;
-			typename node*					pointer;
+			typedef T						value_type;
+			typedef red_black_tree_node	node;
+			typedef node*					pointer;
 
-			pointer	parent;
-			pointer	left;
-			pointer	right;
+			pointer		parent;
+			pointer		left;
+			pointer		right;
 			value_type	value_pair;
-			bool		color;
+			COLOR		color;
 
-			rb_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(), color(RED) {}
+			red_black_tree_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(), color(RED) {}
 
-			rb_node( const value_type& value ) : parent(NULL), left(NULL), right(NULL), value_pair(value), color(RED) {}
+			red_black_tree_node( const value_type& value ) : parent(NULL), left(NULL), right(NULL), value_pair(value), color(RED) {}
 
-			rb_node( const pointer parent, const pointer left, const pointer right, const value_type& value, bool color )
-				: parent(parent), left(left), right(right), value_pair(value), color(color) {}
-
-			rb_node( const reference other )
+			red_black_tree_node( const node& other )
 			{
 				*this = other;
 			}
 
-			~rb_node( void ) {}
+			~red_black_tree_node( void ) {}
 
-			reference	operator=( const reference other )
+			node&	operator=( const node& other )
 			{
 				if (this != &other )
 				{
@@ -52,7 +48,7 @@ namespace ft {
 				}
 				return (*this);
 			}
-	};
+	}; //	class red_black_tree_node
 
 /* =================	Non-member functions				================= */
 

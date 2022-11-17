@@ -19,13 +19,17 @@ int main(void )
 {
 	std::map<int, std::string> m;
 	m.insert(std::pair<int, std::string>(2, "hi"));
-	std::map<int, std::string> m2;
-	m2.insert(std::pair<int, std::string>(2, "hi"));
-	mapMeta(m);
+	std::map<int, std::string> m2 = m;
+	m.clear();
+	// m2.insert(std::pair<int, std::string>(2, "hi"));
+	mapMeta(m2);
 
 	std::map<int, std::string>::iterator it = m.begin();
+	std::map<int, std::string>::iterator it1 = m2.begin();
 	LOGI(it->first);
 	LOGI(it->second);
+	LOGI(it1->first);
+	LOGI(it1->second);
 	LOGI((m == m2));
 	// m.insert(std::pair<int, std::string>(4, "hello"));
 	// mapMeta(m);

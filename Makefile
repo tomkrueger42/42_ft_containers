@@ -12,6 +12,10 @@ SRCS		=	main.cpp
 INCS		=	algorithm.hpp \
 				iterator_traits.hpp \
 				iterator.hpp \
+				map.hpp \
+				red_black_tree_iterator.hpp \
+				red_black_tree_node.hpp \
+				red_black_tree.hpp \
 				reverse_iterator.hpp \
 				type_traits.hpp \
 				utility.hpp \

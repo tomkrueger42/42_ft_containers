@@ -290,7 +290,7 @@ class vector
 			if (newCapacity > this->max_size())
 				throw std::length_error("vector");
 			if (newCapacity > this->_capacity)
-				realloc(newCapacity);
+				_realloc(newCapacity);
 		}
 
 		size_t	capacity( void ) const
@@ -448,8 +448,10 @@ class vector
 			other._alloc = tmp_alloc;
 		}
 
+
 	private:
-		void	realloc( size_type newCapacity )
+
+		void	_realloc( size_type newCapacity )
 		{
 			if (this->max_size() < newCapacity)
 				throw std::length_error("vector");

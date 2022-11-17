@@ -3,7 +3,6 @@
 #include <memory>
 #include "red_black_tree_node.hpp"
 #include "red_black_tree_iterator.hpp"
-#include "reverse_iterator.hpp"
 #include "utility.hpp"
 
 namespace ft {
@@ -11,8 +10,8 @@ namespace ft {
 	template< 
 		class Key,
 		class T,
-		class value_type = ft::pair< const Key, T >,
-		class Allocator = std::allocator< value_type >
+		class Compare,
+		class Allocator = std::allocator< red_black_tree_node< ft::pair< const Key, T > > >
 	> class red_black_tree
 	{
 
@@ -20,13 +19,18 @@ namespace ft {
 
 /* =================	Member types						================= */
 
+			typedef Key														key_type;
+			typedef T														mapped_type;
+			typedef ft::pair< const key_type, mapped_type >					value_type;
 			typedef Allocator												allocator_type;
-			typedef rb_node<value_type>										node;
-			typedef typename ft::red_black_tree_iterator<node>		iterator;		// they will need to be red_black_tree iterators
-			typedef typename ft::red_black_tree_iterator<const node>	const_iterator;
-			typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
-			typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
+			typedef typename allocator_type::size_type						size_type;
+			typedef Compare													key_compare;
+
+			typedef red_black_tree_node<value_type>							node;
 			typedef	node*													node_pointer;
+
+			typedef typename ft::red_black_tree_iterator<node>				iterator;		// they will need to be red_black_tree iterators
+			typedef typename ft::red_black_tree_iterator<const node>		const_iterator;
 
 
 		private:
@@ -34,27 +38,39 @@ namespace ft {
 /* =================	Member objects						================= */
 
 			node_pointer	_root;
+			node_pointer	_delimitingNode;
+			allocator_type	_alloc;
+			key_compare		_comp;
 
 
 		public:
 
 /* =================	Member classes						================= */
 
-			red_black_tree( void ) : _root(NULL) {}
+			red_black_tree( void ) : _root(NULL), _delimitingNode(_new_node(value_type(), NULL)), _alloc(allocator_type()), _comp(key_compare()) {}
 
 			red_black_tree( const red_black_tree& other ) : _root(NULL)
 			{
 				*this = other;
 			}
 
-			~red_black_tree( void ) {}
+			~red_black_tree( void )
+			{
+				clear();
+				_delete_node(iterator(_delimitingNode));
+			}
 
 			red_black_tree&	operator=( const red_black_tree& other )
 			{
 				if (this != &other)
 				{
-					_root = other._root;
+					clear();
+					_alloc = other._alloc;
+					_comp = other._comp;
+					for (iterator it = other.begin(); it != other.end(); it++)
+						insert(*it, NULL);
 				}
+				return (*this);
 			}
 
 
@@ -62,34 +78,30 @@ namespace ft {
 
 			iterator	begin( void )
 			{
-				node_pointer	n = _root;
-				while (n != NULL && n.left != NULL)
-					n = n.left;
-				return (n);
+				return (iterator(_delimitingNode->left));
 			}
 
 			const_iterator	begin( void ) const
 			{
-				node_pointer	n = _root;
-				while (n != NULL && n.left != NULL)
-					n = n.left;
-				return (n);
+				return (const_iterator(_delimitingNode->left));
 			}
 
 			iterator	end( void )
 			{
-				node_pointer	n = _root;
-				while (n != NULL && n.right != NULL)
-					n = n.right;
-				return (n);
+				return (iterator(_delimitingNode));
 			}
 
 			const_iterator	end( void ) const
 			{
-				node_pointer	n = _root;
-				while (n != NULL && n.right != NULL)
-					n = n.right;
-				return (n);
+				return (const_iterator(_delimitingNode));
+			}
+
+
+/* =================	Capacity							================= */
+
+			size_type	max_size( void ) const
+			{
+				return (_alloc.max_size());
 			}
 
 
@@ -98,116 +110,314 @@ namespace ft {
 			void	clear( void )
 			{
 				for (iterator it = begin(); it != end(); it++)
-					deleteNode(it);
+					_delete_node(it);
+				_root = NULL;
+				_delimitingNode->left = NULL;
+				_delimitingNode->parent = NULL;
 			}
 
 			//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
 			//	(1) Returns a pair consisting of an iterator to the inserted element (or to the element that prevented the insertion) and a bool denoting whether the insertion took place.
-			ft::pair<map_iterator, bool>	insert( const value_type& value )
+			ft::pair<iterator, bool>	insert( const value_type& value, node_pointer pos )
 			{
-				for (node_pointer n = _root; n != NULL; )
+				if (_root != NULL)
+					pos = _root;
+				if (pos == NULL)
 				{
-					if (n.value_pair.first == value.first)
+					_root = _new_node(value, NULL);
+					_root->color = BLACK;
+					_root->right = _delimitingNode;
+					_delimitingNode->parent = _root;
+					_delimitingNode->left = _root;
+					return (ft::pair<iterator, bool>(iterator(_root), true));
+				}
+				while (pos != NULL)
+				{
+					if (value.first < pos->value_pair.first && pos->left != NULL)
+						pos = pos->left;
+					else if (value.first > pos->value_pair.first && pos->right != NULL && pos->right != _delimitingNode)
+						pos = pos->right;
+					else
+						break ;
+				}
+				if (value.first < pos->value_pair.first)
+				{
+					pos->left = _new_node(value, pos);
+					if (pos == _delimitingNode->left)								//	begin iterator is invalidated
+						_delimitingNode->left = pos->left;
+					_insert_rb_violation(pos->right);
+					return (ft::pair<iterator, bool>(iterator(pos->left), true));
+				}
+				else if (value.first > pos->value_pair.first)						//	value is inserted right of n
+				{
+					if (pos->right == _delimitingNode)								//	value is largest in tree: end iterator is invalidated
 					{
-						return (ft::pair<iterator, bool>(iterator(n), false));
-					}
-					else if (n.value_pair.first < value.first && n.left == NULL)
-					{
-						n.left = newNode(value, n)
-						return (ft::pair<iterator, bool>(iterator(n.left), true));
-					}
-					else if (n.value_pair.first < value.first)
-					{
-						n = n.left;
-					}
-					else if (n.right == NULL)
-					{
-						n.right = newNode(value, n);
-						return (ft::pair<iterator, bool>(iterator(n.right), true));
+						pos->right = _new_node(value, pos);
+						pos->right->right = _delimitingNode;
+						_delimitingNode->parent = pos->right;
 					}
 					else
-					{
-						n = n.right;
-					}
+						pos->right = _new_node(value, pos);
+					_insert_rb_violation(pos->right);
+					return (ft::pair<iterator, bool>(iterator(pos->right), true));
 				}
-				_root = newNode(value, NULL);
-				return (ft::pair<iterator, bool>(iterator(_root), true));
+				return (ft::pair<iterator, bool>(end(), false));
 			}
 
 			void	erase( iterator pos )
 			{
-				node_pointer	left_sub_tree = pos->left;
-				while (left_sub_tree != NULL && left_sub_tree.right != NULL)
-					left_sub_tree = left_sub_tree.right;
+				node_pointer	nodeToBeDeleted = pos.base();
+				COLOR			originalColor = nodeToBeDeleted->color;
+				node_pointer	x;
 
-				if (pos->left == NULL)
+				if (pos == _delimitingNode)
+					return ;
+				if (nodeToBeDeleted->left == NULL)
 				{
-					pos->left = pos->right;
+					x = nodeToBeDeleted->right;
+					_transplant_node(nodeToBeDeleted, x);
+				}
+				else if (nodeToBeDeleted->right == NULL)
+				{
+					x = nodeToBeDeleted->left;
+					_transplant_node(nodeToBeDeleted, x);
 				}
 				else
 				{
-					left_sub_tree.right = pos->right;
-					if (pos->right != NULL)
-						pos->right->parent = left_sub_tree;
+					node_pointer	y = nodeToBeDeleted->right;
+					while (y != NULL && y->left != NULL)
+						y = y->left;
+					originalColor = y->color;
+					x = y->right;
+					if (y->parent == nodeToBeDeleted)
+					{
+						x->parent = y;
+					}
+					else
+					{
+						_transplant_node(y, y->right);
+						y->right = nodeToBeDeleted->right;
+						y->right->parent = y;
+					}
+					_transplant_node(nodeToBeDeleted, y);
+					y->left = nodeToBeDeleted->left;
+					y->left->parent = y;
+					y->color = nodeToBeDeleted->color;
 				}
-
-				if (pos->parent->left == this)
-					pos->parent->left = left;
-				else
-					pos->parent->right = left;
-				if (pos->left != NULL)
-					pos->left->parent = parent;
-
-				deleteNode(pos);
+				_delete_node(iterator(nodeToBeDeleted));
+				if (originalColor == BLACK)
+					_erase_rb_violation(x);
 			}
 
 
 /* =================	Lookup								================= */
 
 			//	Finds an element with key equivalent to key.
-			iterator	find( const Key& key )
+			iterator	find( const key_type& key )
 			{
-				for (node_pointer n = _root; n != NULL; )
-				{
-					if (n.value_pair.first == key)
-						return (iterator(n));
-					else if (n.value_pair.first < key)
-						n = n.left;
-					else
-						n = n.right;
-				}
-				return (end());
+				return (iterator(_search(_root, key)));
 			}
 
-			const_iterator find( const Key& key ) const
+			const_iterator find( const key_type& key ) const
 			{
-				for (node_pointer n = _root; n != NULL; )
-				{
-					if (n.value_pair.first == key)
-						return (const_iterator(n));
-					else if (n.value_pair.first < key)
-						n = n.left;
-					else
-						n = n.right;
-				}
-				return (end());
+				return (const_iterator(_search(_root, key)));
 			}
+
 
 		private:
 
-			node_pointer	newNode( value_type value_pair, node_pointer parent )
+			node_pointer	_new_node( value_type value_pair, node_pointer parent )
 			{
-				LOGI(size_type(1));
-				node_pointer	n = _alloc.allocate(size_type(1));
+				node_pointer	n = _alloc.allocate(1);
 				_alloc.construct(n, value_pair);
 				n->parent = parent;
 				return (n);
 			}
 
-			void	deleteNode( iterator it )
+			void	_delete_node( iterator it )
 			{
-				_alloc.destroy(it.base(), size_type(1));
-				_alloc.deallocate(it.base(), size_type(1));
+				_alloc.destroy(it.base(), 1);
+				_alloc.deallocate(it.base(), 1);
+			}
+
+			node_pointer	_search( node_pointer n, key_type k )
+			{
+				while (n != NULL)
+				{
+					if (k == n->value_pair.first)								//	was passiert wenn wir bei der _delimitingNode landen??
+						return (n);
+					else if (k < n->value_pair.first)
+						n = n->left;
+					else
+						n = n->right;
+				}
+				return (_delimitingNode);
+			}
+
+			void	_transplant_node( node_pointer o, node_pointer n )
+			{
+				if (o->parent == NULL)
+					_root = n;
+				else if (o == o->parent->left)
+					o->parent->left = n;
+				else
+					o->parent->right = n;
+				if (_delimitingNode->left == o)
+					_delimitingNode->left = n;
+				n->parent = o->parent;											//	maybe needs protection in case last element is removed
+			}
+
+			void	_left_rotate( node_pointer o )
+			{
+				node_pointer	n = o->right;
+				n->parent = o->parent;
+				if (o->parent == NULL)
+					_root = n;
+				else if (o->parent->left == o)
+					o->parent->left = n;
+				else
+					o->parent->right = n;
+				o->right = n->left;
+				if (o->right != NULL)
+					o->right->parent = o;
+				n->left = o;
+				o->parent = n;
+			}
+
+			void	_right_rotate( node_pointer o )
+			{
+				node_pointer	n = o->left;
+				n->parent = o->parent;
+				if (o->parent == NULL)
+					_root = n;
+				else if (o->parent->right == o)
+					o->parent->right = n;
+				else
+					o->parent->left = n;
+				o->left = n->right;
+				if (o->left != NULL)
+					o->left->parent = o;
+				n->right = o;
+				o->parent = n;
+			}
+
+			void	_insert_rb_violation( node_pointer n )
+			{
+				while (n->parent->color == RED)									//	tutorial and codebase differ
+				{
+					if (n->parent->parent->left == n->parent)
+					{
+						if (n->parent->parent->right->color == RED)
+						{
+							n->parent->parent->left->color = BLACK;					//	this codeblock is double
+							n->parent->parent->right->color = BLACK;
+							n->parent->parent->color = RED;
+							n = n->parent->parent;
+						}
+						else 
+						{
+							if (n->parent->right == n)
+							{
+								n->parent = n;
+								_left_rotate(n);
+							}
+							n->parent->color = BLACK;
+							n->parent->parent->color = RED;
+							_right_rotate(n->parent->parent);
+						}
+					}
+					else
+					{
+						if (n->parent->parent->left->color == RED)
+						{
+							n->parent->parent->left->color = BLACK;
+							n->parent->parent->right->color = BLACK;
+							n->parent->parent->color = RED;
+							n = n->parent->parent;
+						}
+						else
+						{
+							if (n->parent->left == n)
+							{
+								n = n->parent;
+								_right_rotate(n);
+							}
+							n->parent->color = BLACK;
+							n->parent->parent->color = RED;
+							_left_rotate(n->parent->parent);
+						}
+					}
+					if (n == _root)
+						break ;
+				}
+				_root->color = BLACK;
+			}
+
+			void	_erase_rb_violation( node_pointer n )
+			{
+				while (n != _root && n->color == BLACK)
+				{
+					if (n == n->parent->left)
+					{
+						node_pointer	sibling = n->parent->right;
+						if (sibling->color == RED)
+						{
+							sibling->color = BLACK;
+							n->parent->color = RED;
+							_left_rotate(n->parent);
+							sibling = n->parent->right;
+						}
+						if (sibling->left->color == BLACK && sibling->right->color == BLACK)
+						{
+							sibling->color = RED;
+							n = n->parent;
+						}
+						else {
+							if (sibling->right->color == BLACK)
+							{
+								sibling->left->color = BLACK;
+								sibling->color = RED;
+								_right_rotate(sibling);
+								sibling = n->parent->right;
+							}
+							sibling->color = n->parent->color;
+							n->parent->color = BLACK;
+							sibling->right->color = BLACK;
+							_left_rotate(n->parent);
+							n == _root;
+						}
+					}
+					else
+					{
+						node_pointer	sibling = n->parent->left;
+						if (sibling->color == RED)
+						{
+							sibling->color = BLACK;
+							n->parent->color = RED;
+							_right_rotate(n->parent);
+							sibling = n->parent->left;
+						}
+						if (sibling->right->color == BLACK && sibling->left->color == BLACK)
+						{
+							sibling->color = RED;
+							n = n->parent;
+						}
+						else {
+							if (sibling->left->color == BLACK)
+							{
+								sibling->right->color = BLACK;
+								sibling->color = RED;
+								_left_rotate(sibling);
+								sibling = n->parent->left;
+							}
+							sibling->color = n->parent->color;
+							n->parent->color = BLACK;
+							sibling->left->color = BLACK;
+							_right_rotate(n->parent);
+							n == _root;
+						}
+					}
+				}
 			}
 
 	}; //	class red_black_tree

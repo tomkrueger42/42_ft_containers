@@ -2,10 +2,12 @@
 
 #include <map>
 
+#include "algorithm.hpp"
 #include <functional>															// for std::less<> and maybe also std::binary_function
 #include "utility.hpp"
 #include "red_black_tree.hpp"
 #include "red_black_tree_iterator.hpp"
+#include "reverse_iterator.hpp"
 
 namespace ft {
 
@@ -23,19 +25,45 @@ template<
 
 		typedef Key												key_type;
 		typedef T												mapped_type;
-		typedef ft::pair<const Key, T>							value_type;
-		typedef typename Allocator::size_type					size_type;
-		typedef typename Allocator::difference_type				difference_type;
+		typedef ft::pair<const key_type, mapped_type>			value_type;
 		typedef Compare											key_compare;
 		typedef Allocator										allocator_type;
-		typedef typename Allocator::reference					reference;
-		typedef typename Allocator::const_reference				const_reference;
-		typedef typename Allocator::pointer						pointer;
-		typedef typename Allocator::const_pointer				const_pointer;
-		typedef	red_black_tree<Key, T>							tree;
-		typedef	typename tree::rb_node<value_type>				node;
-		typedef typename ft::red_black_tree_iterator<node>		iterator;
-		typedef typename ft::red_black_tree_iterator<const node>	const_iterator;
+		typedef typename allocator_type::size_type				size_type;
+		typedef typename allocator_type::difference_type		difference_type;
+		typedef typename allocator_type::reference				reference;
+		typedef typename allocator_type::const_reference		const_reference;
+		typedef typename allocator_type::pointer				pointer;
+		typedef typename allocator_type::const_pointer			const_pointer;
+
+
+/* =================	Member classes						================= */
+
+		class value_compare : public std::binary_function< value_type, value_type, bool >
+		{
+			protected:
+				key_compare	comp;
+
+				//	Initializes the internal instance of the comparator to c.
+				value_compare( key_compare c ) : comp(c) {}
+
+			public:
+				//	Compares lhs.first and rhs.first by calling the stored comparator.
+				bool	operator()( const value_type& lhs, const value_type& rhs ) const
+				{
+					return (comp(lhs.first, rhs.first));
+				}
+		};
+
+
+	private:
+
+		typedef	ft::red_black_tree<Key, T, value_compare>		tree;
+		typedef	typename tree::node								node;
+
+	public:
+
+		typedef typename tree::iterator							iterator;
+		typedef typename tree::const_iterator					const_iterator;
 		typedef typename ft::reverse_iterator<iterator>			reverse_iterator;
 		typedef typename ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
@@ -47,49 +75,28 @@ template<
 		allocator_type	_alloc;
 		tree			_tree;
 		key_compare		_comp;
+		// size_type		_size;		//	size is needed because size() has constant complexity
 
 
 	public:
 
-/* =================	Member classes						================= */
-
-		class value_compare : public std::binary_function< value_type, value_type, bool >
-		{
-			protected:
-				Compare	comp;
-
-				//	Initializes the internal instance of the comparator to c.
-				value_compare( Compare c ) : comp(c) {}
-
-			public:
-				//	Compares lhs.first and rhs.first by calling the stored comparator.
-				bool	operator()( const value_type& lhs, const value_type& rhs ) const
-				{
-					return (comp(lhs.first, rhs.first));
-				}
-		}
-
-
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void ) : _tree(NULL), _alloc(), _comp() {}
+		map( void ) : _tree(), _alloc(), _comp() {}
 
 		//	(2) Constructs an empty container.
-		explicit map( const key_compare& comp, const allocator_type& alloc = Allocator() ) : _comp(comp), _alloc(alloc), _tree(NULL) {}
+		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc), _tree() {}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
-		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = Allocator() ) : _comp(comp), _alloc(alloc), _tree(NULL)
+		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc), _tree()
 		{
-			for ( ; first != last; first++)
-			{
-				insert(*first);
-			}
+			insert(first, last);
 		}
 
 		//	(6) Copy constructor. Constructs the container with the copy of the contents of other.
-		map( const reference other )
+		map( const_reference other )
 		{
 			*this = other;
 		}
@@ -98,20 +105,16 @@ template<
 		~map( void )
 		{
 			clear();
-			// delete _tree??
-			// _alloc.deallocate(_tree)??
-			// _alloc.destroy(_tree)??
 		}
 
 		//	Copy assignment operator. Replaces the contents with a copy of the contents of other.
-		reference	operator=( const reference other )
+		reference	operator=( const_reference other )
 		{
 			if (this != &other)
 			{
 				_alloc = other._alloc;
-				_tree = other._tree;
-				_size = other._size;
 				_comp = other._comp;
+				_tree = other._tree;
 			}
 			return (*this);
 		}
@@ -119,7 +122,7 @@ template<
 		//	Returns the allocator associated with the container.
 		allocator_type	get_allocator( void ) const
 		{
-			return (this->_alloc);
+			return (_alloc);
 		}
 
 
@@ -129,7 +132,7 @@ template<
 		mapped_type&	at( const key_type& key )
 		{
 			iterator	it = _tree.find(key);
-			if (it = end())
+			if (it == end())
 				throw std::out_of_range("map");
 			else
 				return (it.second);
@@ -139,7 +142,7 @@ template<
 		//	More information is on cppreference!!
 		mapped_type&	operator[]( const key_type& key )
 		{
-			return (insert(value_type(key, T())).first->value_pair.second);
+			return (insert(value_type(key, mapped_type())).first->value_pair.second);
 		}
 
 
@@ -207,7 +210,7 @@ template<
 		//	Returns the maximum number of elements the container is able to hold due to system or library implementation limitations.
 		size_type	max_size( void ) const
 		{
-			return (_alloc.max_size());
+			return (_tree.max_size());
 		}
 
 
@@ -223,13 +226,23 @@ template<
 		//	(1) Inserts value.
 		ft::pair<iterator, bool>	insert( const value_type& value )
 		{
-			return (_tree->insert(value));
+			return (_tree->insert(value, NULL));
 		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value )
 		{
+			return (_tree->insert(value, pos.base()).first);
+		}
 
+		//	(7) Inserts elements from range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
+		template< class InputIt >
+		void	insert( InputIt first, InputIt last )
+		{
+			for ( ; first != last; first++)
+			{
+				_tree.insert(*first, NULL); // what happens if one insert() fails??
+			}
 		}
 
 		//	(1) Removes the element at pos.
@@ -258,9 +271,9 @@ template<
 		//	Exchanges the contents of the container with those of other. Does not invoke any move, copy, or swap operations on individual elements.
 		void	swap( reference other )
 		{
-			Allocator	tmp_alloc = _alloc;
-			tree		tmp_tree = _tree;
-			key_compare	tmp_comp = _comp;
+			allocator_type	tmp_alloc = _alloc;
+			tree			tmp_tree = _tree;
+			key_compare		tmp_comp = _comp;
 
 			_alloc = other._alloc;
 			_tree = other._tree;
@@ -294,12 +307,12 @@ template<
 		//	Returns a range containing all elements with the given key in the container. The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
 		ft::pair<iterator, iterator>	equal_range( const key_type& key )
 		{
-			return (ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
+			return (ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key)));
 		}
 		
 		ft::pair<const_iterator, const_iterator>	equal_range( const key_type& key ) const
 		{
-			return (ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key));
+			return (ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key)));
 		}
 
 		//	Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
@@ -334,7 +347,7 @@ template<
 		}
 
 		//	Returns a function object that compares objects of type ft::map::value_type (key-value pairs) by using key_comp to compare the first components of the pairs.
-		ft::map::value_compare	value_comp() const
+		value_compare	value_comp() const
 		{
 			return (value_compare(_comp));
 		}
@@ -350,7 +363,7 @@ bool	operator==( const ft::map< Key, T, Compare, Alloc >& lhs,
 					const ft::map< Key, T, Compare, Alloc >& rhs )
 {
 	return (lhs.size() == rhs.size()
-			&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()))
+			&& ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
 template< class Key, class T, class Compare, class Alloc >
@@ -365,7 +378,7 @@ bool	operator<( const ft::map< Key, T, Compare, Alloc >& lhs,
 					const ft::map< Key, T, Compare, Alloc >& rhs )
 {
 	return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
-										rhs.begin(), rhs.end()))
+										rhs.begin(), rhs.end()));
 }
 
 template< class Key, class T, class Compare, class Alloc >
