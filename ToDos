@@ -7,3 +7,6 @@ iterators:
 map:
 	what to do with _alloc? it is currently not in use in my case.
 	implement _comp
+
+iterators:
+	const <-> non-const

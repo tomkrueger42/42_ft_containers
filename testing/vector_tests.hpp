@@ -1,12 +1,18 @@
-#include "vector.hpp"
-#include <vector>
+#pragma once
 
-#define LOG(msg) std::cout << msg
-#define LOGN(msg) std::cout << msg << std::endl;
-#define LOGI(...) std::cout << #__VA_ARGS__ << ": " << __VA_ARGS__ << std::endl;
+#include <log.hpp>
+
+#if USING_STD
+	#include <vector>
+	#define NS std
+#else
+	#include "vector.hpp"
+	#define NS ft
+#endif
+
 
 template<typename T>
-void	printVector(const T& vec)
+void	vector_print(const T& vec)
 {
 	for (typename T::const_iterator it = vec.begin(); it != vec.end(); it++)
 	{
@@ -15,93 +21,93 @@ void	printVector(const T& vec)
 	LOGI(vec.size());
 	LOGI(vec.capacity());
 	LOGI(vec.data());
-	std::cout << "-------------------------" << std::endl;
+	LOGN("-------------------------");
 }
 
-void	constructor_test()
+void	vector_constructor()
 {
-	std::vector<int>	vec1;
-	printVector(vec1);
+	NS::vector<int>	vec1;
+	vector_print(vec1);
 	
-	std::vector<int>	vec2(vec1.get_allocator());
-	printVector(vec2);
+	NS::vector<int>	vec2(vec1.get_allocator());
+	vector_print(vec2);
 
-	std::vector<int>	vec3(5, 6);
-	printVector(vec3);
+	NS::vector<int>	vec3(5, 6);
+	vector_print(vec3);
 
-	std::vector<int>	vec5(vec3.begin(), vec3.end());
-	printVector(vec5);
+	NS::vector<int>	vec5(vec3.begin(), vec3.end());
+	vector_print(vec5);
 
-	std::vector<int>	vec6(vec5);
-	printVector(vec6);
+	NS::vector<int>	vec6(vec5);
+	vector_print(vec6);
 }
 
-void	operator_assign_test()
+void	vector_operator_assign()
 {
-	std::vector<int>	vec(3, 4);
+	NS::vector<int>	vec(3, 4);
 	vec.reserve(15);
-	std::vector<int>	vec2(7,8);
-	printVector(vec2);
+	NS::vector<int>	vec2(7,8);
+	vector_print(vec2);
 	vec2 = vec;
 	vec.push_back(5);
-	printVector(vec2);
-	std::vector<int>	vec3;
+	vector_print(vec2);
+	NS::vector<int>	vec3;
 	vec2 = vec3;
-	printVector(vec2);
+	vector_print(vec2);
 	vec2.push_back(7);
 	vec2.push_back(7);
 	vec2.push_back(7);
-	printVector(vec2);
+	vector_print(vec2);
 	vec2.push_back(7);
-	printVector(vec2);
+	vector_print(vec2);
 }
 
-void	assign_test(int overload)
+void	vector_assign(int overload)
 {
 	if (overload == 1)
 	{
-		std::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.assign(3, 4);
-		printVector(vec);
+		vector_print(vec);
 		vec.assign(5, 5);
-		printVector(vec);
+		vector_print(vec);
 		vec.assign(2, 42);
-		printVector(vec);
+		vector_print(vec);
 		vec.assign(vec.max_size() / 100000000000, 42);
 	}
 	else if (overload == 2)
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		for (size_t i = 0; i < 10; i++)
 			vec.push_back(i);
-		ft::vector<int>	vec2;
+		NS::vector<int>	vec2;
 		
 		vec2.assign(vec.begin(), vec.end());
-		printVector(vec2);
+		vector_print(vec2);
 		
 		vec2.assign(vec.begin(), vec.begin());
-		printVector(vec2);
+		vector_print(vec2);
 		
 		vec2.assign(vec.end(), vec.end());
-		printVector(vec2);
+		vector_print(vec2);
 
 		vec2.assign(vec.end(), vec.begin());
-		printVector(vec2);
+		vector_print(vec2);
 	}
 }
 
-void	get_allocator_test()
+void	vector_get_allocator()
 {
-	ft::vector<int>	vec;
-	ft::vector<int>	vec2(vec.get_allocator());
+	NS::vector<int>	vec;
+	NS::vector<int>	vec2(vec.get_allocator());
 	vec2.assign(2, 3);
-	printVector(vec2);
+	vector_print(vec2);
 }
 
-void	at_test()
+void	vector_at()
 {
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		try {
 			vec.at(0);
 		} catch (std::exception &e) {
@@ -128,7 +134,7 @@ void	at_test()
 		}
 	}
 	{
-		const ft::vector<int>	vec;
+		const NS::vector<int>	vec;
 		try {
 			vec.at(0);
 		} catch (std::exception &e) {
@@ -152,7 +158,7 @@ void	at_test()
 		}
 	}
 	{
-		const ft::vector<int>	vec(3, 7);
+		const NS::vector<int>	vec(3, 7);
 		try {
 			vec.at(0);
 		} catch (std::exception &e) {
@@ -177,60 +183,60 @@ void	at_test()
 	}
 }
 
-void	operator_bracket_test()
+void	vector_operator_bracket()
 {
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.push_back(1);
 		vec.push_back(2);
 		LOGI(vec[0]);
 		LOGI(vec[1]);
 	}
 	{
-		const ft::vector<int>	vec(2, 3);
+		const NS::vector<int>	vec(2, 3);
 		LOGI(vec[0]);
 		LOGI(vec[1]);
 	}
 }
 
-void	front_back_test()
+void	vector_front_back()
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.push_back(1);
 	vec.push_back(2);
 	LOGI(vec.front());
 	LOGI(vec.back());
-	const ft::vector<int>	vec2(2, 4);
+	const NS::vector<int>	vec2(2, 4);
 	LOGI(vec2.front());
 	LOGI(vec2.back());
 }
 
-void	data_test()		//	ft::vector does not create container-overflow like STL
+void	vector_data()		//	ft::vector does not create container-overflow like STL
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	LOGI(vec.data());
 	vec.reserve(2);
 	LOGI(vec.data());
 	int * ptr = vec.data();
 	ptr[0] = 42;
 	ptr[1] = 24;
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	iterator_test()
+void	vector_iterator()
 {
 	//	Member-functions
 
-	ft::vector<int>::iterator	it;
+	NS::vector<int>::iterator	it;
 	LOGI(it.base());
 
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
 	vec.push_back(4);
-	ft::vector<int>::iterator	it2(vec.begin());
-	ft::vector<int>::iterator	it3(vec.end() - 1);
+	NS::vector<int>::iterator	it2(vec.begin());
+	NS::vector<int>::iterator	it3(vec.end() - 1);
 	LOGI(vec.begin().base());
 	LOGI(it2.base());
 	LOGI(it3.base());
@@ -276,127 +282,127 @@ void	iterator_test()
 	LOGI(distance(it3, it2));
 }
 
-void	reverse_iterator_test()
+void	vector_reverse_iterator()
 {
-	ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit;
+	NS::vector<NS::vector<int>::iterator>::reverse_iterator	rit;
 	// LOGI(rit.base());
 
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.push_back(1);
 	vec.push_back(2);
 	vec.push_back(3);
 	vec.push_back(4);
-	ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit2(vec.rbegin());
-	// ft::vector<ft::vector<int>::iterator>::reverse_iterator	rit3(vec.rend());
+	NS::vector<NS::vector<int>::iterator>::reverse_iterator	rit2(vec.rbegin());
+	// NS::vector<NS::vector<int>::iterator>::reverse_iterator	rit3(vec.rend());
 }
 
-void	empty_test()
+void	vector_empty()
 {
-	std::vector<int>	vec;
+	NS::vector<int>	vec;
 	LOGI(vec.empty());
 	vec.push_back(1);
 	LOGI(vec.empty());
 }
 
-void	size_test()
+void	vector_size()
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	LOGI(vec.size());
 	vec.assign(2, 3);
 	LOGI(vec.size());
 }
 
-void	max_size_test()
+void	vector_max_size()
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	LOGI(vec.max_size());
 }
 
-void	reserve_test()
+void	vector_reserve()
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.reserve(3);
-	printVector(vec);
+	vector_print(vec);
 	vec.assign(4, 5);
-	printVector(vec);
+	vector_print(vec);
 	vec.reserve(2);
-	printVector(vec);
+	vector_print(vec);
 	vec.reserve(7);
-	printVector(vec);
+	vector_print(vec);
 	vec.reserve(-1);
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	capacity_test()
+void	vector_capacity()
 {
-	ft::vector<int> vec;
+	NS::vector<int> vec;
 	LOGI(vec.capacity());
 	vec.assign(2, 3);
 	LOGI(vec.capacity());
 }
 
-void	clear_test()
+void	vector_clear()
 {
-	std::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.clear();
-	printVector(vec);
+	vector_print(vec);
 	vec.assign(3, 4);
-	printVector(vec);
+	vector_print(vec);
 	vec.clear();
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	insert_test(int overload)
+void	vector_insert(int overload)
 {
 	if (overload == 1)
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.insert(vec.begin(), 3);
 		vec.insert(vec.end(), 5);
-		printVector(vec);
+		vector_print(vec);
 
-		ft::vector<int> vec2;
+		NS::vector<int> vec2;
 		vec2.insert(vec2.end(), 3);
 		vec2.insert(vec2.begin(), 5);
 		vec2.insert(vec2.end() - 1, 4);
-		printVector(vec2);
+		vector_print(vec2);
 	}
 	else if (overload == 3)
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.insert(vec.begin(), 2, 27);
 		vec.insert(vec.end(), 2, 29);
 		LOGI(vec.insert(vec.begin() + 2, 2, 28).base());
-		printVector(vec);
+		vector_print(vec);
 	}
 	else if (overload == 4)
 	{
-		ft::vector<int>	vec(3, 4);
-		ft::vector<int>	vec2;
+		NS::vector<int>	vec(3, 4);
+		NS::vector<int>	vec2;
 		vec2.insert(vec2.begin(), vec.begin(), vec.end());
 		
-		ft::vector<int>	vec3(2, 7);
+		NS::vector<int>	vec3(2, 7);
 		vec2.insert(vec2.end(), vec3.begin(), vec3.end());
-		printVector(vec2);
+		vector_print(vec2);
 	}
 }
 
-void	erase_test(int overload)
+void	vector_erase(int overload)
 {
 	if (overload == 1)
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.push_back(3);
 		vec.push_back(4);
 		vec.push_back(5);
 		LOGI(vec.erase(vec.end() - 2).base());
 		LOGI((vec.end()).base());
 		LOGI(vec.begin().base());
-		printVector(vec);
+		vector_print(vec);
 	}
 	else if (overload == 2)
 	{
-		ft::vector<int>	vec;
+		NS::vector<int>	vec;
 		vec.push_back(5);
 		vec.push_back(6);
 		vec.push_back(7);
@@ -404,13 +410,13 @@ void	erase_test(int overload)
 		LOGI(vec.erase(vec.begin() + 1, vec.end() - 1).base());
 		LOGI(vec.begin().base());
 		LOGI(vec.end().base());
-		printVector(vec);
+		vector_print(vec);
 	}
 }
 
-void	push_back_test()
+void	vector_push_back()
 {
-	ft::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.push_back(2);
 	LOGI(vec.size());
 	LOGI(vec.capacity());
@@ -421,63 +427,63 @@ void	push_back_test()
 	LOGI(vec.size());
 	LOGI(vec.capacity());
 	vec.push_back(5);
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	pop_back_test()
+void	vector_pop_back()
 {
-	ft::vector<int>	vec(2, 12);
-	printVector(vec);
+	NS::vector<int>	vec(2, 12);
+	vector_print(vec);
 	vec.pop_back();
-	printVector(vec);
+	vector_print(vec);
 	vec.pop_back();
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	resize()
+void	vector_resize()
 {
-	std::vector<int>	vec;
+	NS::vector<int>	vec;
 	vec.resize(3, 7);
-	printVector(vec);
+	vector_print(vec);
 	vec.resize(4, 8);
-	printVector(vec);
+	vector_print(vec);
 	vec.resize(2, 9);
-	printVector(vec);
+	vector_print(vec);
 	vec.resize(0, 10);
-	printVector(vec);
+	vector_print(vec);
 	vec.resize(-2, 5);
-	printVector(vec);
+	vector_print(vec);
 }
 
-void	swap()
+void	vector_swap()
 {
-	ft::vector<int>	vec;
-	ft::vector<int>	vec2;
+	NS::vector<int>	vec;
+	NS::vector<int>	vec2;
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	vec.swap(vec2);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 
 	vec.assign(3, 4);
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	vec2.swap(vec);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 
 	vec.assign(5, 6);
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	vec2.swap(vec);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 }
 
-void	operator_test()
+void	vector_operator()
 {
-	std::vector<int>	vec(1, 2);
-	std::vector<int>	vec2(1, 3);
+	NS::vector<int>	vec(1, 2);
+	NS::vector<int>	vec2(1, 3);
 	LOGI((vec == vec2));
 	LOGI((vec != vec2));
 	LOGI((vec < vec2));
@@ -486,27 +492,27 @@ void	operator_test()
 	LOGI((vec >= vec2));
 }
 
-void	non_member_swap_test()
+void	vector_non_member_swap()
 {
-	std::vector<int>	vec;
-	std::vector<int>	vec2;
+	NS::vector<int>	vec;
+	NS::vector<int>	vec2;
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	swap(vec, vec2);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 
 	vec.assign(3, 4);
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	swap(vec2, vec);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 
 	vec.assign(5, 6);
 	LOGI(vec.data() );
 	LOGI(vec2.data());
 	swap(vec2, vec);
-	printVector(vec);
-	printVector(vec2);
+	vector_print(vec);
+	vector_print(vec2);
 }

@@ -59,8 +59,7 @@ class reverse_iterator
 		template< class U >
 		reverse_iterator&	operator=( const reverse_iterator<U>& other )
 		{
-			if (this != &other)
-				*this->_current = other.base();
+			*this->_current = other.base();
 			return (*this);
 		}
 

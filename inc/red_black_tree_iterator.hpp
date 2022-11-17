@@ -5,7 +5,7 @@
 
 namespace ft {
 
-template < class it >
+template < class T_node, class T_node_value, class it >
 class red_black_tree_iterator
 {
 
@@ -13,10 +13,11 @@ class red_black_tree_iterator
 
 /* =================	Member types						================= */
 
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, it>::value_type			value_type;
+		typedef T_node					value_type;
+		typedef value_type&				reference;
+		typedef value_type*				pointer;
+		typedef T_node_value			node_value_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, it>::difference_type		difference_type;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, it>::reference			reference;
-		typedef typename ft::iterator<ft::bidirectional_iterator_tag, it>::pointer				pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, it>::iterator_category	iterator_category;
 
 
@@ -64,24 +65,46 @@ class red_black_tree_iterator
 			return (*this);
 		}
 
-		reference	operator*( void ) const
+		node_value_type&	operator*( void )
 		{
 			return (_current->value_pair);
 		}
 
-		pointer	operator->( void ) const
+		node_value_type&	operator*( void ) const
+		{
+			return (_current->value_pair);
+		}
+
+		node_value_type*	operator->( void )
 		{
 			return (&(_current->value_pair));
 		}
 
-		reference	operator[]( difference_type n ) const						// is this needed for the bidirectional_iterator??
+		node_value_type*	operator->( void ) const
 		{
-			return (*(_current + n));
+			return (&(_current->value_pair));
 		}
 
 		red_black_tree_iterator	&operator++( void )
 		{
-			++_current;
+			value_type	n = this;
+			if (n.right != NULL)												//	minimum of right subtree
+			{
+				while (n.left != NULL)
+					n = n.left;
+			}
+			else if (n.parent != NULL && n.parent.left == this)					//	left child of parent
+			{
+				n = n.parent;
+			}
+			else
+			{
+				while (n.parent != NULL && n.parent.right == this)				//	right child of parent
+					n = n.parent;
+				if (n.parent == NULL)											//	end iterator has already been reached
+					return (*this);
+			}
+			this = n;
 			return (*this);
 		}
 
@@ -94,7 +117,24 @@ class red_black_tree_iterator
 
 		red_black_tree_iterator	&operator--( void )
 		{
-			--_current;
+			value_type	n = this;
+			if (n.left != NULL)												//	maximum of left subtree
+			{
+				while (n.right != NULL)
+					n = n.right;
+			}
+			else if (n.parent != NULL && n.parent.right == this)					//	right child of parent
+			{
+				n = n.parent;
+			}
+			else
+			{
+				while (n.parent != NULL && n.parent.left == this)				//	left child of parent
+					n = n.parent;
+				if (n.parent == NULL)											//	begin iterator has already been reached
+					return (*this);
+			}
+			this = n;
 			return (*this);
 		}
 
@@ -105,6 +145,15 @@ class red_black_tree_iterator
 			return (tmp);
 		}
 
+		bool	operator==( const red_black_tree_iterator& other )
+		{
+			return (base() == other.base());
+		}
+
+		bool	operator!=( const red_black_tree_iterator& other)
+		{
+			return (base() != other.base());
+		}
 	private:
 
 		//		This constructor overload is priva
@@ -113,45 +162,32 @@ class red_black_tree_iterator
 /* =================	Non-member functions				================= */
 
 
-template < class It1, class It2 >
-bool	operator==( const ft::red_black_tree_iterator<It1> &lhs,
-					const ft::red_black_tree_iterator<It2> &rhs )
-{
-	return (lhs.base() == rhs.base());
-}
-
-template < class It1, class It2 >
-bool	operator!=( const ft::red_black_tree_iterator<It1> &lhs,
-					const ft::red_black_tree_iterator<It2> &rhs )
-{
-	return (!(lhs == rhs));
-}
 
 /* =================	Operations							================= */
 
-template < class InputIt, class Distance >
-void	advance( InputIt& it, Distance n )										// is this needed for the bidirectional_iterator??
-{
-	it += n;
-}
+// template < class InputIt, class Distance >
+// void	advance( InputIt& it, Distance n )										// is this needed for the bidirectional_iterator??
+// {
+// 	it += n;
+// }
 
-template < class InputIt >
-typename ft::iterator_traits<InputIt>::difference_type
-			distance( InputIt first, InputIt last )								// is this needed for the bidirectional_iterator??
-{
-	typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
-	for ( ; first > last; --first, --hops)
-		;
-	for ( ; first < last; ++first, ++hops)
-		;
-	return (hops);
-}
+// template < class InputIt >
+// typename ft::iterator_traits<InputIt>::difference_type
+// 			distance( InputIt first, InputIt last )								// is this needed for the bidirectional_iterator??
+// {
+// 	typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
+// 	for ( ; first > last; --first, --hops)
+// 		;
+// 	for ( ; first < last; ++first, ++hops)
+// 		;
+// 	return (hops);
+// }
 
 //	Specializes the ft::swap algorithm for ft::vector_iterator. Swaps the contents of lhs and rhs.
-template < class InputIt >
-void	swap( InputIt& lhs, InputIt& rhs )
-{
-	lhs.swap(rhs);
-}
+// template < class InputIt >
+// void	swap( InputIt& lhs, InputIt& rhs )
+// {
+// 	lhs.swap(rhs);
+// }
 
 } // namespace ft

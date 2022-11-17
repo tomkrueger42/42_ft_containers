@@ -43,10 +43,13 @@ template<
 			protected:
 				key_compare	comp;
 
-				//	Initializes the internal instance of the comparator to c.
-				value_compare( key_compare c ) : comp(c) {}
-
 			public:
+				//	Initializes the internal instance of the comparator to c.
+				value_compare( void ) : comp() {}
+				value_compare( key_compare c ) : comp(c) {}
+				value_compare( const value_compare& other ) : comp(other.comp) {}
+				~value_compare( void ) {}
+
 				//	Compares lhs.first and rhs.first by calling the stored comparator.
 				bool	operator()( const value_type& lhs, const value_type& rhs ) const
 				{
@@ -75,7 +78,6 @@ template<
 		allocator_type	_alloc;
 		tree			_tree;
 		key_compare		_comp;
-		// size_type		_size;		//	size is needed because size() has constant complexity
 
 
 	public:
@@ -83,14 +85,14 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void ) : _tree(), _alloc(), _comp() {}
+		map( void ) : _tree(tree()) {}															//	is this one even callable or only the explicit one?
 
 		//	(2) Constructs an empty container.
-		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc), _tree() {}
+		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc) {}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
-		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc), _tree()
+		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc)
 		{
 			insert(first, last);
 		}
@@ -204,7 +206,7 @@ template<
 		//	Returns the number of elements in the container.
 		size_type	size( void ) const
 		{
-			ft::distance(begin(), end());
+			return (_tree.size());
 		}
 
 		//	Returns the maximum number of elements the container is able to hold due to system or library implementation limitations.

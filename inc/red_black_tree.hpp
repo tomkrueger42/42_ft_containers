@@ -29,8 +29,8 @@ namespace ft {
 			typedef red_black_tree_node<value_type>							node;
 			typedef	node*													node_pointer;
 
-			typedef typename ft::red_black_tree_iterator<node>				iterator;		// they will need to be red_black_tree iterators
-			typedef typename ft::red_black_tree_iterator<const node>		const_iterator;
+			typedef typename ft::red_black_tree_iterator<node, value_type, node>				iterator;		// they will need to be red_black_tree iterators
+			typedef typename ft::red_black_tree_iterator<const node, const value_type, const node>		const_iterator;
 
 
 		private:
@@ -41,16 +41,25 @@ namespace ft {
 			node_pointer	_delimitingNode;
 			allocator_type	_alloc;
 			key_compare		_comp;
+			size_type		_size;
 
 
 		public:
 
 /* =================	Member classes						================= */
 
-			red_black_tree( void ) : _root(NULL), _delimitingNode(_new_node(value_type(), NULL)), _alloc(allocator_type()), _comp(key_compare()) {}
-
-			red_black_tree( const red_black_tree& other ) : _root(NULL)
+			red_black_tree( void ) : _comp()
 			{
+				_root = NULL;
+				_delimitingNode = _new_node(value_type(), NULL);
+				_delimitingNode->left = _delimitingNode;
+				_alloc = allocator_type();
+				_size = 0;
+			}
+
+			red_black_tree( const red_black_tree& other ) : _root(NULL), _delimitingNode(_new_node(value_type(), NULL)), _comp()
+			{
+				_size = 0;
 				*this = other;
 			}
 
@@ -65,10 +74,10 @@ namespace ft {
 				if (this != &other)
 				{
 					clear();
-					_alloc = other._alloc;
-					_comp = other._comp;
-					for (iterator it = other.begin(); it != other.end(); it++)
-						insert(*it, NULL);
+					// _alloc = other._alloc;
+					// _comp = other._comp;
+					// for (iterator it = other.begin(); it != other.end(); it++)
+					// 	insert(it->value_pair, NULL);
 				}
 				return (*this);
 			}
@@ -99,6 +108,11 @@ namespace ft {
 
 /* =================	Capacity							================= */
 
+			size_type	size( void ) const
+			{
+				return (_size);
+			}
+
 			size_type	max_size( void ) const
 			{
 				return (_alloc.max_size());
@@ -109,8 +123,7 @@ namespace ft {
 
 			void	clear( void )
 			{
-				for (iterator it = begin(); it != end(); it++)
-					_delete_node(it);
+				_clear_helper(_root);
 				_root = NULL;
 				_delimitingNode->left = NULL;
 				_delimitingNode->parent = NULL;
@@ -231,13 +244,15 @@ namespace ft {
 				node_pointer	n = _alloc.allocate(1);
 				_alloc.construct(n, value_pair);
 				n->parent = parent;
+				++_size;
 				return (n);
 			}
 
 			void	_delete_node( iterator it )
 			{
-				_alloc.destroy(it.base(), 1);
+				_alloc.destroy(it.base());
 				_alloc.deallocate(it.base(), 1);
+				--_size;
 			}
 
 			node_pointer	_search( node_pointer n, key_type k )
@@ -252,6 +267,24 @@ namespace ft {
 						n = n->right;
 				}
 				return (_delimitingNode);
+			}
+
+			void	_clear_helper( node_pointer n )
+			{
+				if (n == NULL)
+					return ;
+				if (n->left == NULL && n->right == NULL)
+				{
+					_delete_node(n);
+				}
+				else if (n->left != NULL)
+				{
+					_clear_helper(n->left);
+				}
+				else
+				{
+					_clear_helper(n->right);
+				}
 			}
 
 			void	_transplant_node( node_pointer o, node_pointer n )
@@ -384,7 +417,7 @@ namespace ft {
 							n->parent->color = BLACK;
 							sibling->right->color = BLACK;
 							_left_rotate(n->parent);
-							n == _root;
+							n = _root;
 						}
 					}
 					else
@@ -414,7 +447,7 @@ namespace ft {
 							n->parent->color = BLACK;
 							sibling->left->color = BLACK;
 							_right_rotate(n->parent);
-							n == _root;
+							n = _root;
 						}
 					}
 				}
