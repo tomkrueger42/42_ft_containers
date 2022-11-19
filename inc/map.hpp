@@ -85,7 +85,7 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void ) : _tree(tree()) {}															//	is this one even callable or only the explicit one?
+		map( void ) : _tree(tree()) {}											//	is this one even callable or only the explicit one?
 
 		//	(2) Constructs an empty container.
 		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc) {}
@@ -200,7 +200,7 @@ template<
 		//	Checks if the container has no elements.
 		bool	empty( void ) const
 		{
-			return (begin() == end());
+			return (_size == 0);
 		}
 
 		//	Returns the number of elements in the container.

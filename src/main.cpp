@@ -1,4 +1,4 @@
-#include "vector_tests.hpp"
+// #include "vector_tests.hpp"
 #include "map_tests.hpp"
 
 int	main(void)

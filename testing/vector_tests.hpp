@@ -183,7 +183,7 @@ void	vector_at()
 	}
 }
 
-void	vector_operator_bracket()
+void	vector_operator_at()
 {
 	{
 		NS::vector<int>	vec;
