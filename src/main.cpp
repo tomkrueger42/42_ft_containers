@@ -1,8 +1,20 @@
-// #include "vector_tests.hpp"
-#include "map_tests.hpp"
+#include "vector_tests.hpp"
+// #include "map_tests.hpp"
 
-int	main(void)
+
+// #if USING_STD
+// 	#include <vector>
+// 	#define std std
+// #else
+// 	#include "vector.hpp"
+// 	#define std ft
+// #endif
+
+
+int		main(void)
 {
-	map_constructor();
+	vector_insert(1);
+	vector_insert(2);
+	vector_insert(3);
 	return (0);
 }

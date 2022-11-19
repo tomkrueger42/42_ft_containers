@@ -228,13 +228,13 @@ template<
 		//	(1) Inserts value.
 		ft::pair<iterator, bool>	insert( const value_type& value )
 		{
-			return (_tree->insert(value, NULL));
+			return (_tree.insert(value, NULL));
 		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value )
 		{
-			return (_tree->insert(value, pos.base()).first);
+			return (_tree.insert(value, pos.base()).first);
 		}
 
 		//	(7) Inserts elements from range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
@@ -320,23 +320,23 @@ template<
 		//	Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
 		iterator	lower_bound( const key_type& key )
 		{
-			return (_tree->find(key));
+			return (_tree.find(key));
 		}
 
 		const_iterator	lower_bound( const key_type& key ) const
 		{
-			return (_tree->find(key));
+			return (_tree.find(key));
 		}
 
 		//	Returns an iterator pointing to the first element that is greater than key.
 		iterator	upper_bound( const key_type& key )
 		{
-			return (++_tree->find(key));
+			return (++_tree.find(key));
 		}
 
 		const_iterator	upper_bound( const key_type& key ) const
 		{
-			return (++_tree->find(key));
+			return (++_tree.find(key));
 		}
 
 

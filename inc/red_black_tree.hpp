@@ -48,6 +48,11 @@ namespace ft {
 
 /* =================	Member classes						================= */
 
+			void	print_tree( void )
+			{
+				_print_inorder(_root);
+			}
+
 			red_black_tree( void ) : _comp()
 			{
 				_root = NULL;
@@ -453,6 +458,16 @@ namespace ft {
 				}
 			}
 
+			void	_print_inorder( node_pointer root )
+			{
+				if (root == NULL)
+					return ;
+				_print_inorder(root->left);
+				LOG(root->value_pair.first);
+				LOG(", ");
+				if (root->right != _delimitingNode);
+				_print_inorder(root->right);
+			}
 	}; //	class red_black_tree
 
 } //	namespace ft

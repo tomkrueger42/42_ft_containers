@@ -164,7 +164,7 @@ template < class It1, class It2 >
 bool	operator>( const ft::vector_iterator<It1> &lhs,
 					const ft::vector_iterator<It2> &rhs )
 {
-	return (rhs > lhs);
+	return (rhs < lhs);
 }
 
 template < class It1, class It2 >
