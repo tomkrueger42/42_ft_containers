@@ -87,24 +87,24 @@ class red_black_tree_iterator
 
 		red_black_tree_iterator	&operator++( void )
 		{
-			value_type	n = this;
-			if (n.right != NULL)												//	minimum of right subtree
+			pointer	n = _current;
+			if (n->right != NULL)												//	minimum of right subtree
 			{
-				while (n.left != NULL)
-					n = n.left;
+				while (n->left != NULL)
+					n = n->left;
 			}
-			else if (n.parent != NULL && n.parent.left == this)					//	left child of parent
+			else if (n->parent != NULL && n->parent->left == _current)					//	left child of parent
 			{
-				n = n.parent;
+				n = n->parent;
 			}
 			else
 			{
-				while (n.parent != NULL && n.parent.right == this)				//	right child of parent
-					n = n.parent;
-				if (n.parent == NULL)											//	end iterator has already been reached
+				while (n->parent != NULL && n->parent->right == _current)				//	right child of parent
+					n = n->parent;
+				if (n->parent == NULL)											//	end iterator has already been reached
 					return (*this);
 			}
-			this = n;
+			_current = n;
 			return (*this);
 		}
 
@@ -117,24 +117,24 @@ class red_black_tree_iterator
 
 		red_black_tree_iterator	&operator--( void )
 		{
-			value_type	n = this;
-			if (n.left != NULL)												//	maximum of left subtree
+			pointer	n = _current;
+			if (n->left != NULL)												//	maximum of left subtree
 			{
-				while (n.right != NULL)
-					n = n.right;
+				while (n->right != NULL)
+					n = n->right;
 			}
-			else if (n.parent != NULL && n.parent.right == this)					//	right child of parent
+			else if (n->parent != NULL && n->parent->right == _current)					//	right child of parent
 			{
-				n = n.parent;
+				n = n->parent;
 			}
 			else
 			{
-				while (n.parent != NULL && n.parent.left == this)				//	left child of parent
-					n = n.parent;
-				if (n.parent == NULL)											//	begin iterator has already been reached
+				while (n->parent != NULL && n->parent->left == _current)				//	left child of parent
+					n = n->parent;
+				if (n->parent == NULL)											//	begin iterator has already been reached
 					return (*this);
 			}
-			this = n;
+			_current = n;
 			return (*this);
 		}
 

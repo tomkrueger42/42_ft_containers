@@ -2,14 +2,11 @@ NAME		=	ft_containers
 CC			=	c++
 CFLAGS		+=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
 INC_DIR		=	./inc/
-SRC_DIR		=	./src/
-OBJ_DIR		=	./obj/
-PREP		=	./obj/
-OBJS		=	$(addprefix $(OBJ_DIR), $(SRCS:.cpp=.o))
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 DEPS		+=	$(addprefix ./testing/, $(TEST))
 
-SRCS		=	main.cpp
+SRCS		=	./src/main.cpp
+
 INCS		=	algorithm.hpp \
 				iterator_traits.hpp \
 				iterator.hpp \
@@ -31,15 +28,9 @@ TEST		=	log.hpp \
 
 all: $(NAME)
 
-$(NAME): $(PREP) $(OBJS) $(DEPS)
-	$(CC) $(CFLAGS) $(OBJS) -o $@
-	$(CC) $(CFLAGS) -USING_STD $(OBJS) -o std_containers
-
-$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -c $< -o $@
-
-$(PREP):
-	mkdir -p $(OBJ_DIR)
+$(NAME): $(SRCS) $(DEPS)
+	$(CC) $(CFLAGS) -Iinc -Itesting $(SRCS) -o $@
+	$(CC) $(CFLAGS) -Itesting -DUSING_STD $(SRCS) -o std_containers
 
 clean:
 	rm -rf $(OBJ_DIR)

@@ -10,8 +10,7 @@ namespace ft {
 	template< 
 		class Key,
 		class T,
-		class Compare,
-		class Allocator = std::allocator< red_black_tree_node< ft::pair< const Key, T > > >
+		class Compare
 	> class red_black_tree
 	{
 
@@ -21,48 +20,63 @@ namespace ft {
 
 			typedef Key														key_type;
 			typedef T														mapped_type;
-			typedef ft::pair< const key_type, mapped_type >					value_type;
-			typedef Allocator												allocator_type;
-			typedef typename allocator_type::size_type						size_type;
-			typedef Compare													key_compare;
+			typedef ft::pair< const Key, T >								value_type;
+			typedef std::allocator< value_type >							value_allocator_type;
+			typedef std::allocator< ft::red_black_tree_node< value_type > >	node_allocator_type;
+			typedef typename node_allocator_type::size_type					size_type;
+			typedef Compare													value_compare;
 
 			typedef red_black_tree_node<value_type>							node;
-			typedef	node*													node_pointer;
+			typedef	typename node_allocator_type::reference					node_reference;
+			typedef	typename node_allocator_type::const_reference			node_const_reference;
+			typedef	typename node_allocator_type::pointer					node_pointer;
+			typedef	typename node_allocator_type::const_pointer				node_const_pointer;
 
-			typedef typename ft::red_black_tree_iterator<node, value_type, node>				iterator;		// they will need to be red_black_tree iterators
-			typedef typename ft::red_black_tree_iterator<const node, const value_type, const node>		const_iterator;
+			typedef typename ft::red_black_tree_iterator<node, value_type, node>					iterator;		//	"node, value_type, node"??
+			typedef typename ft::red_black_tree_iterator<const node, const value_type, const node>	const_iterator;
+			// typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
+			// typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
 
 
 		private:
 
 /* =================	Member objects						================= */
 
-			node_pointer	_root;
-			node_pointer	_delimitingNode;
-			allocator_type	_alloc;
-			key_compare		_comp;
-			size_type		_size;
+			value_allocator_type	_value_alloc;
+			node_allocator_type		_node_alloc;
+			value_compare			_comp;
+			size_type				_size;
+			node_pointer			_root;
+			node_pointer			_delimitingNode;
 
 
 		public:
 
 /* =================	Member classes						================= */
 
-			void	print_tree( void )
+			red_black_tree( void )
 			{
-				_print_inorder(_root);
-			}
-
-			red_black_tree( void ) : _comp()
-			{
+				_comp = value_compare();
+				_value_alloc = value_allocator_type();
 				_root = NULL;
 				_delimitingNode = _new_node(value_type(), NULL);
 				_delimitingNode->left = _delimitingNode;
-				_alloc = allocator_type();
+				_node_alloc = node_allocator_type();
 				_size = 0;
 			}
 
-			red_black_tree( const red_black_tree& other ) : _root(NULL), _delimitingNode(_new_node(value_type(), NULL)), _comp()
+			red_black_tree( value_compare comp, value_allocator_type value_allocator = value_allocator_type())
+			{
+				_comp = comp;
+				_value_alloc = value_allocator;
+				_root = NULL;
+				_delimitingNode = _new_node(value_type(), NULL);
+				_delimitingNode->left = _delimitingNode;
+				_node_alloc = node_allocator_type();
+				_size = 0;
+			}
+
+			red_black_tree( const red_black_tree& other ) : _value_alloc(other._value_alloc), _comp(other._comp), _root(NULL), _delimitingNode(_new_node(value_type(), NULL))
 			{
 				_size = 0;
 				*this = other;
@@ -71,7 +85,7 @@ namespace ft {
 			~red_black_tree( void )
 			{
 				clear();
-				_delete_node(iterator(_delimitingNode));
+				_delete_node(_delimitingNode);
 			}
 
 			red_black_tree&	operator=( const red_black_tree& other )
@@ -79,12 +93,18 @@ namespace ft {
 				if (this != &other)
 				{
 					clear();
-					// _alloc = other._alloc;
-					// _comp = other._comp;
-					// for (iterator it = other.begin(); it != other.end(); it++)
-					// 	insert(it->value_pair, NULL);
+					_node_alloc = other._node_alloc;
+					_value_alloc = other._value_alloc;
+					_comp = other._comp;
+					for (const_iterator it = other.begin(); it != other.end(); it++)
+						insert(*it, NULL);
 				}
 				return (*this);
+			}
+
+			value_allocator_type	get_allocator( void ) const
+			{
+				return (_value_alloc);
 			}
 
 
@@ -120,7 +140,7 @@ namespace ft {
 
 			size_type	max_size( void ) const
 			{
-				return (_alloc.max_size());
+				return (_node_alloc.max_size());
 			}
 
 
@@ -147,7 +167,7 @@ namespace ft {
 					_root->right = _delimitingNode;
 					_delimitingNode->parent = _root;
 					_delimitingNode->left = _root;
-					return (ft::pair<iterator, bool>(iterator(_root), true));
+					return (ft::make_pair(iterator(_root), true));
 				}
 				while (pos != NULL)
 				{
@@ -164,7 +184,7 @@ namespace ft {
 					if (pos == _delimitingNode->left)								//	begin iterator is invalidated
 						_delimitingNode->left = pos->left;
 					_insert_rb_violation(pos->right);
-					return (ft::pair<iterator, bool>(iterator(pos->left), true));
+					return (ft::make_pair(iterator(pos->left), true));
 				}
 				else if (value.first > pos->value_pair.first)						//	value is inserted right of n
 				{
@@ -177,9 +197,9 @@ namespace ft {
 					else
 						pos->right = _new_node(value, pos);
 					_insert_rb_violation(pos->right);
-					return (ft::pair<iterator, bool>(iterator(pos->right), true));
+					return (ft::make_pair(iterator(pos->right), true));
 				}
-				return (ft::pair<iterator, bool>(end(), false));
+				return (ft::make_pair(end(), false));
 			}
 
 			void	erase( iterator pos )
@@ -222,7 +242,7 @@ namespace ft {
 					y->left->parent = y;
 					y->color = nodeToBeDeleted->color;
 				}
-				_delete_node(iterator(nodeToBeDeleted));
+				_delete_node(nodeToBeDeleted);
 				if (originalColor == BLACK)
 					_erase_rb_violation(x);
 			}
@@ -242,25 +262,35 @@ namespace ft {
 			}
 
 
+/* =================	Observers							================= */
+
+			value_compare	value_comp() const
+		{
+			return (_comp);
+		}
+
+
+/* =================	private Member-functions			================= */
+
 		private:
 
 			node_pointer	_new_node( value_type value_pair, node_pointer parent )
 			{
-				node_pointer	n = _alloc.allocate(1);
-				_alloc.construct(n, value_pair);
+				node_pointer	n = _node_alloc.allocate(1);
+				_value_alloc.construct(&n->value_pair, value_pair);
 				n->parent = parent;
 				++_size;
 				return (n);
 			}
 
-			void	_delete_node( iterator it )
+			void	_delete_node( node_pointer n )
 			{
-				_alloc.destroy(it.base());
-				_alloc.deallocate(it.base(), 1);
+				_value_alloc.destroy(&(n->value_pair));
+				_node_alloc.deallocate(n, 1);
 				--_size;
 			}
 
-			node_pointer	_search( node_pointer n, key_type k )
+			node_pointer	_search( node_pointer n, key_type k ) const
 			{
 				while (n != NULL)
 				{
@@ -456,17 +486,6 @@ namespace ft {
 						}
 					}
 				}
-			}
-
-			void	_print_inorder( node_pointer root )
-			{
-				if (root == NULL)
-					return ;
-				_print_inorder(root->left);
-				LOG(root->value_pair.first);
-				LOG(", ");
-				if (root->right != _delimitingNode);
-				_print_inorder(root->right);
 			}
 	}; //	class red_black_tree
 

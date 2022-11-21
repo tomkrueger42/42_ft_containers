@@ -2,7 +2,7 @@
 
 #include <log.hpp>
 
-#if USING_STD
+#ifdef USING_STD
 	#include <vector>
 	#define NAME_SPACE std
 #else
@@ -292,7 +292,7 @@ void	vector_reverse_iterator()
 	vec.push_back(2);
 	vec.push_back(3);
 	vec.push_back(4);
-	NAME_SPACE::vector<NAME_SPACE::vector<int>::iterator>::reverse_iterator	rit2(vec.rbegin());
+	// NAME_SPACE::vector<NAME_SPACE::vector<int>::iterator>::reverse_iterator	rit2(vec.rbegin());
 	// NAME_SPACE::vector<NAME_SPACE::vector<int>::iterator>::reverse_iterator	rit3(vec.rend());
 }
 

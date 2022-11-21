@@ -26,10 +26,10 @@ template<
 		typedef Key												key_type;
 		typedef T												mapped_type;
 		typedef ft::pair<const key_type, mapped_type>			value_type;
+		typedef std::size_t										size_type;
+		typedef std::ptrdiff_t									difference_type;
 		typedef Compare											key_compare;
 		typedef Allocator										allocator_type;
-		typedef typename allocator_type::size_type				size_type;
-		typedef typename allocator_type::difference_type		difference_type;
 		typedef typename allocator_type::reference				reference;
 		typedef typename allocator_type::const_reference		const_reference;
 		typedef typename allocator_type::pointer				pointer;
@@ -60,8 +60,8 @@ template<
 
 	private:
 
-		typedef	ft::red_black_tree<Key, T, value_compare>		tree;
-		typedef	typename tree::node								node;
+		typedef	ft::red_black_tree<Key, T, value_compare>	tree;
+		typedef	typename tree::node							node;
 
 	public:
 
@@ -75,9 +75,7 @@ template<
 
 /* =================	Member objects						================= */
 
-		allocator_type	_alloc;
 		tree			_tree;
-		key_compare		_comp;
 
 
 	public:
@@ -85,37 +83,39 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void ) : _tree(tree()) {}											//	is this one even callable or only the explicit one?
+		map( void )																//	is this one even callable or only the explicit one?
+		{
+			_tree = tree(key_compare(), allocator_type());
+		}
 
 		//	(2) Constructs an empty container.
-		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc) {}
+		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() )
+		{
+			_tree = tree(comp, alloc);
+		}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
-		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() ) : _comp(comp), _alloc(alloc)
+		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() )
 		{
+			_tree = tree(comp, alloc);
 			insert(first, last);
 		}
 
 		//	(6) Copy constructor. Constructs the container with the copy of the contents of other.
-		map( const_reference other )
+		map( const map& other )
 		{
 			*this = other;
 		}
 
 		//	Destructs the map. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
-		~map( void )
-		{
-			clear();
-		}
+		~map( void ) {}
 
 		//	Copy assignment operator. Replaces the contents with a copy of the contents of other.
-		reference	operator=( const_reference other )
+		const map&	operator=( const map& other )
 		{
 			if (this != &other)
 			{
-				_alloc = other._alloc;
-				_comp = other._comp;
 				_tree = other._tree;
 			}
 			return (*this);
@@ -124,7 +124,7 @@ template<
 		//	Returns the allocator associated with the container.
 		allocator_type	get_allocator( void ) const
 		{
-			return (_alloc);
+			return (_tree.get_allocator());
 		}
 
 
@@ -144,7 +144,7 @@ template<
 		//	More information is on cppreference!!
 		mapped_type&	operator[]( const key_type& key )
 		{
-			return (insert(value_type(key, mapped_type())).first->value_pair.second);
+			return (insert(value_type(key, mapped_type())).first->second);
 		}
 
 
@@ -180,7 +180,7 @@ template<
 
 		const_reverse_iterator	rbegin( void ) const
 		{
-			return (reverse_iterator(end()));
+			return (const_reverse_iterator(end()));
 		}
 
 		//	Returns a reverse iterator to the element following the last element of the reversed map. It corresponds to the element preceding the first element of the non-reversed map. This element acts as a placeholder, attempting to access it results in undefined behavior.
@@ -191,7 +191,7 @@ template<
 
 		const_reverse_iterator	rend( void ) const
 		{
-			return (reverse_iterator(begin()));
+			return (const_reverse_iterator(begin()));
 		}
 
 
@@ -200,7 +200,7 @@ template<
 		//	Checks if the container has no elements.
 		bool	empty( void ) const
 		{
-			return (_size == 0);
+			return (_tree.size() == 0);
 		}
 
 		//	Returns the number of elements in the container.
@@ -271,19 +271,12 @@ template<
 		}
 
 		//	Exchanges the contents of the container with those of other. Does not invoke any move, copy, or swap operations on individual elements.
-		void	swap( reference other )
+		void	swap( map& other )
 		{
-			allocator_type	tmp_alloc = _alloc;
-			tree			tmp_tree = _tree;
-			key_compare		tmp_comp = _comp;
+			tree	tmp_tree = _tree;
 
-			_alloc = other._alloc;
 			_tree = other._tree;
-			_comp = other._comp;
-
-			other._alloc = tmp_alloc;
 			other._tree = tmp_tree;
-			other._comp = tmp_comp;
 		}
 
 
@@ -331,12 +324,18 @@ template<
 		//	Returns an iterator pointing to the first element that is greater than key.
 		iterator	upper_bound( const key_type& key )
 		{
-			return (++_tree.find(key));
+			iterator	it = _tree.find(key);
+			if (it != end())
+				++it;
+			return (it);
 		}
 
 		const_iterator	upper_bound( const key_type& key ) const
 		{
-			return (++_tree.find(key));
+			const_iterator	it = _tree.find(key);
+			if (it != end())
+				++it;
+			return (it);
 		}
 
 
@@ -345,13 +344,13 @@ template<
 		//	Returns the function object that compares the keys, which is a copy of this container's constructor argument comp.
 		key_compare	key_comp() const
 		{
-			return (_comp);
+			return (key_compare());
 		}
 
 		//	Returns a function object that compares objects of type ft::map::value_type (key-value pairs) by using key_comp to compare the first components of the pairs.
 		value_compare	value_comp() const
 		{
-			return (value_compare(_comp));
+			return (_tree.value_comp());
 		}
 
 }; // class map

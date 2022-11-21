@@ -10,22 +10,23 @@ namespace ft {
 		RED
 	};
 
-	template< class T >
-	class red_black_tree_node
+	template <
+		class T
+	> class red_black_tree_node
 	{
 		public:
 
 			typedef T						value_type;
-			typedef red_black_tree_node	node;
-			typedef node*					pointer;
+			typedef red_black_tree_node		node;
+			typedef node*					node_pointer;
 
-			pointer		parent;
-			pointer		left;
-			pointer		right;
-			value_type	value_pair;
-			COLOR		color;
+			node_pointer	parent;
+			node_pointer	left;
+			node_pointer	right;
+			value_type		value_pair;
+			COLOR			color;
 
-			red_black_tree_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(), color(RED) {}
+			red_black_tree_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(value_type()), color(RED) {}
 
 			red_black_tree_node( const value_type& value ) : parent(NULL), left(NULL), right(NULL), value_pair(value), color(RED) {}
 
