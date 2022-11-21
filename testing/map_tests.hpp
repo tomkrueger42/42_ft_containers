@@ -2,27 +2,28 @@
 
 #include <log.hpp>
 
+#include "map.hpp"
+#include <map>
+
 #ifdef USING_STD
-	#include <map>
 	#define NAME_SPACE std
 #else
-	#include "map.hpp"
 	#define NAME_SPACE ft
 #endif
 
 template< typename T >
 void	map_print( const T& map )
 {
-	LOGN("map_print()");
-	// for (typename T::const_iterator it = map.begin(); it != map.end(); it++)
-	// {
-	// 	LOG(it->first);
-	// 	LOG(": ");
-	// 	LOGN(it->second);
-	// }
+	LOGN1("map_tests: map_print()");
+	for (typename T::const_iterator it = map.begin(); it != map.end(); it++)
+	{
+		LOG(it->first);
+		LOG(": ");
+		LOGN(it->second);
+	}
 	LOGI(map.size());
 	LOGI((map.begin() == map.end()));
-	LOGN("-------------------------")
+	LOGN("-------------------------");
 }
 
 void	map_constructor( void )
@@ -30,10 +31,13 @@ void	map_constructor( void )
 	NAME_SPACE::map<int, char>	map;
 	map_print(map);
 
+	NAME_SPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
+	map_print(map2);
+
 	// NAME_SPACE::map<int, char>	map2(map.get_allocator());							//	weird, because this works with STL but shouldn't as in the documentation
 	// map_print(map2);
 
-	
+	 
 }
 
 void	map_operator_assign( void )
@@ -251,6 +255,18 @@ void	map_insert( int overload )
 		map_print(map);
 		map.insert(NAME_SPACE::make_pair(8, 'h'));
 		map_print(map);
+		map.insert(NAME_SPACE::make_pair(9, 'i'));
+		map.insert(NAME_SPACE::make_pair(10, 'j'));
+		map.insert(NAME_SPACE::make_pair(11, 'k'));
+		map.insert(NAME_SPACE::make_pair(12, 'l'));
+		map.insert(NAME_SPACE::make_pair(13, 'm'));
+		map.insert(NAME_SPACE::make_pair(14, 'n'));
+		map.insert(NAME_SPACE::make_pair(15, 'o'));
+		map.insert(NAME_SPACE::make_pair(16, 'p'));
+		map.insert(NAME_SPACE::make_pair(17, 'q'));
+		map.insert(NAME_SPACE::make_pair(18, 'r'));
+		map.insert(NAME_SPACE::make_pair(19, 's'));
+		map_print(map);
 	}
 	else if (overload == 2)
 	{
@@ -336,7 +352,6 @@ void	map_insert( int overload )
 		map_print(map);
 		map2.insert(map.end(), map.end());
 		map_print(map2);
-		map2.insert(map.end(), map.begin());
 		map_print(map2);
 		map.insert(map.begin(), map.end());
 		map_print(map);
@@ -344,7 +359,6 @@ void	map_insert( int overload )
 		map_print(map);
 		map.insert(map.end(), map.end());
 		map_print(map);
-		map.insert(map.end(), map.begin());
 		map_print(map);
 
 		map.insert(NAME_SPACE::make_pair(5, 'e'));
@@ -362,7 +376,6 @@ void	map_insert( int overload )
 		map_print(map2);
 		map2.insert(map.end(), map.end());
 		map_print(map2);
-		map2.insert(map.end(), map.begin());
 		map_print(map2);
 		map2.insert(map.begin(), map.end());
 		map_print(map);
@@ -374,15 +387,11 @@ void	map_erase( int overload )
 	if (overload == 1)
 	{
 		NAME_SPACE::map<int, char>	map;
-		map.erase(map.begin());
-		map.erase(map.end());
 
-		map.insert(NAME_SPACE::make_pair(5, 'e'));
-		map.erase(map.end());
-		LOGI((map.begin() == map.end()));
-		map.erase(map.begin());
-		LOGI((map.begin() == map.end()));
-		map.erase(map.begin());
+		// map.insert(NAME_SPACE::make_pair(5, 'e'));
+		// LOGI((map.begin() == map.end()));
+		// map.erase(map.begin());
+		// LOGI((map.begin() == map.end()));
 
 		map.insert(NAME_SPACE::make_pair(5, 'e'));
 		map.insert(NAME_SPACE::make_pair(6, 'f'));
@@ -392,6 +401,7 @@ void	map_erase( int overload )
 		map.erase(map.insert(NAME_SPACE::make_pair(6, 'f')).first);
 		map.erase(map.insert(NAME_SPACE::make_pair(5, 'f')).first);
 		map.erase(map.insert(NAME_SPACE::make_pair(7, 'f')).first);
+		map_print(map);
 	}
 	else if (overload == 2)
 	{

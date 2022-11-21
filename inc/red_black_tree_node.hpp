@@ -28,8 +28,6 @@ namespace ft {
 
 			red_black_tree_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(value_type()), color(RED) {}
 
-			red_black_tree_node( const value_type& value ) : parent(NULL), left(NULL), right(NULL), value_pair(value), color(RED) {}
-
 			red_black_tree_node( const node& other )
 			{
 				*this = other;
@@ -94,6 +92,26 @@ bool	operator>=( const ft::red_black_tree_node< value_type >& lhs,
 					const ft::red_black_tree_node< value_type >& rhs )
 {
 	return (!(lhs < rhs));
+}
+
+template< class value_type >
+std::ostream	&operator <<(std::ostream &out, ft::red_black_tree_node< value_type > &n)
+{
+	out << "val: " << n.value_pair.first << std::endl;
+	if (n.parent != NULL)
+		out << "par: " << n.parent->value_pair.first << std::endl;
+	else
+		out << "par: NULL" << std::endl;
+	if (n.left != NULL)
+		out << "lef: " << n.left->value_pair.first << std::endl;
+	else
+		out << "lef: NULL" << std::endl;
+	if (n.right != NULL)
+		out << "rig: " << n.right->value_pair.first << std::endl;
+	else
+		out << "rig: NULL" << std::endl;
+	out << "col: " << n.color << std::endl;
+	return (out);
 }
 
 } //	namespace ft

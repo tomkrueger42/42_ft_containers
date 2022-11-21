@@ -4,6 +4,6 @@
 
 int		main(void)
 {
-	map_constructor();
+	map_erase(1);
 	return (0);
 }

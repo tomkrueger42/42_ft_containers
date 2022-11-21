@@ -29,8 +29,16 @@ TEST		=	log.hpp \
 all: $(NAME)
 
 $(NAME): $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting $(SRCS) -o $@
-	$(CC) $(CFLAGS) -Itesting -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
+
+1: $(SRCS) $(DEPS)
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers
+
+2: $(SRCS) $(DEPS)
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 -DUSING_STD $(SRCS) -o std_containers
 
 clean:
 	rm -rf $(OBJ_DIR)

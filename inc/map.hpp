@@ -1,12 +1,9 @@
 #pragma once
 
-#include <map>
-
-#include "algorithm.hpp"
+#include "algorithm.hpp"														//	for ft::lexicographical_compare()
 #include <functional>															// for std::less<> and maybe also std::binary_function
-#include "utility.hpp"
+#include "utility.hpp"															//	for ft::pair<>
 #include "red_black_tree.hpp"
-#include "red_black_tree_iterator.hpp"
 #include "reverse_iterator.hpp"
 
 namespace ft {
@@ -41,27 +38,32 @@ template<
 		class value_compare : public std::binary_function< value_type, value_type, bool >
 		{
 			protected:
-				key_compare	comp;
+				key_compare	_compare;
 
 			public:
 				//	Initializes the internal instance of the comparator to c.
-				value_compare( void ) : comp() {}
-				value_compare( key_compare c ) : comp(c) {}
-				value_compare( const value_compare& other ) : comp(other.comp) {}
+				value_compare( void ) : _compare() {}
+				value_compare( key_compare c ) : _compare(c) {}
+				value_compare( const value_compare& other ) : _compare(other._compare) {}
 				~value_compare( void ) {}
+
+				value_compare&	operator=( const value_compare& other ) {
+					if (this != &other)
+						_compare = other._compare;
+					return (*this);
+						}
 
 				//	Compares lhs.first and rhs.first by calling the stored comparator.
 				bool	operator()( const value_type& lhs, const value_type& rhs ) const
 				{
-					return (comp(lhs.first, rhs.first));
+					return (_compare(lhs.first, rhs.first));
 				}
 		};
 
 
 	private:
 
-		typedef	ft::red_black_tree<Key, T, value_compare>	tree;
-		typedef	typename tree::node							node;
+		typedef	ft::red_black_tree<Key, T, value_compare>		tree;
 
 	public:
 
@@ -75,7 +77,7 @@ template<
 
 /* =================	Member objects						================= */
 
-		tree			_tree;
+		tree	_tree;
 
 
 	public:
@@ -83,16 +85,11 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void )																//	is this one even callable or only the explicit one?
-		{
-			_tree = tree(key_compare(), allocator_type());
-		}
+		map( void ) : _tree(tree(key_compare(), allocator_type())) {}			//	is this one even callable or only the explicit one?
 
 		//	(2) Constructs an empty container.
 		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() )
-		{
-			_tree = tree(comp, alloc);
-		}
+					: _tree(tree(comp, alloc)) {}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
@@ -250,14 +247,14 @@ template<
 		//	(1) Removes the element at pos.
 		void	erase( iterator pos )
 		{
-			_tree.erase(pos);
+			_tree.erase(pos.base());
 		}
 
 		//	(2) Removes the elements in the range [first; last), which must be a valid range in *this.
 		void	erase( iterator first, iterator last )
 		{
 			for ( ; first != last; first++)
-				_tree.erase(first);
+				_tree.erase(first.base());
 		}
 
 		//	(3) Removes the element (if one exists) with the key equivalent to key.
@@ -266,7 +263,7 @@ template<
 			iterator	it = find(key);
 			if (it == end())
 				return (0);
-			_tree.erase(it);
+			_tree.erase(it.base());
 			return (1);
 		}
 

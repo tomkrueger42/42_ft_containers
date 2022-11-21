@@ -1,5 +1,7 @@
 #pragma once
 
+#include "log.hpp"
+
 #include "iterator.hpp"
 #include "iterator_traits.hpp"
 
@@ -88,8 +90,10 @@ class red_black_tree_iterator
 		red_black_tree_iterator	&operator++( void )
 		{
 			pointer	n = _current;
+			// LOG1N("iterator: operator++(void)");
 			if (n->right != NULL)												//	minimum of right subtree
 			{
+				n = n->right;
 				while (n->left != NULL)
 					n = n->left;
 			}
@@ -103,6 +107,7 @@ class red_black_tree_iterator
 					n = n->parent;
 				if (n->parent == NULL)											//	end iterator has already been reached
 					return (*this);
+				n = n->parent;
 			}
 			_current = n;
 			return (*this);
@@ -111,7 +116,7 @@ class red_black_tree_iterator
 		red_black_tree_iterator	operator++( int )
 		{
 			red_black_tree_iterator	tmp(_current);
-			++_current;
+			++*this;
 			return (tmp);
 		}
 
@@ -120,6 +125,7 @@ class red_black_tree_iterator
 			pointer	n = _current;
 			if (n->left != NULL)												//	maximum of left subtree
 			{
+				n = n->left;
 				while (n->right != NULL)
 					n = n->right;
 			}
@@ -133,6 +139,7 @@ class red_black_tree_iterator
 					n = n->parent;
 				if (n->parent == NULL)											//	begin iterator has already been reached
 					return (*this);
+				n = n->parent;
 			}
 			_current = n;
 			return (*this);
@@ -141,7 +148,7 @@ class red_black_tree_iterator
 		red_black_tree_iterator	operator--( int )
 		{
 			red_black_tree_iterator	tmp(_current);
-			--_current;
+			--(*this);
 			return (tmp);
 		}
 
