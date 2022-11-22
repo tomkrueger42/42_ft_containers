@@ -289,10 +289,54 @@ namespace ft {
 				return (iterator(_search(_root, ft::make_pair(key, mapped_type()))));
 			}
 
-			const_iterator find( const key_type& key ) const
+			const_iterator	find( const key_type& key ) const
 			{
 				LOGN1("rb_tree: find() const");
 				return (const_iterator(_search(_root, ft::make_pair(key, mapped_type()))));
+			}
+
+			iterator	lower_bound( const value_type& value )
+			{
+				iterator	it = begin();
+				for ( ; it != end(); it++)
+				{
+					if (!_compare(*it, value))
+						break ;
+				}
+				return (it);
+			}
+
+			const_iterator	lower_bound( const value_type& value ) const
+			{
+				const_iterator	it = begin();
+				for ( ; it != end(); it++)
+				{
+					if (!_compare(*it, value))
+						break ;
+				}
+				return (it);
+			}
+
+			iterator	upper_bound( const value_type& value )
+			{
+				iterator	it = begin();
+				for ( ; it != end(); it++)
+				{
+					if (_compare(value, *it))
+						break ;
+				}
+				return (it);
+			}
+
+			const_iterator	upper_bound( const value_type& value ) const
+			{
+				const_iterator	it = begin();
+				for ( ; it != end(); it++)
+				{
+					if (_compare(value, *it))
+						break ;
+				}
+				return (it);
 			}
 
 
@@ -311,7 +355,9 @@ namespace ft {
 
 			node_pointer	_new_node( value_type value_pair, node_pointer parent )
 			{
-				LOGN1("rb_tree: _new_node()");
+				LOG1("rb_tree: _new_node(): ");
+				LOGN1(value_pair.first);
+
 				node_pointer	n = _node_alloc.allocate(1);
 				_node_alloc.construct(n);
 				_value_alloc.construct(&n->value_pair, value_pair);
@@ -322,7 +368,12 @@ namespace ft {
 
 			void	_delete_node( node_pointer n )
 			{
-				LOGN1("rb_tree: _delete_node()");
+				LOG1("rb_tree: _delete_node(): ");
+				if (n != NULL)
+					LOGN1(n->value_pair.first);
+				else
+					LOGN1("(null)");
+
 				_value_alloc.destroy(&(n->value_pair));
 				_node_alloc.destroy(n);
 				_node_alloc.deallocate(n, 1);

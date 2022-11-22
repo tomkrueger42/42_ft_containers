@@ -4,6 +4,6 @@
 
 int		main(void)
 {
-	map_erase(1);
+	map_equal_range();
 	return (0);
 }

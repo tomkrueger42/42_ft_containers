@@ -253,8 +253,13 @@ template<
 		//	(2) Removes the elements in the range [first; last), which must be a valid range in *this.
 		void	erase( iterator first, iterator last )
 		{
-			for ( ; first != last; first++)
+			while (first != last)
+			{
+				iterator	it = first;
+				++it;
 				_tree.erase(first.base());
+				first = it;
+			}
 		}
 
 		//	(3) Removes the element (if one exists) with the key equivalent to key.
@@ -310,29 +315,23 @@ template<
 		//	Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
 		iterator	lower_bound( const key_type& key )
 		{
-			return (_tree.find(key));
+			return (_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 
 		const_iterator	lower_bound( const key_type& key ) const
 		{
-			return (_tree.find(key));
+			return (_tree.lower_bound(ft::make_pair(key, mapped_type())));
 		}
 
 		//	Returns an iterator pointing to the first element that is greater than key.
 		iterator	upper_bound( const key_type& key )
 		{
-			iterator	it = _tree.find(key);
-			if (it != end())
-				++it;
-			return (it);
+			return (_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 
 		const_iterator	upper_bound( const key_type& key ) const
 		{
-			const_iterator	it = _tree.find(key);
-			if (it != end())
-				++it;
-			return (it);
+			return (_tree.upper_bound(ft::make_pair(key, mapped_type())));
 		}
 
 

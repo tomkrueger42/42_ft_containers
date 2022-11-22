@@ -419,12 +419,12 @@ void	map_erase( int overload )
 
 		map_print(map);
 
-		map.erase(map.begin(), map.begin());
-		map.erase(map.end(), map.end());
-		map.erase(map.end(), map.begin());
+		// map.erase(map.begin(), map.begin());
+		// map.erase(map.end(), map.end());
+		// map.erase(map.end(), map.begin());
 		map.erase(map.begin(), map.end());
 
-		map_print(map);
+		// map_print(map);
 	}
 	else if (overload == 3)
 	{
@@ -493,52 +493,50 @@ void	map_find( void )
 		NAME_SPACE::map<int, char>	map;
 
 		LOGI(map.find(0)->first);
-		LOGI(map.find(0)->second);
 
 		map.insert(NAME_SPACE::make_pair(2, 'b'));
 		LOGI(map.find(0)->first);
-		LOGI(map.find(0)->second);
 		LOGI(map.find(2)->first);
-		LOGI(map.find(2)->second);
 	}
 	{
 		const NAME_SPACE::map<int, char>	map;
 
 		LOGI(map.find(0)->first);
-		LOGI(map.find(0)->second);
 	}
 }
 
 void	map_equal_range( void )
 {
 	{
-		LOGN("const");
-		const NAME_SPACE::map<int, char>	map;
+		// LOGN("const");
+		// const NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.equal_range(0).first->first);
-		LOGI(map.equal_range(0).second->first);
+		// LOGI(map.equal_range(0).first->first);
+		// LOGI(map.equal_range(0).second->first);
 	}
 	{
 		LOGN("non-const");
 		NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.equal_range(0).first->first);
-		LOGI(map.equal_range(0).second->first);
+		LOGI((map.equal_range(0).first == map.end()));
+		LOGI((map.equal_range(0).second == map.end()));
 
 		map.insert(NAME_SPACE::make_pair(1, 'a'));
-		LOGI(map.equal_range(0).first->first);
-		LOGI(map.equal_range(0).second->first);
+		LOGI((map.equal_range(0).first == map.end()));
+		LOGI((map.equal_range(0).second == map.end()));
+		if (map.equal_range(1).first != map.end())
 		LOGI(map.equal_range(1).first->first);
-		LOGI(map.equal_range(1).second->first);
-		LOGI(map.equal_range(1).first->second);
-		LOGI(map.equal_range(1).second->second);
+		if (map.equal_range(1).second != map.end())
+			LOGI(map.equal_range(1).second->first);
 
 		map.insert(NAME_SPACE::make_pair(2, 'b'));
 		map.insert(NAME_SPACE::make_pair(3, 'c'));
 		map.insert(NAME_SPACE::make_pair(4, 'd'));
 		map.insert(NAME_SPACE::make_pair(5, 'e'));
-		LOGI(map.equal_range(3).first->second);
-		LOGI(map.equal_range(3).second->second);
+		if (map.equal_range(1).first != map.end())
+			LOGI(map.equal_range(3).first->first);
+		if (map.equal_range(1).second != map.end())
+			LOGI(map.equal_range(3).second->first);
 	}
 }
 
@@ -548,26 +546,28 @@ void	map_lower_bound( void )
 		LOGN("const");
 		const NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.lower_bound(0)->first);
+		if (map.lower_bound(0) != map.end())
+			LOGI(map.lower_bound(0)->first);
 	}
 	{
 		LOGN("non-const");
 		NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.lower_bound(0)->first);
+		if (map.lower_bound(0) != map.end())
+			LOGI(map.lower_bound(0)->first);
 
 		map.insert(NAME_SPACE::make_pair(1, 'a'));
-		LOGI(map.lower_bound(0)->first);
-		LOGI(map.lower_bound(1)->first);
-		LOGI(map.lower_bound(1)->first);
-		LOGI(map.lower_bound(1)->second);
+		if (map.lower_bound(0) != map.end())
+			LOGI(map.lower_bound(0)->first);
+		if (map.lower_bound(2) != map.end())
+			LOGI(map.lower_bound(2)->first);
 
 		map.insert(NAME_SPACE::make_pair(2, 'b'));
-		map.insert(NAME_SPACE::make_pair(3, 'c'));
+		// map.insert(NAME_SPACE::make_pair(3, 'c'));
 		map.insert(NAME_SPACE::make_pair(4, 'd'));
 		map.insert(NAME_SPACE::make_pair(5, 'e'));
-		LOGI(map.lower_bound(3)->first);
-		LOGI(map.lower_bound(3)->second);
+		if (map.lower_bound(3) != map.end())
+			LOGI(map.lower_bound(3)->first);
 	}
 }
 
@@ -577,26 +577,30 @@ void	map_upper_bound( void )
 		LOGN("const");
 		const NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.upper_bound(0)->first);
+		if (map.upper_bound(0) != map.end())
+			LOGI(map.upper_bound(0)->first);
 	}
 	{
 		LOGN("non-const");
 		NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.upper_bound(0)->first);
+		if (map.upper_bound(0) != map.end())
+			LOGI(map.upper_bound(0)->first);
 
 		map.insert(NAME_SPACE::make_pair(1, 'a'));
-		LOGI(map.upper_bound(0)->first);
-		LOGI(map.upper_bound(1)->first);
-		LOGI(map.upper_bound(1)->first);
-		LOGI(map.upper_bound(1)->second);
+		if (map.upper_bound(0) != map.end())
+			LOGI(map.upper_bound(0)->first);
+		if (map.upper_bound(1) != map.end())
+			LOGI(map.upper_bound(1)->first);
+		if (map.upper_bound(2) != map.end())
+			LOGI(map.upper_bound(2)->first);
 
 		map.insert(NAME_SPACE::make_pair(2, 'b'));
 		map.insert(NAME_SPACE::make_pair(3, 'c'));
 		map.insert(NAME_SPACE::make_pair(4, 'd'));
 		map.insert(NAME_SPACE::make_pair(5, 'e'));
-		LOGI(map.upper_bound(3)->first);
-		LOGI(map.upper_bound(3)->second);
+		if (map.upper_bound(3) != map.end())
+			LOGI(map.upper_bound(3)->first);
 	}
 }
 
