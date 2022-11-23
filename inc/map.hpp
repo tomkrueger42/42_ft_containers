@@ -63,7 +63,7 @@ template<
 
 	private:
 
-		typedef	ft::red_black_tree<Key, T, value_compare>		tree;
+		typedef	ft::red_black_tree< value_type >	tree;
 
 	public:
 
@@ -77,7 +77,9 @@ template<
 
 /* =================	Member objects						================= */
 
-		tree	_tree;
+		tree			_tree;
+		value_compare	_compare;
+		allocator_type	_value_alloc;
 
 
 	public:
@@ -85,17 +87,23 @@ template<
 /* =================	Constructors						================= */
 
 		//	(1) Constructs an empty container.
-		map( void ) : _tree(tree(key_compare(), allocator_type())) {}			//	is this one even callable or only the explicit one?
+		// map( void ) : _tree(tree(key_compare(), allocator_type())) {}			//	is this one even callable or only the explicit one?
 
 		//	(2) Constructs an empty container.
-		explicit map( const key_compare& comp, const allocator_type& alloc = allocator_type() )
-					: _tree(tree(comp, alloc)) {}
+		explicit map( const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() )
+		{
+			_compare = comp;
+			_value_alloc = alloc;
+		}
 
 		//	(4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
 		template< class InputIt >
-		map( InputIt first, InputIt last, const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() )
+		map( InputIt first, InputIt last,
+			const key_compare& comp = Compare(),
+			const allocator_type& alloc = allocator_type() )
 		{
-			_tree = tree(comp, alloc);
+			_compare = comp;
+			_value_alloc = alloc;
 			insert(first, last);
 		}
 
@@ -106,13 +114,20 @@ template<
 		}
 
 		//	Destructs the map. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
-		~map( void ) {}
+		~map( void )
+		{
+			_tree.clear(_value_alloc);
+			_tree.erase(end().base(), _value_alloc);
+		}
 
 		//	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 		const map&	operator=( const map& other )
 		{
 			if (this != &other)
 			{
+				clear(_value_alloc);
+				_compare = other.value_comp();
+				_value_alloc = other.get_allocator();
 				_tree = other._tree;
 			}
 			return (*this);
@@ -121,7 +136,7 @@ template<
 		//	Returns the allocator associated with the container.
 		allocator_type	get_allocator( void ) const
 		{
-			return (_tree.get_allocator());
+			return (_value_alloc);
 		}
 
 
@@ -132,9 +147,18 @@ template<
 		{
 			iterator	it = _tree.find(key);
 			if (it == end())
-				throw std::out_of_range("map");
+				throw std::out_of_range("map::at:  key not found");
 			else
-				return (it.second);
+				return (it->second);
+		}
+
+		const mapped_type&	at( const key_type& key ) const
+		{
+			iterator	it = _tree.find(key);
+			if (it == end())
+				throw std::out_of_range("map::at:  key not found");
+			else
+				return (it->second);
 		}
 
 		//	Returns a reference to the value that is mapped to a key equivalent to key, performing an insertion if such key does not already exist.
@@ -218,20 +242,20 @@ template<
 		//	Erases all elements from the container. After this call, size() returns zero.
 		void	clear( void )
 		{
-			_tree.clear();
+			_tree.clear(_value_alloc);
 		}
 
 		//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
 		//	(1) Inserts value.
 		ft::pair<iterator, bool>	insert( const value_type& value )
 		{
-			return (_tree.insert(value, NULL));
+			return (_tree.insert(value, NULL, _value_alloc));
 		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value )
 		{
-			return (_tree.insert(value, pos.base()).first);
+			return (_tree.insert(value, pos.base(), _value_alloc).first);
 		}
 
 		//	(7) Inserts elements from range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
@@ -240,14 +264,14 @@ template<
 		{
 			for ( ; first != last; first++)
 			{
-				_tree.insert(*first, NULL); // what happens if one insert() fails??
+				_tree.insert(*first, NULL, _value_alloc); // what happens if one insert() fails??
 			}
 		}
 
 		//	(1) Removes the element at pos.
 		void	erase( iterator pos )
 		{
-			_tree.erase(pos.base());
+			_tree.erase(pos.base(), _value_alloc);
 		}
 
 		//	(2) Removes the elements in the range [first; last), which must be a valid range in *this.
@@ -257,7 +281,7 @@ template<
 			{
 				iterator	it = first;
 				++it;
-				_tree.erase(first.base());
+				_tree.erase(first.base(), _value_alloc);
 				first = it;
 			}
 		}
@@ -268,7 +292,7 @@ template<
 			iterator	it = find(key);
 			if (it == end())
 				return (0);
-			_tree.erase(it.base());
+			_tree.erase(it.base(), _value_alloc);
 			return (1);
 		}
 
@@ -293,12 +317,12 @@ template<
 		//	Finds an element with key equivalent to key.
 		iterator	find( const key_type& key )
 		{
-			return (_tree.find(key));
+			return (_tree.search(ft::make_pair(key, mapped_type()), NULL, _compare));
 		}
 		
 		const_iterator	find( const key_type& key ) const
 		{
-			return (_tree.find(key));
+			return (_tree.search(ft::make_pair(key, mapped_type()), NULL, _compare));
 		}
 
 		//	Returns a range containing all elements with the given key in the container. The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
@@ -346,7 +370,7 @@ template<
 		//	Returns a function object that compares objects of type ft::map::value_type (key-value pairs) by using key_comp to compare the first components of the pairs.
 		value_compare	value_comp() const
 		{
-			return (_tree.value_comp());
+			return (_compare);
 		}
 
 }; // class map

@@ -8,9 +8,7 @@
 namespace ft {
 
 	template< 
-		class Key,
-		class T,
-		class Compare
+		class Value
 	> class red_black_tree
 	{
 
@@ -18,33 +16,27 @@ namespace ft {
 
 /* =================	Member types						================= */
 
-			typedef Key														key_type;
-			typedef T														mapped_type;
-			typedef ft::pair< const Key, T >								value_type;
-			typedef std::allocator< value_type >							value_allocator_type;
+			typedef Value													value_type;
+			// typedef Allocator												value_allocator_type;
 			typedef std::allocator< ft::red_black_tree_node< value_type > >	node_allocator_type;
 			typedef typename node_allocator_type::size_type					size_type;
-			typedef Compare													value_compare;
 
-			typedef red_black_tree_node<value_type>							node;
+			typedef red_black_tree_node< value_type >						node;
 			typedef	typename node_allocator_type::reference					node_reference;
 			typedef	typename node_allocator_type::const_reference			node_const_reference;
 			typedef	typename node_allocator_type::pointer					node_pointer;
 			typedef	typename node_allocator_type::const_pointer				node_const_pointer;
 
-			typedef typename ft::red_black_tree_iterator<node, value_type, node>					iterator;		//	"node, value_type, node"??
-			typedef typename ft::red_black_tree_iterator<const node, const value_type, const node>	const_iterator;
-			// typedef typename ft::reverse_iterator<iterator>					reverse_iterator;
-			// typedef typename ft::reverse_iterator<const_iterator>			const_reverse_iterator;
+			typedef typename ft::red_black_tree_iterator< node, value_type >					iterator;
+			typedef typename ft::red_black_tree_iterator< node, const value_type, value_type >	const_iterator;
 
 
 		private:
 
 /* =================	Member objects						================= */
 
-			value_allocator_type	_value_alloc;
+			// value_allocator_type	_value_alloc;
 			node_allocator_type		_node_alloc;
-			value_compare			_compare;
 			size_type				_size;
 			node_pointer			_root;
 			node_pointer			_endNode;
@@ -55,51 +47,47 @@ namespace ft {
 
 /* =================	Member classes						================= */
 
-			red_black_tree( void )
+			template< class Value_Allocator >
+			red_black_tree( Value_Allocator value_alloc )
 			{
 				LOGN1("rb_tree: default constructor");
-				_compare = value_compare();
-				_value_alloc = value_allocator_type();
+				// _value_alloc = value_allocator_type();
 				_root = NULL;
-				_endNode = _new_node(value_type(), NULL);
+				_endNode = _new_node(value_type(), NULL, value_alloc);
 				_beginNode = _endNode;
-				_node_alloc = node_allocator_type();
+				// _node_alloc = node_allocator_type();
 				_size = 0;
 				LOGI2(_endNode);
 			}
 
-			red_black_tree( value_compare comp, value_allocator_type value_allocator = value_allocator_type())
-			{
-				LOGN1("rb_tree: init constructor");
-				_compare = comp;
-				_value_alloc = value_allocator;
-				_root = NULL;
-				_endNode = _new_node(value_type(), NULL);
-				_beginNode = _endNode;
-				_node_alloc = node_allocator_type();
-				_size = 0;
-				LOGI2(_endNode);
-			}
+			// red_black_tree( value_compare comp, value_allocator_type value_allocator)
+			// {
+			// 	LOGN1("rb_tree: init constructor");
+			// 	// _value_alloc = value_allocator;
+			// 	_root = NULL;
+			// 	_endNode = _new_node(value_type(), NULL);
+			// 	_beginNode = _endNode;
+			// 	// _node_alloc = node_allocator_type();
+			// 	_size = 0;
+			// 	LOGI2(_endNode);
+			// }
 
-			red_black_tree( const red_black_tree& other )
-			{
-				LOGN1("rb_tree: copy constructor");
-				_compare = value_compare();
-				_value_alloc = value_allocator_type();
-				_root = NULL;
-				_endNode = _new_node(value_type(), NULL);
-				_beginNode = _endNode;
-				_node_alloc = node_allocator_type();
-				_size = 0;
-				*this = other;
-				LOGI2(_endNode);
-			}
+			// red_black_tree( const red_black_tree& other )
+			// {
+			// 	LOGN1("rb_tree: copy constructor");
+			// 	// _value_alloc = value_allocator_type();
+			// 	_root = NULL;
+			// 	_endNode = _new_node(value_type(), NULL);
+			// 	_beginNode = _endNode;
+			// 	// _node_alloc = node_allocator_type();
+			// 	_size = 0;
+			// 	*this = other;
+			// 	LOGI2(_endNode);
+			// }
 
 			~red_black_tree( void )
 			{
 				LOGN1("rb_tree: destructor");
-				clear();
-				_delete_node(_endNode);
 			}
 
 			red_black_tree&	operator=( const red_black_tree& other )
@@ -109,18 +97,17 @@ namespace ft {
 				{
 					clear();
 					_node_alloc = other._node_alloc;
-					_value_alloc = other._value_alloc;
-					_compare = other._compare;
+					// _value_alloc = other._value_alloc;
 					for (const_iterator it = other.begin(); it != other.end(); it++)
 						insert(*it, NULL);
 				}
 				return (*this);
 			}
 
-			value_allocator_type	get_allocator( void ) const
-			{
-				return (_value_alloc);
-			}
+			// value_allocator_type	get_allocator( void ) const
+			// {
+			// 	return (_value_alloc);
+			// }
 
 
 /* =================	Iterators							================= */
@@ -161,33 +148,47 @@ namespace ft {
 
 /* =================	Modifiers							================= */
 
-			void	clear( void )
+			template< class Value_Allocator >
+			void	clear( Value_Allocator value_alloc )
 			{
-				LOG1("rb_tree: clear(): ");
-				if (_root != NULL)
-					LOGN1(_root->value_pair.first);
-				else
-					LOGN1("(null)");
-				_clear_helper(_root);
-				_root = NULL;
-				_beginNode = _endNode;
-				_endNode->parent = NULL;
+				// LOG1("rb_tree: clear(): ");
+				// if (_root != NULL)
+				// 	LOGN1(_root->value_pair.first);
+				// else
+				// 	LOGN1("(null)");
+
+				_clear_helper(_root, value_alloc);
+				// if (n == NULL)
+				// 	return ;
+				// clear(n->left, value_alloc);
+				// if (n->right != _endNode)
+				// 	clear(n->right, value_alloc);
+				// if (n != _endNode)
+				// 	_delete_node(n, value_alloc);
+				if (_size == 0)
+				{
+					_root = NULL;
+					_beginNode = _endNode;
+					_endNode->parent = NULL;
+				}
 			}
 
 			//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
 			//	(1) Returns a pair consisting of an iterator to the inserted element (or to the element that prevented the insertion) and a bool denoting whether the insertion took place.
-			ft::pair<iterator, bool>	insert( const value_type& value, node_pointer pos )
+			template< class Value_Compare, class Value_Allocator >
+			ft::pair<iterator, bool>	insert( const value_type& value, node_pointer pos, Value_Compare compare, Value_Allocator value_alloc)
 			{
 				LOG1("rb_tree: insert: ");
 				LOGN1(value.first);
 				// if (_root != NULL)
 				// 	LOGI1(_root->value_pair.first);
+
 				if (pos == NULL)
 					pos = _root;
 				if (pos == NULL)
 				{
 					LOGN2("root insert");
-					_root = _new_node(value, NULL);
+					_root = _new_node(value, NULL, value_alloc);
 					_root->color = BLACK;
 					_root->right = _endNode;
 					_endNode->parent = _root;
@@ -196,38 +197,39 @@ namespace ft {
 				}
 				while (pos != NULL)
 				{
-					if (_compare(value, pos->value_pair) && pos->left != NULL)
+					if (compare(value, pos->value_pair) && pos->left != NULL)
 						pos = pos->left;
-					else if (_compare(pos->value_pair, value) && pos->right != NULL && pos->right != _endNode)
+					else if (compare(pos->value_pair, value) && pos->right != NULL && pos->right != _endNode)
 						pos = pos->right;
 					else
 						break ;
 				}
-				if (_compare(value, pos->value_pair))						//	value is inserted left of n
+				if (compare(value, pos->value_pair))						//	value is inserted left of n
 				{
-					pos->left = _new_node(value, pos);
+					pos->left = _new_node(value, pos, value_alloc);
 					if (pos == _beginNode)										//	begin iterator is invalidated
 						_beginNode = pos->left;
 					_insert_rb_violation(pos->left);							//	pos->right or pos->left??
 					return (ft::make_pair(iterator(pos->left), true));
 				}
-				else if (_compare(pos->value_pair, value))					//	value is inserted right of n
+				else if (compare(pos->value_pair, value))					//	value is inserted right of n
 				{
 					if (pos->right == _endNode)									//	value is largest in tree: end iterator is invalidated
 					{
-						pos->right = _new_node(value, pos);
+						pos->right = _new_node(value, pos, value_alloc);
 						pos->right->right = _endNode;
 						_endNode->parent = pos->right;
 					}
 					else
-						pos->right = _new_node(value, pos);
+						pos->right = _new_node(value, pos, value_alloc);
 					_insert_rb_violation(pos->right);
 					return (ft::make_pair(iterator(pos->right), true));
 				}
 				return (ft::make_pair(iterator(pos), false));
 			}
 
-			void	erase( node_pointer n )
+			template< class Value_Allocator >
+			void	erase( node_pointer n, Value_Allocator value_alloc )
 			{
 				LOG1("rb_tree: erase(): ");
 				if (n != NULL)
@@ -274,7 +276,7 @@ namespace ft {
 					y->left->parent = y;
 					y->color = n->color;
 				}
-				_delete_node(n);
+				_delete_node(n, value_alloc);
 				if (originalColor == BLACK)
 					_erase_rb_violation(x);
 			}
@@ -282,105 +284,57 @@ namespace ft {
 
 /* =================	Lookup								================= */
 
-			//	Finds an element with key equivalent to key.
-			iterator	find( const key_type& key )
-			{
-				LOGN1("rb_tree: find()");
-				return (iterator(_search(_root, ft::make_pair(key, mapped_type()))));
-			}
-
-			const_iterator	find( const key_type& key ) const
-			{
-				LOGN1("rb_tree: find() const");
-				return (const_iterator(_search(_root, ft::make_pair(key, mapped_type()))));
-			}
-
-			iterator	lower_bound( const value_type& value )
+			template< class Value_Compare >
+			iterator	lower_bound( const value_type& value, Value_Compare compare)
 			{
 				iterator	it = begin();
 				for ( ; it != end(); it++)
 				{
-					if (!_compare(*it, value))
+					if (!compare(*it, value))
 						break ;
 				}
 				return (it);
 			}
 
-			const_iterator	lower_bound( const value_type& value ) const
+			template< class Value_Compare >
+			const_iterator	lower_bound( const value_type& value, Value_Compare compare ) const
 			{
 				const_iterator	it = begin();
 				for ( ; it != end(); it++)
 				{
-					if (!_compare(*it, value))
+					if (!compare(*it, value))
 						break ;
 				}
 				return (it);
 			}
 
-			iterator	upper_bound( const value_type& value )
+			template< class Value_Compare >
+			iterator	upper_bound( const value_type& value, Value_Compare compare )
 			{
 				iterator	it = begin();
 				for ( ; it != end(); it++)
 				{
-					if (_compare(value, *it))
+					if (compare(value, *it))
 						break ;
 				}
 				return (it);
 			}
 
-			const_iterator	upper_bound( const value_type& value ) const
+			template< class Value_Compare >
+			const_iterator	upper_bound( const value_type& value, Value_Compare compare ) const
 			{
 				const_iterator	it = begin();
 				for ( ; it != end(); it++)
 				{
-					if (_compare(value, *it))
+					if (compare(value, *it))
 						break ;
 				}
 				return (it);
 			}
 
 
-/* =================	Observers							================= */
-
-			value_compare	value_comp() const
-			{
-				LOGN1("rb_tree: value_comp()");
-				return (_compare);
-			}
-
-
-/* =================	private Member-functions			================= */
-
-		private:
-
-			node_pointer	_new_node( value_type value_pair, node_pointer parent )
-			{
-				LOG1("rb_tree: _new_node(): ");
-				LOGN1(value_pair.first);
-
-				node_pointer	n = _node_alloc.allocate(1);
-				_node_alloc.construct(n);
-				_value_alloc.construct(&n->value_pair, value_pair);
-				n->parent = parent;
-				++_size;
-				return (n);
-			}
-
-			void	_delete_node( node_pointer n )
-			{
-				LOG1("rb_tree: _delete_node(): ");
-				if (n != NULL)
-					LOGN1(n->value_pair.first);
-				else
-					LOGN1("(null)");
-
-				_value_alloc.destroy(&(n->value_pair));
-				_node_alloc.destroy(n);
-				_node_alloc.deallocate(n, 1);
-				--_size;
-			}
-
-			node_pointer	_search( node_pointer n, value_type value ) const
+			template< class Value_Compare >
+			node_pointer	search( value_type value, node_pointer n, Value_Compare compare) const
 			{
 				LOG1("rb_tree: _search(): ");
 				if (n != NULL)
@@ -388,11 +342,13 @@ namespace ft {
 				else
 					LOGN1("(null)");
 
+				if (n == NULL)
+					n = _root;
 				while (n != NULL)
 				{
-					if (_compare(value, n->value_pair))
+					if (compare(value, n->value_pair))
 						n = n->left;
-					else if (_compare(n->value_pair, value))
+					else if (compare(n->value_pair, value))
 						n = n->right;
 					else
 						return (n);
@@ -400,21 +356,56 @@ namespace ft {
 				return (_endNode);
 			}
 
-			void	_clear_helper( node_pointer n )
+
+/* =================	private Member-functions			================= */
+
+		private:
+
+			template< class Value_Allocator >
+			node_pointer	_new_node( value_type value_pair, node_pointer parent, Value_Allocator value_alloc )
 			{
-				LOG1("rb_tree: _clear_helper(): ");
+				LOG1("rb_tree: _new_node(): ");
+				LOGN1(value_pair.first);
+
+				node_pointer	n = _node_alloc.allocate(1);
+				_node_alloc.construct(n);
+				value_alloc.construct(&n->value_pair, value_pair);
+				n->parent = parent;
+				++_size;
+				return (n);
+			}
+
+			template< class Value_Allocator >
+			void	_delete_node( node_pointer n, Value_Allocator value_alloc )
+			{
+				LOG1("rb_tree: _delete_node(): ");
 				if (n != NULL)
 					LOGN1(n->value_pair.first);
 				else
 					LOGN1("(null)");
 
+				value_alloc.destroy(&(n->value_pair));
+				_node_alloc.destroy(n);
+				_node_alloc.deallocate(n, 1);
+				--_size;
+			}
+
+			template< class Value_Allocator >
+			void	_clear_helper( node_pointer n, Value_Allocator value_alloc )
+			{
+				// LOG1("rb_tree: _clear_helper(): ");
+				// if (n != NULL)
+				// 	LOGN1(n->value_pair.first);
+				// else
+				// 	LOGN1("(null)");
+
 				if (n == NULL)
 					return ;
-				_clear_helper(n->left);
+				_clear_helper(n->left, value_alloc);
 				if (n->right != _endNode)
-					_clear_helper(n->right);
+					_clear_helper(n->right, value_alloc);
 				if (n != _endNode)
-					_delete_node(n);
+					_delete_node(n, value_alloc);
 			}
 
 			void	_transplant_node( node_pointer o, node_pointer n )
@@ -613,5 +604,4 @@ namespace ft {
 				}
 			}
 	}; //	class red_black_tree
-
 } //	namespace ft

@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "utility.hpp"
+#include <iostream>
 
 namespace ft {
 
@@ -16,9 +17,9 @@ namespace ft {
 	{
 		public:
 
-			typedef T						value_type;
-			typedef red_black_tree_node		node;
-			typedef node*					node_pointer;
+			typedef T					value_type;
+			typedef red_black_tree_node	node;
+			typedef node*				node_pointer;
 
 			node_pointer	parent;
 			node_pointer	left;

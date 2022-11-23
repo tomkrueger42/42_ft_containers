@@ -71,7 +71,7 @@ void	map_at( void )
 	NAME_SPACE::map<int, char>	map;
 	try
 	{
-		map.find(0);
+		map.at(0);
 	}
 	catch(const std::exception& e)
 	{
@@ -79,7 +79,7 @@ void	map_at( void )
 	}
 	try
 	{
-		map.find(1);
+		map.at(1);
 	}
 	catch(const std::exception& e)
 	{
@@ -89,7 +89,7 @@ void	map_at( void )
 	map.insert(NAME_SPACE::make_pair(1, 'a'));
 	try
 	{
-		map.find(0);
+		map.at(0);
 	}
 	catch(const std::exception& e)
 	{
@@ -97,7 +97,7 @@ void	map_at( void )
 	}
 	try
 	{
-		map.find(1);
+		LOGN(map.at(1));
 	}
 	catch(const std::exception& e)
 	{
@@ -124,65 +124,70 @@ void	map_operator_at( void )
 void	map_iterator( void )
 {
 	NAME_SPACE::map<int, char>	map;
-	LOGI(map.begin()->first);
-	LOGI(map.end()->first);
 	LOGI((map.begin() == map.end()));
 	LOGI((map.begin() != map.end()));
 
+	NAME_SPACE::map<int, char>::iterator it_empty;
+	LOGI((it_empty == map.begin()));
+
 	map.insert(NAME_SPACE::make_pair(1, 'a'));
 	for (NAME_SPACE::map<int, char>::iterator it = map.begin(); it != map.end(); it++)
-		LOGI(it->second);
+		LOGI(it->first);
 	map.insert(NAME_SPACE::make_pair(2, 'b'));
 	NAME_SPACE::map<int, char>::iterator	it = map.begin();
-	LOGI(it->second);
+	LOGI(it->first);
 	++it;
-	LOGI(it->second);
+	LOGI(it->first);
 	--it;
-	LOGI(it->second);
+	LOGI(it->first);
 	it++;
-	LOGI(it->second);
+	LOGI(it->first);
 	it--;
-	LOGI(it->second);
+	LOGI(it->first);
 	it = map.end();
 	it--;
-	LOGI(it->second);
+	LOGI(it->first);
+	map_print(map);
+	it->second = 'z';
+	map_print(map);
 
 	map.erase(1);
 	it = map.end();
 	--it;
-	LOGI(it->second);
+	LOGI(it->first);
 }
 
 void	map_reverse_iterator( void )
 {
-	// NAME_SPACE::map<int, char>	map;
-	// // LOGI(map.rbegin()->first);
-	// // LOGI(map.rend()->first);
-	// LOGI((map.rbegin() == map.rend()));
-	// LOGI((map.rbegin() != map.rend()));
+	NAME_SPACE::map<int, char>	map;
+	LOGI((map.rbegin() == map.rend()));
+	LOGI((map.rbegin() != map.rend()));
 
-	// map.insert(NAME_SPACE::make_pair(1, 'a'));
-	// for (NAME_SPACE::map<int, char>::reverse_iterator it = map.rbegin(); it != map.rend(); it++)
-	// 	LOGI(it->second);
-	// map.insert(NAME_SPACE::make_pair(2, 'b'));
-	// NAME_SPACE::map<int, char>::reverse_iterator	it = map.rbegin();
-	// LOGI(it->second);
-	// ++it;
-	// LOGI(it->second);
-	// --it;
-	// LOGI(it->second);
-	// it++;
-	// LOGI(it->second);
-	// it--;
-	// LOGI(it->second);
-	// it = map.rend();
-	// it--;
-	// LOGI(it->second);
+	map.insert(NAME_SPACE::make_pair(1, 'a'));
+	for (NAME_SPACE::map<int, char>::reverse_iterator it = map.rbegin(); it != map.rend(); it++)
+		LOGI(it->first);
+	map.insert(NAME_SPACE::make_pair(2, 'b'));
+	NAME_SPACE::map<int, char>::reverse_iterator	it = map.rbegin();
+	LOGI(it->first);
+	++it;
+	LOGI(it->first);
+	--it;
+	LOGI(it->first);
+	it++;
+	LOGI(it->first);
+	it--;
+	LOGI(it->first);
+	it = map.rend();
+	it--;
+	LOGI(it->first);
+	map_print(map);
+	it->second = 'z';
+	map_print(map);
 
-	// map.erase(1);
-	// it = map.rend();
-	// --it;
-	// LOGI(it->second);
+	map.erase(1);
+	it = map.rend();
+	--it;
+	LOGI(it->first);
 }
 
 void	map_empty( void )
@@ -492,27 +497,27 @@ void	map_find( void )
 	{
 		NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.find(0)->first);
+		LOGI((map.find(0) == map.end()));
 
 		map.insert(NAME_SPACE::make_pair(2, 'b'));
-		LOGI(map.find(0)->first);
+		LOGI((map.find(0) == map.end()));
 		LOGI(map.find(2)->first);
 	}
 	{
 		const NAME_SPACE::map<int, char>	map;
 
-		LOGI(map.find(0)->first);
+		LOGI((map.find(0) == map.end()));
 	}
 }
 
 void	map_equal_range( void )
 {
 	{
-		// LOGN("const");
-		// const NAME_SPACE::map<int, char>	map;
+		LOGN("const");
+		const NAME_SPACE::map<int, char>	map;
 
-		// LOGI(map.equal_range(0).first->first);
-		// LOGI(map.equal_range(0).second->first);
+		LOGI((map.equal_range(0).first == map.end()));
+		LOGI((map.equal_range(0).second == map.end()));
 	}
 	{
 		LOGN("non-const");

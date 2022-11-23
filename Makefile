@@ -5,7 +5,7 @@ INC_DIR		=	./inc/
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 DEPS		+=	$(addprefix ./testing/, $(TEST))
 
-SRCS		=	./src/main.cpp
+SRCS		=	./containers_test/srcs/map/bounds.cpp #./src/main.cpp
 
 INCS		=	algorithm.hpp \
 				iterator_traits.hpp \
@@ -29,19 +29,20 @@ TEST		=	log.hpp \
 all: $(NAME)
 
 $(NAME): $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 $(SRCS) -o ft_containers
 	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 $(SRCS) -o ft_containers
 
 1: $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 $(SRCS) -o ft_containers
 	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 $(SRCS) -o ft_containers
 
 2: $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 $(SRCS) -o ft_containers
 	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 $(SRCS) -o ft_containers
 
 clean:
-	rm -rf $(OBJ_DIR)
+	rm -f 1
+	rm -f 2
 
 fclean: clean
 	rm -f $(NAME)

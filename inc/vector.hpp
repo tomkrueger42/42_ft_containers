@@ -118,15 +118,17 @@ class vector
 		void	assign( InputIt first, InputIt last,
 						typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
-			if ((first >= begin() && first <= end())
-				|| (last >= begin() && last <= end()))
+			iterator f = first;
+			iterator l = last;
+			if ((f >= begin() && f <= end())
+				|| (l >= begin() && l <= end()))
 				return ;
-			reserve(distance(first, last));
+			reserve(ft::distance(first, last));
 			for (size_type i = 0; i < _size; i++)
 			{
 				_alloc.destroy(&(_ptr[i]));
 			}
-			_size = distance(first, last);
+			_size = ft::distance(first, last);
 			if (first == last)
 				_size = 0;
 			for (size_type i = 0; first != last; i++, first++)
@@ -270,14 +272,14 @@ class vector
 			return (_size == 0);
 		}
 
-		//	Returns the number of elements in the container, i.e. std::distance(begin(), end()).
+		//	Returns the number of elements in the container, i.e. std::ft::distance(begin(), end()).
 		size_type	size( void ) const
 		{
 			return (_size);
 		}
 
 		//	Returns the maximum number of elements the container is able to hold due to system
-		//	or library implementation limitations, i.e. std::distance(begin(), end()) for the largest container.
+		//	or library implementation limitations, i.e. std::ft::distance(begin(), end()) for the largest container.
 		size_type	max_size() const
 		{
 			return (_alloc.max_size());
@@ -315,7 +317,7 @@ class vector
 		//	(1)	inserts value before pos.
 		iterator	insert( iterator pos, const T& value )
 		{
-			size_type	position = distance(begin(), pos);
+			size_type	position = ft::distance(begin(), pos);
 			reserve(1);
 			if (_size == _capacity)
 				reserve(_capacity * 2);
@@ -331,7 +333,7 @@ class vector
 		//	(3)	inserts count copies of the value before pos.
 		iterator	insert( iterator pos, size_type count, const T& value )
 		{
-			size_type	position = distance(begin(), pos);
+			size_type	position = ft::distance(begin(), pos);
 			reserve(_size + count);
 			for (size_type i = _size; i > position; i--)
 			{
@@ -351,11 +353,11 @@ class vector
 		iterator	insert( iterator pos, InputIt first, InputIt last,
 							typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true )
 		{
-			size_type	position = distance(begin(), pos);
-			reserve(_size + distance(first, last));
+			size_type	position = ft::distance(begin(), pos);
+			reserve(_size + ft::distance(first, last));
 			for (size_type i = _size; i > position; i--)
 			{
-				_ptr[i + distance(first, last) - 1] = _ptr[i - 1];
+				_ptr[i + ft::distance(first, last) - 1] = _ptr[i - 1];
 			}
 			for ( ; first != last; position++, first++)
 			{
@@ -382,7 +384,7 @@ class vector
 		//	(2)	Removes the elements in the range [first, last).
 		iterator	erase( iterator first, iterator last )
 		{
-			difference_type	n = distance(first, last);
+			difference_type	n = ft::distance(first, last);
 			for (iterator it = first; it < last; it++)
 			{
 				_alloc.destroy(it.base());
