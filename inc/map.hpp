@@ -63,7 +63,7 @@ template<
 
 	private:
 
-		typedef	ft::red_black_tree< value_type >	tree;
+		typedef	ft::red_black_tree< value_type, value_compare >	tree;
 
 	public:
 
@@ -77,9 +77,9 @@ template<
 
 /* =================	Member objects						================= */
 
-		tree			_tree;
 		value_compare	_compare;
 		allocator_type	_value_alloc;
+		tree			_tree;
 
 
 	public:
@@ -90,7 +90,7 @@ template<
 		// map( void ) : _tree(tree(key_compare(), allocator_type())) {}			//	is this one even callable or only the explicit one?
 
 		//	(2) Constructs an empty container.
-		explicit map( const key_compare& comp = Compare(), const allocator_type& alloc = allocator_type() )
+		explicit map( const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type() )
 		{
 			_compare = comp;
 			_value_alloc = alloc;
@@ -114,18 +114,13 @@ template<
 		}
 
 		//	Destructs the map. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
-		~map( void )
-		{
-			_tree.clear(_value_alloc);
-			_tree.erase(end().base(), _value_alloc);
-		}
+		~map( void ) {}
 
 		//	Copy assignment operator. Replaces the contents with a copy of the contents of other.
 		const map&	operator=( const map& other )
 		{
 			if (this != &other)
 			{
-				clear(_value_alloc);
 				_compare = other.value_comp();
 				_value_alloc = other.get_allocator();
 				_tree = other._tree;
@@ -145,7 +140,7 @@ template<
 		//	Returns a reference to the mapped value of the element with key equivalent to key. If no such element exists, an exception of type std::out_of_range is thrown.
 		mapped_type&	at( const key_type& key )
 		{
-			iterator	it = _tree.find(key);
+			iterator	it = find(key);
 			if (it == end())
 				throw std::out_of_range("map::at:  key not found");
 			else
@@ -154,7 +149,7 @@ template<
 
 		const mapped_type&	at( const key_type& key ) const
 		{
-			iterator	it = _tree.find(key);
+			const_iterator	it = find(key);
 			if (it == end())
 				throw std::out_of_range("map::at:  key not found");
 			else
@@ -242,20 +237,20 @@ template<
 		//	Erases all elements from the container. After this call, size() returns zero.
 		void	clear( void )
 		{
-			_tree.clear(_value_alloc);
+			_tree.clear();
 		}
 
 		//	Inserts element(s) into the container, if the container doesn't already contain an element with an equivalent key.
 		//	(1) Inserts value.
 		ft::pair<iterator, bool>	insert( const value_type& value )
 		{
-			return (_tree.insert(value, NULL, _value_alloc));
+			return (_tree.insert(value, NULL));
 		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value )
 		{
-			return (_tree.insert(value, pos.base(), _value_alloc).first);
+			return (_tree.insert(value, pos.base()).first);
 		}
 
 		//	(7) Inserts elements from range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
@@ -264,14 +259,14 @@ template<
 		{
 			for ( ; first != last; first++)
 			{
-				_tree.insert(*first, NULL, _value_alloc); // what happens if one insert() fails??
+				_tree.insert(*first, NULL); // what happens if one insert() fails??
 			}
 		}
 
 		//	(1) Removes the element at pos.
 		void	erase( iterator pos )
 		{
-			_tree.erase(pos.base(), _value_alloc);
+			_tree.erase(pos.base());
 		}
 
 		//	(2) Removes the elements in the range [first; last), which must be a valid range in *this.
@@ -281,7 +276,7 @@ template<
 			{
 				iterator	it = first;
 				++it;
-				_tree.erase(first.base(), _value_alloc);
+				_tree.erase(first.base());
 				first = it;
 			}
 		}
@@ -292,7 +287,7 @@ template<
 			iterator	it = find(key);
 			if (it == end())
 				return (0);
-			_tree.erase(it.base(), _value_alloc);
+			_tree.erase(it.base());
 			return (1);
 		}
 
@@ -317,12 +312,12 @@ template<
 		//	Finds an element with key equivalent to key.
 		iterator	find( const key_type& key )
 		{
-			return (_tree.search(ft::make_pair(key, mapped_type()), NULL, _compare));
+			return (_tree.search(ft::make_pair(key, mapped_type()), NULL));
 		}
 		
 		const_iterator	find( const key_type& key ) const
 		{
-			return (_tree.search(ft::make_pair(key, mapped_type()), NULL, _compare));
+			return (_tree.search(ft::make_pair(key, mapped_type()), NULL));
 		}
 
 		//	Returns a range containing all elements with the given key in the container. The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().

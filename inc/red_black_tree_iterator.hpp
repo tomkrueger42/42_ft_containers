@@ -169,32 +169,4 @@ namespace ft {
 /* =================	Non-member functions				================= */
 
 
-
-/* =================	Operations							================= */
-
-// template < class InputIt, class Distance >
-// void	advance( InputIt& it, Distance n )										// is this needed for the bidirectional_iterator??
-// {
-// 	it += n;
-// }
-
-// template < class InputIt >
-// typename ft::iterator_traits<InputIt>::difference_type
-// 			distance( InputIt first, InputIt last )								// is this needed for the bidirectional_iterator??
-// {
-// 	typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
-// 	for ( ; first > last; --first, --hops)
-// 		;
-// 	for ( ; first < last; ++first, ++hops)
-// 		;
-// 	return (hops);
-// }
-
-//	Specializes the ft::swap algorithm for ft::vector_iterator. Swaps the contents of lhs and rhs.
-// template < class InputIt >
-// void	swap( InputIt& lhs, InputIt& rhs )
-// {
-// 	lhs.swap(rhs);
-// }
-
 } // namespace ft

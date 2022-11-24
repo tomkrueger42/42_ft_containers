@@ -118,10 +118,8 @@ class vector
 		void	assign( InputIt first, InputIt last,
 						typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
-			iterator f = first;
-			iterator l = last;
-			if ((f >= begin() && f <= end())
-				|| (l >= begin() && l <= end()))
+			if ((first >= begin() && first <= end())
+				|| (last >= begin() && last <= end()))
 				return ;
 			reserve(ft::distance(first, last));
 			for (size_type i = 0; i < _size; i++)

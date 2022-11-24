@@ -5,7 +5,7 @@ INC_DIR		=	./inc/
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 DEPS		+=	$(addprefix ./testing/, $(TEST))
 
-SRCS		=	./containers_test/srcs/map/bounds.cpp #./src/main.cpp
+SRCS		=	 ./src/main.cpp #./containers_test/srcs/map/bounds.cpp
 
 INCS		=	algorithm.hpp \
 				iterator_traits.hpp \
@@ -19,9 +19,9 @@ INCS		=	algorithm.hpp \
 				utility.hpp \
 				vector_iterator.hpp \
 				vector.hpp \
+				log.hpp
 
-TEST		=	log.hpp \
-				map_tests.hpp \
+TEST		=	map_tests.hpp \
 				vector_tests.hpp
 
 .PHONY: all clean fclean re
