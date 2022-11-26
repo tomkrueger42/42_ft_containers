@@ -17,9 +17,9 @@ namespace ft {
 	{
 		public:
 
-			typedef T					value_type;
-			typedef red_black_tree_node	node;
-			typedef node*				node_pointer;
+			typedef T									value_type;
+			typedef red_black_tree_node< value_type >	node_type;
+			typedef node_type*							node_pointer;
 
 			node_pointer	parent;
 			node_pointer	left;
@@ -29,14 +29,14 @@ namespace ft {
 
 			red_black_tree_node( void ) : parent(NULL), left(NULL), right(NULL), value_pair(value_type()), color(RED) {}
 
-			red_black_tree_node( const node& other )
+			red_black_tree_node( const node_type& other )
 			{
 				*this = other;
 			}
 
 			~red_black_tree_node( void ) {}
 
-			node&	operator=( const node& other )
+			node_type&	operator=( const node_type& other )
 			{
 				if (this != &other )
 				{

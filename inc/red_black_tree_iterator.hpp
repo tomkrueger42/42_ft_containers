@@ -9,8 +9,7 @@ namespace ft {
 
 	template <
 		class T_node,
-		class T_value,
-		class T_value_no_const = T_value
+		class T_value
 	> class red_black_tree_iterator
 	{
 
@@ -18,9 +17,7 @@ namespace ft {
 
 /* =================	Member types						================= */
 
-			typedef T_node																				node_type;
-			typedef node_type&																			node_reference;
-			typedef node_type*																			node_pointer;
+			typedef T_node																				node_pointer;
 			typedef T_value																				value_type;
 			typedef value_type&																			reference;
 			typedef const value_type&																	const_reference;
@@ -41,15 +38,18 @@ namespace ft {
 
 /* =================	Constructors / Destructor			================= */
 
-			red_black_tree_iterator( node_pointer ptr = NULL ) : _current(ptr) {}
+			red_black_tree_iterator( const node_pointer& ptr = NULL ) : _current(ptr) {}
 
-			red_black_tree_iterator( const red_black_tree_iterator &other )
-			{
-				*this = other;
-			}
+			template< typename NodePtr2, typename T2 >
+			red_black_tree_iterator( const red_black_tree_iterator<NodePtr2, T2>& rhs )
+									: _current(rhs.base()) {}
 
 			//	const to non-const constructor
-			red_black_tree_iterator( red_black_tree_iterator< node_type, T_value_no_const, T_value_no_const > other ) : _current(other.base()) {}
+			operator red_black_tree_iterator< const node_pointer, const T_value >() const
+			{
+				return (_current);
+			}
+
 
 			~red_black_tree_iterator( void ) {}
 
@@ -64,10 +64,10 @@ namespace ft {
 
 /* =================	Operator overloads					================= */
 
-			red_black_tree_iterator	&operator=( const red_black_tree_iterator &other )
+			template< typename NodePtr2, typename T2 >
+			red_black_tree_iterator	&operator=( const red_black_tree_iterator< NodePtr2, T2 >& other )
 			{
-				if (this != &other)
-					this->_current = other._current;
+				this->_current = other.base();
 				return (*this);
 			}
 
@@ -76,7 +76,7 @@ namespace ft {
 				return (_current->value_pair);
 			}
 
-			const_reference	operator*( void ) const
+			reference	operator*( void ) const
 			{
 				return (_current->value_pair);
 			}
@@ -86,7 +86,7 @@ namespace ft {
 				return (&(_current->value_pair));
 			}
 
-			const_pointer	operator->( void ) const
+			pointer	operator->( void ) const
 			{
 				return (&(_current->value_pair));
 			}
@@ -94,6 +94,7 @@ namespace ft {
 			red_black_tree_iterator	&operator++( void )
 			{
 				node_pointer	n = _current;
+
 				if (n->right != NULL)											//	minimum of right subtree
 				{
 					n = n->right;
@@ -106,7 +107,7 @@ namespace ft {
 				}
 				else
 				{
-					while (n->parent != NULL && n->parent->right == _current)	//	right child of parent
+					while (n->parent != NULL && n->parent->right == n)			//	right child of parent
 						n = n->parent;
 					if (n->parent == NULL)										//	end iterator has already been reached
 						return (*this);
@@ -138,7 +139,7 @@ namespace ft {
 				}
 				else
 				{
-					while (n->parent != NULL && n->parent->left == _current)	//	left child of parent
+					while (n->parent != NULL && n->parent->left == n)			//	left child of parent
 						n = n->parent;
 					if (n->parent == NULL)										//	begin iterator has already been reached
 						return (*this);
@@ -155,18 +156,36 @@ namespace ft {
 				return (tmp);
 			}
 
-			bool	operator==( const red_black_tree_iterator& other )
-			{
-				return (base() == other.base());
-			}
-
-			bool	operator!=( const red_black_tree_iterator& other)
-			{
-				return (base() != other.base());
-			}
 };
 
 /* =================	Non-member functions				================= */
 
+	template< typename NodePtr, typename T >
+	bool	operator==( const red_black_tree_iterator< NodePtr, T >& lhs,
+						const red_black_tree_iterator< NodePtr, T >& rhs )
+	{
+		return (lhs.base() == rhs.base());
+	}
+
+	template< typename NodePtr1, typename T1, typename NodePtr2, typename T2 >
+	bool	operator==( const red_black_tree_iterator< NodePtr1, T1 >& lhs,
+						const red_black_tree_iterator< NodePtr2, T2 >& rhs )
+	{
+		return (lhs.base() == rhs.base());
+	}
+
+	template< typename NodePtr, typename T >
+	bool	operator!=( const red_black_tree_iterator< NodePtr, T >& lhs,
+						const red_black_tree_iterator< NodePtr, T >& rhs )
+	{
+		return (lhs.base() != rhs.base());
+	}
+
+	template< typename NodePtr1, typename T1, typename NodePtr2, typename T2 >
+	bool	operator!=( const red_black_tree_iterator< NodePtr1, T1 >& lhs,
+						const red_black_tree_iterator< NodePtr2, T2 >& rhs )
+	{
+		return (lhs.base() != rhs.base());
+	}
 
 } // namespace ft

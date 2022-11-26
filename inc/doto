@@ -1,0 +1,11 @@
+// equal_range     //  pointer being freed was not allocated in _delete_node(): _node_alloc.destroy(n)
+erase           //  std::advance error
+erase_key       //  segfault
+erase_range     //  std::advance error
+insert_hint     
+key_comp        //  std::advance error
+// lower_bound     //  pointer being freed was not allocated in _delete_node(): _node_alloc.destroy(n)
+random          //  std::advance error
+swap            //  segfault
+// upper_bound     //  pointer being freed was not allocated in _delete_node(): _node_alloc.destroy(n)
+value_comp      //  std::advance error
