@@ -1,6 +1,4 @@
-erase           //  std::advance error
-erase_range     //  std::advance error
-key_comp        //  std::advance error
-random          //  std::advance error
-value_comp      //  std::advance error
+erase           //  segfault
+erase_range     //  segfault
+random          //  segfault
 insert_hint is a little dirty implemented

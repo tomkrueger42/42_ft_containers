@@ -8,7 +8,6 @@ DEPS		+=	$(addprefix ./testing/, $(TEST))
 SRCS		=	 ./src/main.cpp #./containers_test/srcs/map/bounds.cpp
 
 INCS		=	algorithm.hpp \
-				iterator_traits.hpp \
 				iterator.hpp \
 				map.hpp \
 				red_black_tree_iterator.hpp \

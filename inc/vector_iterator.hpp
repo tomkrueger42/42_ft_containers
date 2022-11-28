@@ -194,23 +194,23 @@ namespace ft {
 		it += n;
 	}
 
-	template < class InputIt >
-	typename ft::iterator_traits<InputIt>::difference_type
-				distance( InputIt first, InputIt last )
-	{
-		typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
-		// for ( ; first != last; --first, ++hops)
-		// 	;
-		for ( ; first != last; ++first, ++hops)
-			;
-		return (hops);
-	}
+	// template < class InputIt >
+	// typename ft::iterator_traits<InputIt>::difference_type
+	// 			distance( InputIt first, InputIt last )
+	// {
+	// 	typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
+	// 	// for ( ; first != last; --first, ++hops)
+	// 	// 	;
+	// 	for ( ; first != last; ++first, ++hops)
+	// 		;
+	// 	return (hops);
+	// }
 
 	//	Specializes the ft::swap algorithm for ft::vector_iterator. Swaps the contents of lhs and rhs.
-	template < class InputIt >
-	void	swap( InputIt& lhs, InputIt& rhs )
-	{
-		lhs.swap(rhs);
-	}
+	// template < class InputIt >
+	// void	swap( InputIt& lhs, InputIt& rhs )
+	// {
+	// 	lhs.swap(rhs);
+	// }
 
 } // namespace ft

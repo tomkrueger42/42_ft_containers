@@ -30,7 +30,7 @@ namespace ft {
 		typedef typename node_allocator_type::size_type								size_type;
 
 		typedef ft::red_black_tree_iterator< node_pointer, value_type >				iterator;
-		typedef ft::red_black_tree_iterator< const node_pointer, const value_type >	const_iterator;
+		typedef ft::red_black_tree_iterator< node_pointer, const value_type >		const_iterator;
 
 
 	private:
@@ -192,11 +192,12 @@ namespace ft {
 
 		void	erase( node_pointer n )
 		{
-			LOG1("rb_tree: erase(): ");
+			LOG1("\nrb_tree: erase(): ");
 			if (n != NULL)
 				LOGN1(n->value_pair.first);
 			else
 				LOGN1("(null)");
+			LOGN1(*n);
 
 			COLOR			originalColor = n->color;
 			node_pointer	x;
@@ -235,7 +236,8 @@ namespace ft {
 				{
 					_transplant_node(successor, successor->right);
 					successor->right = n->right;
-					successor->right->parent = successor;
+					if (successor->right != NULL)
+						successor->right->parent = successor;
 				}
 				_transplant_node(n, successor);
 				successor->left = n->left;
@@ -245,6 +247,7 @@ namespace ft {
 			_delete_node(n);
 			if (originalColor == BLACK)
 				_erase_rb_violation(x);
+			_set_iterator_pointers();
 		}
 
 

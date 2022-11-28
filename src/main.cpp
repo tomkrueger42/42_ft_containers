@@ -8,7 +8,12 @@ int		main(void)
 	struct timeval	tval_end;
 	gettimeofday(&tval_start, NULL);
 	
-
+	std::map<int, int> const stdm;
+	std::map<int, int>::iterator stdit = stdm.begin();
+	(void)stdit;
+	// ft::map<int, int> const ftm;
+	// ft::map<int, int>::iterator ftit = ftm.begin();
+	// (void)ftit;
 	
 	gettimeofday(&tval_end, NULL);
 	LOG("Time: ");
