@@ -20,7 +20,9 @@ void map_test_swap()
         intmap m1(intstr_arr, intstr_arr + 32);
         intmap m2;
 
+        PRINT_LINE("Erased?:", 0);
         NAMESPACE::swap(m1, m2);
+        PRINT_LINE("Erased?:", 0);
 
         PRINT_ALL(m1);
         PRINT_ALL(m2);
