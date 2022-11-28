@@ -1,7 +1,6 @@
 #pragma once
 
 #include "iterator.hpp"
-#include "iterator_traits.hpp"
 
 namespace ft {
 
@@ -200,10 +199,10 @@ namespace ft {
 				distance( InputIt first, InputIt last )
 	{
 		typename ft::iterator_traits<InputIt>::difference_type	hops = 0;
-		for ( ; first != last; --first, ++hops)
-			;
-		// for ( ; first < last; ++first, ++hops)
+		// for ( ; first != last; --first, ++hops)
 		// 	;
+		for ( ; first != last; ++first, ++hops)
+			;
 		return (hops);
 	}
 

@@ -321,7 +321,7 @@ template<
 		
 		const_iterator	find( const key_type& key ) const
 		{
-			return (_tree.search(ft::make_pair(key, mapped_type()), NULL));
+			return (const_iterator(_tree.search(ft::make_pair(key, mapped_type()), NULL)));
 		}
 
 		//	Returns a range containing all elements with the given key in the container. The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().

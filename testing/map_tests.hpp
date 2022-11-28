@@ -84,6 +84,7 @@ void init_array_str_str(NAMESPACE::pair<std::string, std::string>* arr, std::siz
     (void)intstr_arr;                                                                              \
     (void)strstr_arr;                                                                              \
     (void)intstr_size;                                                                             \
+	(void)strstr_size;
 
 template< typename T >
 void	map_print( const T& map )
@@ -98,6 +99,14 @@ void	map_print( const T& map )
 	LOGI(map.size());
 	LOGI((map.begin() == map.end()));
 	LOGN("-------------------------");
+}
+
+void	map_random( void )
+{
+	SETUP_ARRAYS();
+	NAMESPACE::map<std::string, std::string> m(strstr_arr, strstr_arr + 16);
+	NAMESPACE::map<std::string, std::string>::iterator it = m.begin();
+	std::advance(it, 10);
 }
 
 void	map_constructor( void )

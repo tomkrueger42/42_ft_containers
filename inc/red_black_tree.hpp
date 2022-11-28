@@ -18,18 +18,19 @@ namespace ft {
 
 /* =================	Member types						================= */
 
-		typedef Value																		value_type;
-		typedef Allocator																	value_allocator_type;
+		typedef Value																value_type;
+		typedef Allocator															value_allocator_type;
+		typedef typename value_allocator_type::difference_type						difference_type;
 
-		typedef Compare																		value_compare;
+		typedef Compare																value_compare;
 
-		typedef typename red_black_tree_node< value_type >::node_type						node_type;
-		typedef typename node_type::node_pointer											node_pointer;
-		typedef typename value_allocator_type::template rebind<node_type>::other			node_allocator_type;
-		typedef typename node_allocator_type::size_type										size_type;
+		typedef typename red_black_tree_node< value_type >::node_type				node_type;
+		typedef typename node_type::node_pointer									node_pointer;
+		typedef typename value_allocator_type::template rebind<node_type>::other	node_allocator_type;
+		typedef typename node_allocator_type::size_type								size_type;
 
-		typedef typename ft::red_black_tree_iterator< node_type*, value_type >				iterator;
-		typedef typename ft::red_black_tree_iterator< const node_type*, const value_type >	const_iterator;
+		typedef ft::red_black_tree_iterator< node_pointer, value_type >				iterator;
+		typedef ft::red_black_tree_iterator< const node_pointer, const value_type >	const_iterator;
 
 
 	private:
@@ -200,7 +201,7 @@ namespace ft {
 			COLOR			originalColor = n->color;
 			node_pointer	x;
 
-			if (n->left == NULL)
+			if (n->left == NULL)										//	node has no left child
 			{
 				x = n->right;
 				if (n == _beginNode && n->right != NULL)				//	invalidating begin() iterator
@@ -209,7 +210,7 @@ namespace ft {
 					_beginNode = n->parent;
 				_transplant_node(n, x);
 			}
-			else if (n->right == NULL || n->right == _endNode)
+			else if (n->right == NULL || n->right == _endNode)			//	node has no right child (not counting _endNode)
 			{
 				x = n->left;
 				_transplant_node(n, x);
@@ -219,28 +220,27 @@ namespace ft {
 					x->right = _endNode;
 				}
 			}
-			else
+			else														//	node has two children
 			{
-				node_pointer	y = n->right;
-				while (y != NULL && y->left != NULL)
-					y = y->left;
-				originalColor = y->color;
-				x = y->right;
-				if (y->parent == n)
+				node_pointer	successor = n->right;					//	next after node
+				while (successor != NULL && successor->left != NULL)
+					successor = successor->left;
+				originalColor = successor->color;
+				x = successor->right;
+				if (successor->parent == n && x != NULL)
 				{
-					if (x != NULL)
-						x->parent = y;
+					x->parent = successor;
 				}
 				else
 				{
-					_transplant_node(y, y->right);
-					y->right = n->right;
-					y->right->parent = y;
+					_transplant_node(successor, successor->right);
+					successor->right = n->right;
+					successor->right->parent = successor;
 				}
-				_transplant_node(n, y);
-				y->left = n->left;
-				y->left->parent = y;
-				y->color = n->color;
+				_transplant_node(n, successor);
+				successor->left = n->left;
+				successor->left->parent = successor;
+				successor->color = n->color;
 			}
 			_delete_node(n);
 			if (originalColor == BLACK)
@@ -261,9 +261,9 @@ namespace ft {
 			return (it);
 		}
 
-		const_iterator	lower_bound( const value_type& value ) const
+				const_iterator	lower_bound( const value_type& value ) const
 		{
-			const_iterator	it = begin();
+					const_iterator	it = begin();
 			for ( ; it != end(); it++)
 			{
 				if (!_compare(*it, value))
@@ -283,9 +283,9 @@ namespace ft {
 			return (it);
 		}
 
-		const_iterator	upper_bound( const value_type& value ) const
+				const_iterator	upper_bound( const value_type& value ) const
 		{
-			const_iterator	it = begin();
+					const_iterator	it = begin();
 			for ( ; it != end(); it++)
 			{
 				if (_compare(value, *it))

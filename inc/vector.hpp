@@ -1,5 +1,7 @@
 #pragma once
 
+#include "log.hpp"
+
 #include <memory>
 #include <stdexcept>
 
@@ -9,7 +11,7 @@
 #include "vector_iterator.hpp"
 
 namespace ft {
-template < class T, class Allocator = std::allocator<T> >
+template < class T, class Allocator = std::allocator< T > >
 class vector
 {
 	public:
@@ -81,7 +83,8 @@ class vector
 			{
 				_alloc.destroy(&(_ptr[i]));
 			}
-			_alloc.deallocate(_ptr, _capacity);
+			if (_ptr != NULL)
+				_alloc.deallocate(_ptr, _capacity);
 			_ptr = NULL;
 			_size = 0;
 			_capacity = 0;
@@ -118,17 +121,18 @@ class vector
 		void	assign( InputIt first, InputIt last,
 						typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
-			if ((first >= begin() && first <= end())
-				|| (last >= begin() && last <= end()))
-				return ;
+			// if ((first >= begin() && first <= end())
+			// 	|| (last >= begin() && last <= end()))
+			// 	return ;
+			// for (size_type i = 0; i < _size; i++)
+			// {
+			// 	_alloc.destroy(&(_ptr[i]));
+			// }
+			clear();
 			reserve(ft::distance(first, last));
-			for (size_type i = 0; i < _size; i++)
-			{
-				_alloc.destroy(&(_ptr[i]));
-			}
-			_size = ft::distance(first, last);
-			if (first == last)
-				_size = 0;
+			// _size = ft::distance(first, last);
+			// if (first == last)
+			// 	_size = 0;
 			for (size_type i = 0; first != last; i++, first++)
 			{
 				_alloc.construct(&(_ptr[i]), *first);
@@ -453,6 +457,7 @@ class vector
 
 		void	_realloc( size_type newCapacity )
 		{
+			LOGN("realloc");
 			if (max_size() < newCapacity)
 				throw std::length_error("vector");
 			T	*newPTR = _alloc.allocate(newCapacity);
@@ -463,7 +468,8 @@ class vector
 			if (newCapacity < _size)
 				_size = newCapacity;
 			std::memmove(newPTR, _ptr, _size * sizeof(T));
-			_alloc.deallocate(_ptr, _capacity);
+			if (_ptr != NULL)
+				_alloc.deallocate(_ptr, _capacity);
 			_ptr = newPTR;
 			_capacity = newCapacity;
 		}
