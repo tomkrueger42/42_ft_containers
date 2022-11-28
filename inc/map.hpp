@@ -37,6 +37,9 @@ template<
 
 		class value_compare : public std::binary_function< value_type, value_type, bool >
 		{
+			private:
+				friend class map;
+
 			protected:
 				key_compare	_compare;
 
@@ -244,15 +247,15 @@ template<
 		//	(1) Inserts value.
 		ft::pair<iterator, bool>	insert( const value_type& value )
 		{
-			ft::pair<iterator, bool> it = _tree.insert(value, NULL);
-			return (it);
+			ft::pair<iterator, bool> pair = _tree.insert(value, NULL);
+			return (pair);
 		}
 
 		//	Inserts value in the position as close as possible to the position just prior to pos.
 		iterator	insert( iterator pos, const value_type& value )
 		{
-			iterator it = _tree.insert(value, pos.base()).first;
-			return (it);
+			(void)pos;
+			return (_tree.insert(value, /* pos.base() */ NULL).first);
 		}
 
 		//	(7) Inserts elements from range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
@@ -296,10 +299,9 @@ template<
 		//	Exchanges the contents of the container with those of other. Does not invoke any move, copy, or swap operations on individual elements.
 		void	swap( map& other )
 		{
-			tree	tmp_tree = _tree;
-
-			_tree = other._tree;
-			other._tree = tmp_tree;
+			ft::swap(_compare, other._compare);
+			ft::swap(_value_alloc, other._value_alloc);
+			_tree.swap(other._tree);
 		}
 
 

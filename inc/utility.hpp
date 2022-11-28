@@ -41,8 +41,7 @@ namespace ft {
 	template< class T1, class T2 >
 	ft::pair<T1, T2>	make_pair( T1 t, T2 u )
 	{
-		ft::pair<T1, T2>	pair(t, u);
-		return (pair);
+		return (ft::pair<T1, T2>(t, u));
 	}
 
 	template< class T1, class T2 >
@@ -58,7 +57,7 @@ namespace ft {
 	}
 
 	template< class T1, class T2 >
-	bool operator<( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
+	bool	operator<( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
 	{
 		if (lhs.first < rhs.first)
 			return (true);
@@ -68,24 +67,32 @@ namespace ft {
 			return (true);
 		else
 			return (false);
-}
+	}
 
 	template< class T1, class T2 >
-	bool operator<=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
+	bool	operator<=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
 	{
 		return (!(rhs < lhs));
 	}
 
 	template< class T1, class T2 >
-	bool operator>( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
+	bool	operator>( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
 	{
 		return (rhs < lhs);
 	}
 
 	template< class T1, class T2 >
-	bool operator>=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
+	bool	operator>=( const ft::pair<T1,T2>& lhs, const ft::pair<T1,T2>& rhs )
 	{
 		return (!(lhs < rhs));
+	}
+
+	template< class T >
+	void	swap( T& lhs, T& rhs )
+	{
+		T	tmp(lhs);
+		lhs = rhs;
+		rhs = tmp;
 	}
 
 } // namespace ft
