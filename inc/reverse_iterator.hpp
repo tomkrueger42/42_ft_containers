@@ -92,6 +92,7 @@ namespace ft {
 				iterator_type	tmp = base();
 				while (n-- > 0)
 					--tmp;
+				--tmp;
 				return (*tmp);
 			}
 

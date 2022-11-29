@@ -66,7 +66,7 @@ class vector
 				typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 				: _size(0), _capacity(0), _ptr(NULL), _alloc(alloc)
 		{
-			assign<InputIt>(first, last);
+			assign(first, last);
 		}
 
 		//	(6)	Copy constructor. Constructs the container with the copy of the contents of other.
@@ -79,14 +79,10 @@ class vector
 		//	Note, that if the elements are pointers, the pointed-to objects are not destroyed.
 		~vector( void )
 		{
-			for (size_type i = 0; i < _size; i++)
-			{
-				_alloc.destroy(&(_ptr[i]));
-			}
+			clear();
 			if (_ptr != NULL)
 				_alloc.deallocate(_ptr, _capacity);
 			_ptr = NULL;
-			_size = 0;
 			_capacity = 0;
 		}
 
@@ -103,14 +99,11 @@ class vector
 		//	(1)	Replaces the contents with count copies of value value
 		void	assign( size_type count, const T& value )
 		{
+			clear();
 			reserve(count);
-			for (size_type i = 0; i < _size; i++)
-			{
-				_alloc.destroy(&(_ptr[i]));
-			}
 			for (size_type i = 0; i < count; i++)
 			{
-				_alloc.construct(&(_ptr[i]), value);
+				_alloc.construct(_ptr + i, value);
 			}
 			_size = count;
 		}
@@ -121,22 +114,7 @@ class vector
 		void	assign( InputIt first, InputIt last,
 						typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true)
 		{
-			// if ((first >= begin() && first <= end())
-			// 	|| (last >= begin() && last <= end()))
-			// 	return ;
-			// for (size_type i = 0; i < _size; i++)
-			// {
-			// 	_alloc.destroy(&(_ptr[i]));
-			// }
-			clear();
-			reserve(ft::distance(first, last));
-			// _size = ft::distance(first, last);
-			// if (first == last)
-			// 	_size = 0;
-			for (size_type i = 0; first != last; i++, first++)
-			{
-				_alloc.construct(&(_ptr[i]), *first);
-			}
+			_assign_range(first, last, typename ft::iterator_traits<InputIt>::iterator_category());
 		}
 
 		//	Returns the allocator associated with the container.
@@ -284,17 +262,22 @@ class vector
 		//	or library implementation limitations, i.e. std::ft::distance(begin(), end()) for the largest container.
 		size_type	max_size() const
 		{
-			return (_alloc.max_size());
+			if (_alloc.max_size() < std::numeric_limits< size_type >::max() / 2)
+				return (_alloc.max_size());
+			return (std::numeric_limits< size_type >::max() / 2);
 		}
 
 		//	Increase the capacity of the vector to a value that's greater or equal to new_cap.
 		//	If new_cap is greater than the current capacity(), new storage is allocated, otherwise the function does nothing.
 		void	reserve( size_type newCapacity )
 		{
-			if (newCapacity > max_size())
+			if (newCapacity > max_size() && (_capacity == 0 || _capacity == max_size()))
 				throw std::length_error("vector");
-			if (newCapacity > _capacity)
-				_realloc(newCapacity);
+			else if (newCapacity > max_size())
+				newCapacity = max_size();
+			else if (newCapacity < _capacity)
+				return ;
+			_realloc(newCapacity);
 		}
 
 		size_t	capacity( void ) const
@@ -310,7 +293,7 @@ class vector
 		{
 			for (size_type i = 0; i < _size; i++)
 			{
-				_alloc.destroy(&(_ptr[i]));
+				_alloc.destroy(_ptr + i);
 			}
 			_size = 0;
 		}
@@ -319,34 +302,38 @@ class vector
 		//	(1)	inserts value before pos.
 		iterator	insert( iterator pos, const T& value )
 		{
-			size_type	position = ft::distance(begin(), pos);
-			reserve(1);
-			if (_size == _capacity)
-				reserve(_capacity * 2);
-			for (size_type i = _size; i > position; i--)
-			{
-				_ptr[i] = _ptr[i - 1];
-			}
-			_alloc.construct(&(_ptr[position]), value);
-			++_size;
-			return (iterator(&(_ptr[position])));
+			return (insert(pos, 1, value));
 		}
 
 		//	(3)	inserts count copies of the value before pos.
 		iterator	insert( iterator pos, size_type count, const T& value )
 		{
+			if (count == 0)
+				return (pos);
+
 			size_type	position = ft::distance(begin(), pos);
-			reserve(_size + count);
-			for (size_type i = _size; i > position; i--)
+			size_type	newSize = _size + count;
+			pointer		newPTR = _alloc.allocate(newSize);
+
+			for (size_type i = 0; i < position; i++)
 			{
-				_ptr[i + count - 1] = _ptr[i - 1];
+				_alloc.construct(newPTR + i, _ptr[i]);
 			}
-			for (size_type i = 0; i < count; i++)
+			for (size_type i = position; i < position + count; i++)
 			{
-				_alloc.construct(&(_ptr[position + i]), value);
-				++_size;
+				_alloc.construct(newPTR + i, value);
 			}
-			return (iterator(&(_ptr[position])));
+			for (size_type i = position; i < _size; i++)
+			{
+				_alloc.construct(newPTR + count + i, _ptr[i]);
+			}
+			clear();
+			if (_ptr != NULL)
+				_alloc.deallocate(_ptr, _capacity);
+			_ptr = newPTR;
+			_size = newSize;
+			_capacity = newSize;
+			return (iterator(_ptr + position));
 		}
 
 		//	(4)	inserts elements from range [first, last) before pos.
@@ -355,29 +342,18 @@ class vector
 		iterator	insert( iterator pos, InputIt first, InputIt last,
 							typename ft::enable_if<!ft::is_integral<InputIt>::value, bool>::type = true )
 		{
-			size_type	position = ft::distance(begin(), pos);
-			reserve(_size + ft::distance(first, last));
-			for (size_type i = _size; i > position; i--)
-			{
-				_ptr[i + ft::distance(first, last) - 1] = _ptr[i - 1];
-			}
-			for ( ; first != last; position++, first++)
-			{
-				_alloc.construct(&(_ptr[position]), *first);
-				++_size;
-			}
-			return (iterator(&(_ptr[position])));
+			return (_insert_range(pos, first, last, typename ft::iterator_traits<InputIt>::iterator_category()));
 		}
 
 		//	Erases the specified elements from the container.
 		//	(1)	Removes the element at pos.
 		iterator	erase( iterator pos )
 		{
-			_alloc.destroy(pos.base());
-			for (iterator it = pos; it != end(); it++)
+			for (iterator it = pos; it < end() - 1; it++)
 			{
 				*it = *(it + 1);
 			}
+			_alloc.destroy(_ptr + _size - 1);
 			if (pos != end())
 				--_size;
 			return (pos);
@@ -387,13 +363,13 @@ class vector
 		iterator	erase( iterator first, iterator last )
 		{
 			difference_type	n = ft::distance(first, last);
-			for (iterator it = first; it < last; it++)
-			{
-				_alloc.destroy(it.base());
-			}
 			for (iterator it = first; last < end(); it++, last++)
 			{
 				*it = *last;
+			}
+			for (difference_type d = 1; n >= d; d++)
+			{
+				_alloc.destroy(end().base() - d);
 			}
 			_size -= n;
 			return (first);
@@ -406,7 +382,7 @@ class vector
 			reserve(1);
 			if (_size == _capacity)
 				reserve(_capacity * 2);
-			_alloc.construct(&(_ptr[_size]), value);
+			_alloc.construct(_ptr + _size, value);
 			++_size;
 		}
 
@@ -457,23 +433,82 @@ class vector
 
 		void	_realloc( size_type newCapacity )
 		{
-			LOGN("realloc");
-			if (max_size() < newCapacity)
-				throw std::length_error("vector");
-			T	*newPTR = _alloc.allocate(newCapacity);
+			pointer newPTR = _alloc.allocate(newCapacity);
 			for (size_type i = newCapacity; newCapacity < _size; i++)
 			{
-				_alloc.destroy(&(_ptr[i]));
+				_alloc.destroy(_ptr + i);
 			}
 			if (newCapacity < _size)
 				_size = newCapacity;
-			std::memmove(newPTR, _ptr, _size * sizeof(T));
+			for (size_type i = 0; i < _size; i++)
+			{
+				_alloc.construct(newPTR + i, _ptr[i]);
+				_alloc.destroy(_ptr + i);
+			}
 			if (_ptr != NULL)
 				_alloc.deallocate(_ptr, _capacity);
 			_ptr = newPTR;
 			_capacity = newCapacity;
 		}
 
+		template< typename InputIterator >
+		void	_assign_range( InputIterator first, InputIterator last, input_iterator_tag  )
+		{
+			clear();
+			for ( ; first != last; first++)
+				push_back(*first);
+		}
+
+		template< typename InputIterator >
+		void	_assign_range( InputIterator first, InputIterator last, random_access_iterator_tag )
+		{
+			clear();
+			reserve(ft::distance(first, last));
+			for (_size = 0; first != last; _size++, first++)
+				_alloc.construct(_ptr + _size, *first);
+		}
+
+		template< typename InputIterator >
+		iterator	_insert_range( iterator pos, InputIterator first, InputIterator last, random_access_iterator_tag )
+		{
+			size_type	count = ft::distance(first, last);
+			if (count == 0)
+				return (pos);
+
+			size_type	position = ft::distance(begin(), pos);
+			size_type	newSize = _size + count;
+			pointer		newPTR = _alloc.allocate(newSize);
+
+			for (size_type i = 0; i < position; i++)
+			{
+				_alloc.construct(newPTR + i, _ptr[i]);
+			}
+			for (size_type i = position; i < position + count; i++, first++)
+			{
+				_alloc.construct(newPTR + i, *first);
+			}
+			for (size_type i = position; i < _size; i++)
+			{
+				_alloc.construct(newPTR + count + i, _ptr[i]);
+			}
+
+			clear();
+			if (_ptr != NULL)
+				_alloc.deallocate(_ptr, _capacity);
+			_ptr = newPTR;
+			_size = newSize;
+			_capacity = newSize;
+			return (iterator(_ptr + position));
+		}
+
+		template< typename InputIterator >
+		iterator	_insert_range( iterator pos, InputIterator first, InputIterator last, input_iterator_tag )
+		{
+			size_type	position = ft::distance(begin(), pos);
+			for ( ; first != last; ++first, ++pos)
+				pos = insert(pos, *first);
+			return (iterator(_ptr + position));
+		}
 }; // class Vector
 
 /* =================	Non-member functions				================= */

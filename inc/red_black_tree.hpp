@@ -255,46 +255,78 @@ namespace ft {
 
 		iterator	lower_bound( const value_type& value )
 		{
-			iterator	it = begin();
-			for ( ; it != end(); it++)
+			node_pointer result = _endNode;
+			node_pointer node = _root;
+			while (node != NULL)
 			{
-				if (!_compare(*it, value))
-					break ;
+				if (!_compare(node->value_pair, value))
+				{
+					result = node;
+					node = node->left;
+				}
+				else
+				{
+					node = node->right;
+				}
 			}
-			return (it);
+			return (iterator(result));
 		}
 
-				const_iterator	lower_bound( const value_type& value ) const
+		const_iterator	lower_bound( const value_type& value ) const
 		{
-					const_iterator	it = begin();
-			for ( ; it != end(); it++)
+			node_pointer result = _endNode;
+			node_pointer node = _root;
+			while (node != NULL)
 			{
-				if (!_compare(*it, value))
-					break ;
+				if (!_compare(node->value_pair, value))
+				{
+					result = node;
+					node = node->left;
+				}
+				else
+				{
+					node = node->right;
+				}
 			}
-			return (it);
+			return (const_iterator(result));
 		}
 
 		iterator	upper_bound( const value_type& value )
 		{
-			iterator	it = begin();
-			for ( ; it != end(); it++)
+			node_pointer result = _endNode;
+			node_pointer node = _root;
+			while (node != NULL)
 			{
-				if (_compare(value, *it))
-					break ;
+				if (_compare(value, node->value_pair))
+				{
+					result = node;
+					node = node->left;
+				}
+				else
+				{
+					node = node->right;
+				}
 			}
-			return (it);
+			return (iterator(result));
 		}
 
-				const_iterator	upper_bound( const value_type& value ) const
+		const_iterator	upper_bound( const value_type& value ) const
 		{
-					const_iterator	it = begin();
-			for ( ; it != end(); it++)
+			node_pointer result = _endNode;
+			node_pointer node = _root;
+			while (node != NULL)
 			{
-				if (_compare(value, *it))
-					break ;
+				if (_compare(value, node->value_pair))
+				{
+					result = node;
+					node = node->left;
+				}
+				else
+				{
+					node = node->right;
+				}
 			}
-			return (it);
+			return (const_iterator(result));
 		}
 
 		node_pointer	search( value_type value, node_pointer n ) const

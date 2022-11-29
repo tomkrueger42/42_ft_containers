@@ -24,7 +24,7 @@ typedef std::random_access_iterator_tag              random_access_iterator_tag;
 
 /* =================	Iterator traits						================= */
 
-template<typename Iterator>
+template< typename Iterator >
 struct iterator_traits
 {
 
@@ -36,8 +36,8 @@ struct iterator_traits
 
 };
 
-template<typename T>
-struct iterator_traits<T*>
+template< typename T >
+struct iterator_traits< T* >
 {
 
     typedef T                                        value_type;
@@ -48,8 +48,8 @@ struct iterator_traits<T*>
 
 };
 
-template<typename T>
-struct iterator_traits<const T*>
+template< typename T >
+struct iterator_traits< const T* >
 {
 
     typedef T                                        value_type;
@@ -62,11 +62,11 @@ struct iterator_traits<const T*>
 
 /* =================	Iterator base						================= */
 
-template<typename Category, 
+template< typename Category, 
          typename T,
          typename Distance = std::ptrdiff_t,
          typename Pointer = T*,
-         typename Reference = T&>
+         typename Reference = T& >
 struct iterator
 {
 
@@ -80,29 +80,27 @@ struct iterator
 
 /* =================	Iterator distance					================= */
 
-template<typename InputIterator>
-typename iterator_traits<InputIterator>::difference_type
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type
 _distance_helper(InputIterator first, InputIterator last, input_iterator_tag)
 {
-    typename iterator_traits<InputIterator>::difference_type dist = 0;
+    typename iterator_traits< InputIterator >::difference_type dist = 0;
 
     for (; first != last; ++first)
         ++dist;
     return dist;
 }
 
-template<typename InputIterator>
-typename iterator_traits<InputIterator>::difference_type
-_distance_helper(InputIterator first, InputIterator last, random_access_iterator_tag)
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type    _distance_helper(InputIterator first, InputIterator last, random_access_iterator_tag)
 {
     return last - first;
 }
 
-template<typename InputIterator>
-typename iterator_traits<InputIterator>::difference_type
-distance(InputIterator first, InputIterator last)
+template< typename InputIterator >
+typename iterator_traits< InputIterator >::difference_type    distance(InputIterator first, InputIterator last)
 {
-    return _distance_helper(first, last, typename iterator_traits<InputIterator>::iterator_category());
+    return _distance_helper(first, last, typename iterator_traits< InputIterator >::iterator_category());
 }
 
 }
