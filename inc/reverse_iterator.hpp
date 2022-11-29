@@ -187,13 +187,13 @@ bool	operator!=(const reverse_iterator< It1 >& lhs, const reverse_iterator< It2 
 template< typename It >
 bool	operator<(const reverse_iterator< It >& lhs, const reverse_iterator< It >& rhs)
 {
-	return (lhs.base() < rhs.base());
+	return (rhs.base() < lhs.base());
 }
 
 template< typename It1, typename It2 >
 bool	operator<(const reverse_iterator< It1 >& lhs, const reverse_iterator< It2 >& rhs)
 {
-	return (lhs.base() < rhs.base());
+	return (rhs.base() < lhs.base());
 }
 
 template< typename It >
