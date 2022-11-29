@@ -235,25 +235,25 @@ bool	operator>=(const reverse_iterator< It1 >& lhs, const reverse_iterator< It2 
 template< typename It >
 reverse_iterator< It >	operator+(const typename reverse_iterator< It >::difference_type& i, const reverse_iterator< It >& iter)
 {
-	return (reverse_iterator< It >(iter.base() + i));
+	return (reverse_iterator< It >(iter.base() - i));
 }
 
 template< typename It >
 reverse_iterator< It >	operator-(const typename reverse_iterator< It >::difference_type& i, const reverse_iterator< It >& iter)
 {
-	return (reverse_iterator< It >(iter.base() - i));
+	return (reverse_iterator< It >(iter.base() + i));
 }
 
 template< typename It >
 typename reverse_iterator< It >::difference_type	operator+(const reverse_iterator< It >& rhs, const reverse_iterator< It >& lhs)
 {
-	return (rhs.base() + lhs.base());
+	return (lhs.base() - rhs.base());
 }
 
 template< typename It >
 typename reverse_iterator< It >::difference_type	operator-(const reverse_iterator< It >& rhs, const reverse_iterator< It >& lhs)
 {
-	return (rhs.base() - lhs.base());
+	return (rhs.base() + lhs.base());
 }
 
 template< typename It1, typename It2 >
@@ -265,7 +265,7 @@ typename reverse_iterator< It1 >::difference_type	operator+(const reverse_iterat
 template< typename It1, typename It2 >
 typename reverse_iterator< It1 >::difference_type	operator-(const reverse_iterator< It1 >& rhs, const reverse_iterator< It2 >& lhs)
 {
-	return (rhs.base() - lhs.base());
+	return (lhs.base() - rhs.base());
 }
 
 } //	namespace ft
