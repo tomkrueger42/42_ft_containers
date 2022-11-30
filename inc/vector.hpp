@@ -418,18 +418,10 @@ public:
     //  All iterators and references remain valid. The past-the-end iterator is invalidated. 
     void swap( vector& other )
     {
-        size_type       tmp_size = _size;
-        size_type       tmp_capacity = _capacity;
-        pointer         tmp_ptr = _ptr;
-        allocator_type  tmp_alloc = _alloc;
-        _size = other._size;
-        _capacity = other._capacity;
-        _ptr = other._ptr;
-        _alloc = other._alloc;
-        other._size = tmp_size;
-        other._capacity = tmp_capacity;
-        other._ptr = tmp_ptr;
-        other._alloc = tmp_alloc;
+        ft::swap(_size, other._size);
+        ft::swap(_capacity, other._capacity);
+        ft::swap(_ptr, other._ptr);
+        ft::swap(_alloc, other._alloc);
     }
 
 

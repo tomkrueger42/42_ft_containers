@@ -6,13 +6,13 @@
 #include <map>
 
 #ifdef USING_STD
-	#define NAMESPACE std
+	#define TESTED_NAMESPACE std
 #else
-	#define NAMESPACE ft
+	#define TESTED_NAMESPACE ft
 #endif
 
 template <typename T>
-void init_array_int_str(NAMESPACE::pair<int, std::string>* arr, std::size_t size)
+void init_array_int_str(TESTED_NAMESPACE::pair<int, std::string>* arr, std::size_t size)
 {
     std::string x[64] = { "CBCId4lUU6oYms60JkNr", "V5sbXjlqYRAV1C1LgJbt", "TPcK94z2htaoK5hWpR1j",
                           "WA1JMsjadjyjQjJLxVkE", "aDhJUsH7AVnKLfzQGcPC", "DPpRIm6G9C5CWSWYLwnt",
@@ -38,12 +38,12 @@ void init_array_int_str(NAMESPACE::pair<int, std::string>* arr, std::size_t size
                           "1IRLC9sfQI5AzDYeotLd" };
 
     for (std::size_t i = 0; i < size; ++i) {
-        arr[i] = NAMESPACE::make_pair(rand(), x[i]);
+        arr[i] = TESTED_NAMESPACE::make_pair(rand(), x[i]);
     }
 }
 
 template <typename T>
-void init_array_str_str(NAMESPACE::pair<std::string, std::string>* arr, std::size_t size)
+void init_array_str_str(TESTED_NAMESPACE::pair<std::string, std::string>* arr, std::size_t size)
 {
     std::string x[32] = { "RxWAUMME3GtF9Zbv3a4M", "WC96vs7Z6I6TfdGxObUg", "2beuhrfBZvjdkmfqV9yn",
                           "AuIhF3lUgwT0OMy8DuUx", "dVW2KAL06gB4s7rEf508", "jnsp7MGfl5wZNZVfQSvp",
@@ -70,14 +70,14 @@ void init_array_str_str(NAMESPACE::pair<std::string, std::string>* arr, std::siz
                           "YQfr76LAA1xKokfq8HpL", "6utvLeZ9t0IM4OkdfAQ2" };
 
     for (std::size_t i = 0; i < size; ++i) {
-        arr[i] = NAMESPACE::make_pair(x[i], y[i]);
+        arr[i] = TESTED_NAMESPACE::make_pair(x[i], y[i]);
     }
 }
 
 #define SETUP_ARRAYS()                                                                             \
-    NAMESPACE::pair<int, std::string> intstr_arr[64];                                              \
+    TESTED_NAMESPACE::pair<int, std::string> intstr_arr[64];                                              \
     init_array_int_str<void>(intstr_arr, 64);                                                      \
-    NAMESPACE::pair<std::string, std::string> strstr_arr[32];                                      \
+    TESTED_NAMESPACE::pair<std::string, std::string> strstr_arr[32];                                      \
     init_array_str_str<void>(strstr_arr, 32);                                                      \
     std::size_t intstr_size = 64;                                                                  \
     std::size_t strstr_size = 32;                                                                  \
@@ -104,20 +104,20 @@ void	map_print( const T& map )
 void	map_random( void )
 {
 	SETUP_ARRAYS();
-	NAMESPACE::map<std::string, std::string> m(strstr_arr, strstr_arr + 16);
-	NAMESPACE::map<std::string, std::string>::iterator it = m.begin();
+	TESTED_NAMESPACE::map<std::string, std::string> m(strstr_arr, strstr_arr + 16);
+	TESTED_NAMESPACE::map<std::string, std::string>::iterator it = m.begin();
 	std::advance(it, 10);
 }
 
 void	map_constructor( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	map_print(map);
 
-	NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
+	TESTED_NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
 	map_print(map2);
 
-	// NAMESPACE::map<int, char>	map2(map.get_allocator());							//	weird, because this works with STL but shouldn't as in the documentation
+	// TESTED_NAMESPACE::map<int, char>	map2(map.get_allocator());							//	weird, because this works with STL but shouldn't as in the documentation
 	// map_print(map2);
 
 	 
@@ -137,15 +137,15 @@ void	map_operator_assign( void )
 	SETUP_ARRAYS();
 
 	{
-		NAMESPACE::map<int, std::string>	m1;
-		NAMESPACE::map<int, std::string>	m2;
+		TESTED_NAMESPACE::map<int, std::string>	m1;
+		TESTED_NAMESPACE::map<int, std::string>	m2;
 
 		m1 = m2;
 
 		print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
 
-		m2 = NAMESPACE::map<int, std::string>(intstr_arr, intstr_arr + intstr_size);
+		m2 = TESTED_NAMESPACE::map<int, std::string>(intstr_arr, intstr_arr + intstr_size);
 
         print_map(m2.begin(), m2.end());
 		LOGI(m2.size());
@@ -155,7 +155,7 @@ void	map_operator_assign( void )
         print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
 
-        m1 = NAMESPACE::map<int, std::string>(intstr_arr, intstr_arr + 10);
+        m1 = TESTED_NAMESPACE::map<int, std::string>(intstr_arr, intstr_arr + 10);
 
         print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
@@ -167,15 +167,15 @@ void	map_operator_assign( void )
     }
 
     {
-        NAMESPACE::map<std::string, std::string> m1;
-        NAMESPACE::map<std::string, std::string> m2;
+        TESTED_NAMESPACE::map<std::string, std::string> m1;
+        TESTED_NAMESPACE::map<std::string, std::string> m2;
 
         m1 = m2;
 
         print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
 
-        m2 = NAMESPACE::map<std::string, std::string>(strstr_arr, strstr_arr + strstr_size);
+        m2 = TESTED_NAMESPACE::map<std::string, std::string>(strstr_arr, strstr_arr + strstr_size);
 
         print_map(m2.begin(), m2.end());
 		LOGI(m2.size());
@@ -185,7 +185,7 @@ void	map_operator_assign( void )
         print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
 
-        m1 = NAMESPACE::map<std::string, std::string>(strstr_arr, strstr_arr + 10);
+        m1 = TESTED_NAMESPACE::map<std::string, std::string>(strstr_arr, strstr_arr + 10);
 
         print_map(m1.begin(), m1.end());
 		LOGI(m1.size());
@@ -199,14 +199,14 @@ void	map_operator_assign( void )
 
 void	map_get_allocator( void )
 {
-	NAMESPACE::map<int, char>	map;
-	NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
+	TESTED_NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
 	map_print(map2);
 }
 
 void	map_at( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	try
 	{
 		map.at(0);
@@ -224,7 +224,7 @@ void	map_at( void )
 		std::cerr << e.what() << '\n';
 	}
 
-	map.insert(NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 	try
 	{
 		map.at(0);
@@ -245,15 +245,15 @@ void	map_at( void )
 
 void	map_operator_at( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI(map[0]);
 	
-	map.insert(NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 	LOGI(map[1]);
 	LOGI(map[2]);
 	map_print(map);
 
-	map.insert(NAMESPACE::make_pair(2, 'b'));
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 	LOGI(map[1]);
 	LOGI(map[2]);
 	map_print(map);
@@ -261,18 +261,18 @@ void	map_operator_at( void )
 
 void	map_iterator( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI((map.begin() == map.end()));
 	LOGI((map.begin() != map.end()));
 
-	NAMESPACE::map<int, char>::iterator it_empty;
+	TESTED_NAMESPACE::map<int, char>::iterator it_empty;
 	LOGI((it_empty == map.begin()));
 
-	map.insert(NAMESPACE::make_pair(1, 'a'));
-	for (NAMESPACE::map<int, char>::iterator it = map.begin(); it != map.end(); it++)
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+	for (TESTED_NAMESPACE::map<int, char>::iterator it = map.begin(); it != map.end(); it++)
 		LOGI(it->first);
-	map.insert(NAMESPACE::make_pair(2, 'b'));
-	NAMESPACE::map<int, char>::iterator	it = map.begin();
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+	TESTED_NAMESPACE::map<int, char>::iterator	it = map.begin();
 	LOGI(it->first);
 	++it;
 	LOGI(it->first);
@@ -297,15 +297,15 @@ void	map_iterator( void )
 
 void	map_reverse_iterator( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI((map.rbegin() == map.rend()));
 	LOGI((map.rbegin() != map.rend()));
 
-	map.insert(NAMESPACE::make_pair(1, 'a'));
-	for (NAMESPACE::map<int, char>::reverse_iterator it = map.rbegin(); it != map.rend(); it++)
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+	for (TESTED_NAMESPACE::map<int, char>::reverse_iterator it = map.rbegin(); it != map.rend(); it++)
 		LOGI(it->first);
-	map.insert(NAMESPACE::make_pair(2, 'b'));
-	NAMESPACE::map<int, char>::reverse_iterator	it = map.rbegin();
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+	TESTED_NAMESPACE::map<int, char>::reverse_iterator	it = map.rbegin();
 	LOGI(it->first);
 	++it;
 	LOGI(it->first);
@@ -330,9 +330,9 @@ void	map_reverse_iterator( void )
 
 void	map_empty( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI(map.empty());
-	map.insert(NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 	LOGI(map.empty());
 	map.erase(1);
 	LOGI(map.empty());
@@ -340,40 +340,40 @@ void	map_empty( void )
 
 void	map_size( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI(map.size());
-	map.insert(NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 	LOGI(map.size());
 	map.erase(1);
 	LOGI(map.size());
 
-	NAMESPACE::map<int, char> map2;
-	NAMESPACE::map<int, char> map3;
+	TESTED_NAMESPACE::map<int, char> map2;
+	TESTED_NAMESPACE::map<int, char> map3;
 	map2 = map3;
 	LOGI(map2.size());
 }
 
 void	map_max_size( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	LOGI(map.max_size());
 }
 
 void	map_clear( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 	map_print(map);
 	map.clear();
 	map_print(map);
-	map.insert(NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 	map_print(map);
 	map.clear();
 	map_print(map);
-	map.insert(NAMESPACE::make_pair(1, 'a'));
-	map.insert(NAMESPACE::make_pair(2, 'b'));
-	map.insert(NAMESPACE::make_pair(3, 'c'));
-	map.insert(NAMESPACE::make_pair(4, 'd'));
-	map.insert(NAMESPACE::make_pair(5, 'e'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+	map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+	map.insert(TESTED_NAMESPACE::make_pair(4, 'd'));
+	map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 	map_print(map);
 	map.clear();
 	map_print(map);
@@ -383,117 +383,117 @@ void	map_insert( int overload )
 {
 	if (overload == 1)
 	{
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(2, 'b'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(3, 'c'));
+		map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(6, 'f'));
+		map.insert(TESTED_NAMESPACE::make_pair(6, 'f'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(1, 'a'));
+		map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(8, 'h'));
+		map.insert(TESTED_NAMESPACE::make_pair(8, 'h'));
 		map_print(map);
-		map.insert(NAMESPACE::make_pair(9, 'i'));
-		map.insert(NAMESPACE::make_pair(10, 'j'));
-		map.insert(NAMESPACE::make_pair(11, 'k'));
-		map.insert(NAMESPACE::make_pair(12, 'l'));
-		map.insert(NAMESPACE::make_pair(13, 'm'));
-		map.insert(NAMESPACE::make_pair(14, 'n'));
-		map.insert(NAMESPACE::make_pair(15, 'o'));
-		map.insert(NAMESPACE::make_pair(16, 'p'));
-		map.insert(NAMESPACE::make_pair(17, 'q'));
-		map.insert(NAMESPACE::make_pair(18, 'r'));
-		map.insert(NAMESPACE::make_pair(19, 's'));
+		map.insert(TESTED_NAMESPACE::make_pair(9, 'i'));
+		map.insert(TESTED_NAMESPACE::make_pair(10, 'j'));
+		map.insert(TESTED_NAMESPACE::make_pair(11, 'k'));
+		map.insert(TESTED_NAMESPACE::make_pair(12, 'l'));
+		map.insert(TESTED_NAMESPACE::make_pair(13, 'm'));
+		map.insert(TESTED_NAMESPACE::make_pair(14, 'n'));
+		map.insert(TESTED_NAMESPACE::make_pair(15, 'o'));
+		map.insert(TESTED_NAMESPACE::make_pair(16, 'p'));
+		map.insert(TESTED_NAMESPACE::make_pair(17, 'q'));
+		map.insert(TESTED_NAMESPACE::make_pair(18, 'r'));
+		map.insert(TESTED_NAMESPACE::make_pair(19, 's'));
 		map_print(map);
 	}
 	else if (overload == 2)
 	{
 		{
 			LOGN("always map.begin()");
-			NAMESPACE::map<int, char>	map;
+			TESTED_NAMESPACE::map<int, char>	map;
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(2, 'b'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(2, 'b'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(3, 'c'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(3, 'c'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(6, 'f'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(6, 'f'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(1, 'a'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(1, 'a'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(8, 'h'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(8, 'h'));
 			map_print(map);
 			LOGN("--------------------------------------");
 		}
 		{
 			LOGN("always map.end()");
-			NAMESPACE::map<int, char>	map;
+			TESTED_NAMESPACE::map<int, char>	map;
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(2, 'b'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(2, 'b'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(3, 'c'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(3, 'c'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(6, 'f'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(6, 'f'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(1, 'a'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(1, 'a'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(8, 'h'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(8, 'h'));
 			map_print(map);
 			LOGN("--------------------------------------");
 		}
 		{
 			LOGN("mixed map.begin() and map.end()");
-			NAMESPACE::map<int, char>	map;
+			TESTED_NAMESPACE::map<int, char>	map;
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(5, 'e'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(5, 'e'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(2, 'b'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(2, 'b'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(3, 'c'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(3, 'c'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(7, 'g'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(7, 'g'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(6, 'f'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(6, 'f'));
 			map_print(map);
-			map.insert(map.end(), NAMESPACE::make_pair(1, 'a'));
+			map.insert(map.end(), TESTED_NAMESPACE::make_pair(1, 'a'));
 			map_print(map);
-			map.insert(map.begin(), NAMESPACE::make_pair(8, 'h'));
+			map.insert(map.begin(), TESTED_NAMESPACE::make_pair(8, 'h'));
 			map_print(map);
 		}
 	}
 	else if (overload == 3)
 	{
-		NAMESPACE::map<int, char>	map;
-		NAMESPACE::map<int, char>	map2;
+		TESTED_NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map2;
 		map2.insert(map.begin(), map.end());
 		map_print(map2);
 		map.insert(map2.begin(), map2.begin());
@@ -509,15 +509,15 @@ void	map_insert( int overload )
 		map_print(map);
 		map_print(map);
 
-		map.insert(NAMESPACE::make_pair(5, 'e'));
-		map.insert(NAMESPACE::make_pair(5, 'e'));
-		map.insert(NAMESPACE::make_pair(2, 'b'));
-		map.insert(NAMESPACE::make_pair(7, 'g'));
-		map.insert(NAMESPACE::make_pair(3, 'c'));
-		map.insert(NAMESPACE::make_pair(7, 'g'));
-		map.insert(NAMESPACE::make_pair(6, 'f'));
-		map.insert(NAMESPACE::make_pair(1, 'a'));
-		map.insert(NAMESPACE::make_pair(8, 'h'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(6, 'f'));
+		map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+		map.insert(TESTED_NAMESPACE::make_pair(8, 'h'));
 		map_print(map);
 
 		map2.insert(map.begin(), map.begin());
@@ -534,26 +534,26 @@ void	map_erase( int overload )
 {
 	if (overload == 1)
 	{
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 
-		// map.insert(NAMESPACE::make_pair(5, 'e'));
+		// map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		// LOGI((map.begin() == map.end()));
 		// map.erase(map.begin());
 		// LOGI((map.begin() == map.end()));
 
-		map.insert(NAMESPACE::make_pair(5, 'e'));
-		map.insert(NAMESPACE::make_pair(6, 'f'));
-		map.insert(NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(6, 'f'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
 
-		map.erase(map.insert(NAMESPACE::make_pair(6, 'f')).first);
-		map.erase(map.insert(NAMESPACE::make_pair(6, 'f')).first);
-		map.erase(map.insert(NAMESPACE::make_pair(5, 'f')).first);
-		map.erase(map.insert(NAMESPACE::make_pair(7, 'f')).first);
+		map.erase(map.insert(TESTED_NAMESPACE::make_pair(6, 'f')).first);
+		map.erase(map.insert(TESTED_NAMESPACE::make_pair(6, 'f')).first);
+		map.erase(map.insert(TESTED_NAMESPACE::make_pair(5, 'f')).first);
+		map.erase(map.insert(TESTED_NAMESPACE::make_pair(7, 'f')).first);
 		map_print(map);
 	}
 	else if (overload == 2)
 	{
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 		map.erase(map.begin(), map.begin());
 		map.erase(map.end(), map.end());
 		map.erase(map.end(), map.begin());
@@ -561,9 +561,9 @@ void	map_erase( int overload )
 
 		map_print(map);
 
-		map.insert(NAMESPACE::make_pair(5, 'e'));
-		map.insert(NAMESPACE::make_pair(6, 'f'));
-		map.insert(NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(6, 'f'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
 
 		map_print(map);
 
@@ -576,20 +576,20 @@ void	map_erase( int overload )
 	}
 	else if (overload == 3)
 	{
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 		LOGI(map.erase(0));
 		LOGI(map.erase(1));
 
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		LOGI(map.erase(0));
 		LOGI((map.begin() == map.end()));
 		LOGI(map.erase(5));
 		LOGI((map.begin() == map.end()));
 		LOGI(map.erase(5));
 
-		map.insert(NAMESPACE::make_pair(5, 'e'));
-		map.insert(NAMESPACE::make_pair(6, 'f'));
-		map.insert(NAMESPACE::make_pair(7, 'g'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(6, 'f'));
+		map.insert(TESTED_NAMESPACE::make_pair(7, 'g'));
 
 		LOGI(map.erase(0));
 		LOGI(map.erase(6));
@@ -602,17 +602,17 @@ void	map_erase( int overload )
 
 void	map_swap( void )
 {
-	NAMESPACE::map<int, char>	map;
-	NAMESPACE::map<int, char>	map2;
+	TESTED_NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map2;
 
 	map_print(map);
 	map.swap(map2);
 	map2.swap(map);
 	map.swap(map);
 	map_print(map);
-	map.insert(NAMESPACE::make_pair(1, 'a'));
-	map.insert(NAMESPACE::make_pair(2, 'b'));
-	map.insert(NAMESPACE::make_pair(3, 'c'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+	map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
 	map_print(map);
 	map_print(map2);
 	map.swap(map2);
@@ -625,12 +625,12 @@ void	map_swap( void )
 
 void	map_count( void )
 {
-	NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map;
 
 	LOGI(map.count(0));
 	LOGI(map.count(1));
 
-	map.insert(NAMESPACE::make_pair(2, 'b'));
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 	LOGI(map.count(0));
 	LOGI(map.count(2));
 }
@@ -638,16 +638,16 @@ void	map_count( void )
 void	map_find( void )
 {
 	{
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 
 		LOGI((map.find(0) == map.end()));
 
-		map.insert(NAMESPACE::make_pair(2, 'b'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 		LOGI((map.find(0) == map.end()));
 		LOGI(map.find(2)->first);
 	}
 	{
-		const NAMESPACE::map<int, char>	map;
+		const TESTED_NAMESPACE::map<int, char>	map;
 
 		LOGI((map.find(0) == map.end()));
 	}
@@ -657,19 +657,19 @@ void	map_equal_range( void )
 {
 	{
 		LOGN("const");
-		const NAMESPACE::map<int, char>	map;
+		const TESTED_NAMESPACE::map<int, char>	map;
 
 		LOGI((map.equal_range(0).first == map.end()));
 		LOGI((map.equal_range(0).second == map.end()));
 	}
 	{
 		LOGN("non-const");
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 
 		LOGI((map.equal_range(0).first == map.end()));
 		LOGI((map.equal_range(0).second == map.end()));
 
-		map.insert(NAMESPACE::make_pair(1, 'a'));
+		map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 		LOGI((map.equal_range(0).first == map.end()));
 		LOGI((map.equal_range(0).second == map.end()));
 		if (map.equal_range(1).first != map.end())
@@ -677,10 +677,10 @@ void	map_equal_range( void )
 		if (map.equal_range(1).second != map.end())
 			LOGI(map.equal_range(1).second->first);
 
-		map.insert(NAMESPACE::make_pair(2, 'b'));
-		map.insert(NAMESPACE::make_pair(3, 'c'));
-		map.insert(NAMESPACE::make_pair(4, 'd'));
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+		map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+		map.insert(TESTED_NAMESPACE::make_pair(4, 'd'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		if (map.equal_range(1).first != map.end())
 			LOGI(map.equal_range(3).first->first);
 		if (map.equal_range(1).second != map.end())
@@ -692,28 +692,28 @@ void	map_lower_bound( void )
 {
 	{
 		LOGN("const");
-		const NAMESPACE::map<int, char>	map;
+		const TESTED_NAMESPACE::map<int, char>	map;
 
 		if (map.lower_bound(0) != map.end())
 			LOGI(map.lower_bound(0)->first);
 	}
 	{
 		LOGN("non-const");
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 
 		if (map.lower_bound(0) != map.end())
 			LOGI(map.lower_bound(0)->first);
 
-		map.insert(NAMESPACE::make_pair(1, 'a'));
+		map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 		if (map.lower_bound(0) != map.end())
 			LOGI(map.lower_bound(0)->first);
 		if (map.lower_bound(2) != map.end())
 			LOGI(map.lower_bound(2)->first);
 
-		map.insert(NAMESPACE::make_pair(2, 'b'));
-		// map.insert(NAMESPACE::make_pair(3, 'c'));
-		map.insert(NAMESPACE::make_pair(4, 'd'));
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+		// map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+		map.insert(TESTED_NAMESPACE::make_pair(4, 'd'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		if (map.lower_bound(3) != map.end())
 			LOGI(map.lower_bound(3)->first);
 	}
@@ -723,19 +723,19 @@ void	map_upper_bound( void )
 {
 	{
 		LOGN("const");
-		const NAMESPACE::map<int, char>	map;
+		const TESTED_NAMESPACE::map<int, char>	map;
 
 		if (map.upper_bound(0) != map.end())
 			LOGI(map.upper_bound(0)->first);
 	}
 	{
 		LOGN("non-const");
-		NAMESPACE::map<int, char>	map;
+		TESTED_NAMESPACE::map<int, char>	map;
 
 		if (map.upper_bound(0) != map.end())
 			LOGI(map.upper_bound(0)->first);
 
-		map.insert(NAMESPACE::make_pair(1, 'a'));
+		map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 		if (map.upper_bound(0) != map.end())
 			LOGI(map.upper_bound(0)->first);
 		if (map.upper_bound(1) != map.end())
@@ -743,10 +743,10 @@ void	map_upper_bound( void )
 		if (map.upper_bound(2) != map.end())
 			LOGI(map.upper_bound(2)->first);
 
-		map.insert(NAMESPACE::make_pair(2, 'b'));
-		map.insert(NAMESPACE::make_pair(3, 'c'));
-		map.insert(NAMESPACE::make_pair(4, 'd'));
-		map.insert(NAMESPACE::make_pair(5, 'e'));
+		map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+		map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+		map.insert(TESTED_NAMESPACE::make_pair(4, 'd'));
+		map.insert(TESTED_NAMESPACE::make_pair(5, 'e'));
 		if (map.upper_bound(3) != map.end())
 			LOGI(map.upper_bound(3)->first);
 	}
@@ -754,8 +754,8 @@ void	map_upper_bound( void )
 
 void	map_key_comp( void )
 {
-	NAMESPACE::map<int, char>	map;
-	NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
+	TESTED_NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map2(map.key_comp(), map.get_allocator());
 	map_print(map);
 }
 
@@ -769,34 +769,34 @@ void	map_comparison_operators( int overload )
 	if (overload == 1)
 	{
 		{
-			const NAMESPACE::map<int, char>	map;
-			const NAMESPACE::map<int, char>	map2;
+			const TESTED_NAMESPACE::map<int, char>	map;
+			const TESTED_NAMESPACE::map<int, char>	map2;
 
 			LOGI((map == map2));
 			LOGI((map2 == map));
 		}
 		{
-			NAMESPACE::map<int, char>	map;
-			NAMESPACE::map<int, char>	map2;
+			TESTED_NAMESPACE::map<int, char>	map;
+			TESTED_NAMESPACE::map<int, char>	map2;
 
 			LOGI((map == map2));
 			LOGI((map2 == map));
 
-			map.insert(NAMESPACE::make_pair(1, 'a'));
+			map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 			LOGI((map == map2));
 			LOGI((map2 == map));
 
-			map2.insert(NAMESPACE::make_pair(2, 'b'));
+			map2.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 			LOGI((map == map2));
 			LOGI((map2 == map));
 
-			map2.insert(NAMESPACE::make_pair(3, 'c'));
+			map2.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
 			LOGI((map == map2));
 			LOGI((map2 == map));
 
-			map.insert(NAMESPACE::make_pair(2, 'b'));
-			map.insert(NAMESPACE::make_pair(3, 'c'));
-			map2.insert(NAMESPACE::make_pair(1, 'a'));
+			map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+			map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+			map2.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 			LOGI((map == map2));
 			LOGI((map2 == map));
 		}
@@ -804,34 +804,34 @@ void	map_comparison_operators( int overload )
 	else if (overload == 3)
 	{
 		{
-			const NAMESPACE::map<int, char>	map;
-			const NAMESPACE::map<int, char>	map2;
+			const TESTED_NAMESPACE::map<int, char>	map;
+			const TESTED_NAMESPACE::map<int, char>	map2;
 
 			LOGI((map < map2));
 			LOGI((map2 < map));
 		}
 		{
-			NAMESPACE::map<int, char>	map;
-			NAMESPACE::map<int, char>	map2;
+			TESTED_NAMESPACE::map<int, char>	map;
+			TESTED_NAMESPACE::map<int, char>	map2;
 
 			LOGI((map < map2));
 			LOGI((map2 < map));
 
-			map.insert(NAMESPACE::make_pair(1, 'a'));
+			map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 			LOGI((map < map2));
 			LOGI((map2 < map));
 
-			map2.insert(NAMESPACE::make_pair(2, 'b'));
+			map2.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 			LOGI((map < map2));
 			LOGI((map2 < map));
 
-			map2.insert(NAMESPACE::make_pair(3, 'c'));
+			map2.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
 			LOGI((map < map2));
 			LOGI((map2 < map));
 
-			map.insert(NAMESPACE::make_pair(2, 'b'));
-			map.insert(NAMESPACE::make_pair(3, 'c'));
-			map2.insert(NAMESPACE::make_pair(1, 'a'));
+			map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
+			map.insert(TESTED_NAMESPACE::make_pair(3, 'c'));
+			map2.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
 			LOGI((map < map2));
 			LOGI((map2 < map));
 		}
@@ -840,13 +840,13 @@ void	map_comparison_operators( int overload )
 
 void	map_swap_non_member( void )
 {
-	NAMESPACE::map<int, char>	map;
-	NAMESPACE::map<int, char>	map2;
+	TESTED_NAMESPACE::map<int, char>	map;
+	TESTED_NAMESPACE::map<int, char>	map2;
 
 	swap(map, map2);
 
-	map.insert(NAMESPACE::make_pair(1, 'a'));
-	map.insert(NAMESPACE::make_pair(2, 'b'));
+	map.insert(TESTED_NAMESPACE::make_pair(1, 'a'));
+	map.insert(TESTED_NAMESPACE::make_pair(2, 'b'));
 	map_print(map);
 	map_print(map2);
 

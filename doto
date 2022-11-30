@@ -1,4 +1,0 @@
-erase           //  segfault
-erase_range     //  segfault
-random          //  segfault
-insert_hint is a little dirty implemented

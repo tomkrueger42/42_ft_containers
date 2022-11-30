@@ -30,8 +30,8 @@ TEST		=	map_tests.hpp \
 all: $(NAME)
 
 $(NAME): $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
 	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
 
 1: $(SRCS) $(DEPS)
 	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers

@@ -268,7 +268,7 @@ public:
     //  (1) Removes the element at pos.
     void    erase( iterator pos )
     {
-        _tree.erase(pos.base());
+        _tree.erase(pos);
     }
 
     //  (2) Removes the elements in the range [first; last), which must be a valid range in *this.
@@ -278,7 +278,7 @@ public:
         {
             iterator    it = first;
             ++it;
-            _tree.erase(first.base());
+            _tree.erase(first);
             first = it;
         }
     }
@@ -289,7 +289,7 @@ public:
         iterator    it = find(key);
         if (it == end())
             return (0);
-        _tree.erase(it.base());
+        _tree.erase(it);
         return (1);
     }
 

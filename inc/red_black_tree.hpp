@@ -29,8 +29,8 @@ public:
     typedef typename value_allocator_type::template rebind<node_type>::other    node_allocator_type;
     typedef typename node_allocator_type::size_type                             size_type;
 
-    typedef ft::red_black_tree_iterator< node_pointer, value_type >             iterator;
-    typedef ft::red_black_tree_iterator< node_pointer, const value_type >       const_iterator;
+    typedef ft::red_black_tree_iterator< value_type >             iterator;
+    typedef ft::const_red_black_tree_iterator< value_type >       const_iterator;
 
 
 private:
@@ -175,8 +175,9 @@ public:
         return (ft::make_pair(iterator(pos), false));
     }
 
-    void    erase( node_pointer n )
+    void    erase( const_iterator pos )
     {
+        node_pointer    n = const_cast< node_pointer >(pos.base());
         COLOR           originalColor = n->color;
         node_pointer    x;
 

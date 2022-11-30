@@ -1,5 +1,5 @@
 #include "vector_tests.hpp"
-// #include "map_tests.hpp"
+#include "map_tests.hpp"
 #include "../inc/stack.hpp"
 #include "../inc/set.hpp"
 #include "../inc/map.hpp"
@@ -25,11 +25,13 @@
 // 	LOGN(" usec");
 // 	return (0);
 // }
-#define NAMESPACE ft
+// #define NAMESPACE ft
+#include <list>
+#include <set>
 template <typename T>
 std::string	printPair(const T &iterator, bool nl = true, std::ostream &o = std::cout)
 {
-	o << "key: " << iterator->first << " | value: " << iterator->second;
+	o << "value: " << *iterator;
 	if (nl)
 		o << std::endl;
 	return ("");
@@ -49,39 +51,54 @@ void	printSize(T_MAP const &mp, bool print_content = 1)
 	}
 	std::cout << "###############################################" << std::endl;
 }
+#define T1 std::string
 
-#define T1 char
-#define T2 float
-typedef NAMESPACE::map<T1, T2> _map;
-typedef _map::const_iterator const_it;
+static int iter = 0;
 
-static unsigned int i = 0;
-
-void	ft_comp(const _map &mp, const const_it &it1, const const_it &it2)
+template <typename SET, typename U>
+void	ft_erase(SET &st, U param)
 {
-	bool res[2];
+	std::cout << "\t-- [" << iter++ << "] --" << std::endl;
+	st.erase(param);
+	printSize(st);
+}
 
-	std::cout << "\t-- [" << ++i << "] --" << std::endl;
-	res[0] = mp.key_comp()(it1->first, it2->first);
-	res[1] = mp.value_comp()(*it1, *it2);
-	std::cout << "with [" << it1->first << " and " << it2->first << "]: ";
-	std::cout << "key_comp: " << res[0] << " | " << "value_comp: " << res[1] << std::endl;
+template <typename SET, typename U, typename V>
+void	ft_erase(SET &st, U param, V param2)
+{
+	std::cout << "\t-- [" << iter++ << "] --" << std::endl;
+	st.erase(param, param2);
+	printSize(st);
 }
 
 int		main(void)
 {
-	_map	mp;
+	std::list<T1> lst;
+	unsigned int lst_size = 10;
+	for (unsigned int i = 0; i < lst_size; ++i)
+		lst.push_back(std::string((lst_size - i), i + 65));
+	TESTED_NAMESPACE::set<T1> st(lst.begin(), lst.end());
+	printSize(st);
 
-	mp['a'] = 2.3;
-	mp['b'] = 1.4;
-	mp['c'] = 0.3;
-	mp['d'] = 4.2;
-	printSize(mp);
+	ft_erase(st, ++st.begin());
 
-	for (const_it it1 = mp.begin(); it1 != mp.end(); ++it1)
-		for (const_it it2 = mp.begin(); it2 != mp.end(); ++it2)
-			ft_comp(mp, it1, it2);
+	ft_erase(st, st.begin());
+	ft_erase(st, --st.end());
 
-	printSize(mp);
+	ft_erase(st, st.begin(), ++(++(++st.begin())));
+	ft_erase(st, --(--(--st.end())), --st.end());
+
+	st.insert("Hello");
+	st.insert("Hi there");
+	printSize(st);
+	ft_erase(st, --(--(--st.end())), st.end());
+
+	st.insert("ONE");
+	st.insert("TWO");
+	st.insert("THREE");
+	st.insert("FOUR");
+	printSize(st);
+	ft_erase(st, st.begin(), st.end());
+
 	return (0);
 }

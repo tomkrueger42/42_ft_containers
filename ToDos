@@ -1,5 +1,0 @@
-vector:
-	all three insert() overloads needs to have a const_iterator not only iterator
-
-iterators:
-	reverse_iterator testing

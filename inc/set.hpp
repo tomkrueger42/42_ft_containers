@@ -2,7 +2,6 @@
 
 #include <functional>                                                           //  for std::less<> and maybe also std::binary_function
 #include "algorithm.hpp"                                                        //  for ft::lexicographical_compare()
-#include "utility.hpp"                                                          //  for ft::pair<>
 #include "red_black_tree.hpp"
 #include "reverse_iterator.hpp"
 
@@ -15,8 +14,7 @@ template<
 > class set
 {
 
-public:
-
+   public:
 /* =================    Member types                        ================= */
 
     typedef Key                                             key_type;
@@ -31,20 +29,17 @@ public:
     typedef typename allocator_type::pointer                pointer;
     typedef typename allocator_type::const_pointer          const_pointer;
 
-private:
-
+   private:
     typedef ft::red_black_tree< value_type, value_compare > tree;
 
-public:
-
+   public:
     typedef typename tree::const_iterator                   iterator;
     typedef typename tree::const_iterator                   const_iterator;
     typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
     typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
 
 
-private:
-
+   private:
 /* =================    Member objects                      ================= */
 
     value_compare   _compare;
@@ -52,8 +47,7 @@ private:
     tree            _tree;
 
 
-public:
-
+   public:
 /* =================    Constructors                        ================= */
 
     //  Constructs an empty container.
@@ -206,7 +200,7 @@ public:
     //  (1) Removes the element at pos.
     void    erase( iterator pos )
     {
-        _tree.erase(pos.base());
+        _tree.erase(pos);
     }
 
     //  (2) Removes the elements in the range [first; last), which must be a valid range in *this.
@@ -216,7 +210,7 @@ public:
         {
             iterator    it = first;
             ++it;
-            _tree.erase(first.base());
+            _tree.erase(first);
             first = it;
         }
     }
@@ -224,10 +218,10 @@ public:
     //  (3) Removes the element (if one exists) with the key equivalent to key.
     size_type   erase( const key_type& key )
     {
-        iterator    it = find(key);
+        const_iterator    it = find(key);
         if (it == end())
             return (0);
-        _tree.erase(it.base());
+        _tree.erase(it);
         return (1);
     }
 
