@@ -10,7 +10,6 @@ class reverse_iterator
 
 /* =================    Member types                        ================= */
 
-
     public:
         typedef Iter                                                    iterator_type;
         typedef typename ft::iterator_traits<Iter>::iterator_category   iterator_category;
