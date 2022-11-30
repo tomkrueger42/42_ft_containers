@@ -1,5 +1,9 @@
 #include "vector_tests.hpp"
-#include "map_tests.hpp"
+// #include "map_tests.hpp"
+#include "../inc/stack.hpp"
+#include "../inc/set.hpp"
+#include "../inc/map.hpp"
+#include "../inc/log.hpp"
 #include <sys/time.h>
 
 // int		main(void)
@@ -21,83 +25,63 @@
 // 	LOGN(" usec");
 // 	return (0);
 // }
-
-#define T_SIZE_TYPE typename NAMESPACE::vector<T>::size_type
-
+#define NAMESPACE ft
 template <typename T>
-void	printSize(NAMESPACE::vector<T> const &vct, bool print_content = true)
+std::string	printPair(const T &iterator, bool nl = true, std::ostream &o = std::cout)
 {
-	const T_SIZE_TYPE size = vct.size();
-	const T_SIZE_TYPE capacity = vct.capacity();
-	const std::string isCapacityOk = (capacity >= size) ? "OK" : "KO";
-	// Cannot limit capacity's max value because it's implementation dependent
+	o << "key: " << iterator->first << " | value: " << iterator->second;
+	if (nl)
+		o << std::endl;
+	return ("");
+}
 
-	std::cout << "size: " << size << std::endl;
-	std::cout << "capacity: " << isCapacityOk << std::endl;
-	std::cout << "max_size: " << vct.max_size() << std::endl;
+template <typename T_MAP>
+void	printSize(T_MAP const &mp, bool print_content = 1)
+{
+	std::cout << "size: " << mp.size() << std::endl;
+	std::cout << "max_size: " << mp.max_size() << std::endl;
 	if (print_content)
 	{
-		typename NAMESPACE::vector<T>::const_iterator it = vct.begin();
-		typename NAMESPACE::vector<T>::const_iterator ite = vct.end();
+		typename T_MAP::const_iterator it = mp.begin(), ite = mp.end();
 		std::cout << std::endl << "Content is:" << std::endl;
 		for (; it != ite; ++it)
-			std::cout << "- " << *it << std::endl;
+			std::cout << "- " << printPair(it, false) << std::endl;
 	}
 	std::cout << "###############################################" << std::endl;
 }
 
+#define T1 char
+#define T2 float
+typedef NAMESPACE::map<T1, T2> _map;
+typedef _map::const_iterator const_it;
 
-template <typename Ite_1, typename Ite_2>
-void ft_eq_ope(const Ite_1 &first, const Ite_2 &second, const bool redo = 1)
+static unsigned int i = 0;
+
+void	ft_comp(const _map &mp, const const_it &it1, const const_it &it2)
 {
-	std::cout << (first < second) << std::endl;
-	std::cout << (first <= second) << std::endl;
-	std::cout << (first > second) << std::endl;
-	std::cout << (first >= second) << std::endl;
-	if (redo)
-		ft_eq_ope(second, first, 0);
+	bool res[2];
+
+	std::cout << "\t-- [" << ++i << "] --" << std::endl;
+	res[0] = mp.key_comp()(it1->first, it2->first);
+	res[1] = mp.value_comp()(*it1, *it2);
+	std::cout << "with [" << it1->first << " and " << it2->first << "]: ";
+	std::cout << "key_comp: " << res[0] << " | " << "value_comp: " << res[1] << std::endl;
 }
 
 int		main(void)
 {
-	const int size = 5;
-	NAMESPACE::vector<int> vct(size);
-	NAMESPACE::vector<int>::reverse_iterator it_0(vct.rbegin());
-	NAMESPACE::vector<int>::reverse_iterator it_1(vct.rend());
-	NAMESPACE::vector<int>::reverse_iterator it_mid;
+	_map	mp;
 
-	NAMESPACE::vector<int>::const_reverse_iterator cit_0 = vct.rbegin();
-	NAMESPACE::vector<int>::const_reverse_iterator cit_1;
-	NAMESPACE::vector<int>::const_reverse_iterator cit_mid;
+	mp['a'] = 2.3;
+	mp['b'] = 1.4;
+	mp['c'] = 0.3;
+	mp['d'] = 4.2;
+	printSize(mp);
 
-	for (int i = size; it_0 != it_1; --i)
-		*it_0++ = i;
-	printSize(vct, 1);
-	it_0 = vct.rbegin();
-	cit_1 = vct.rend();
-	it_mid = it_0 + 3;
-	cit_mid = it_0 + 3; cit_mid = cit_0 + 3; cit_mid = it_mid;
+	for (const_it it1 = mp.begin(); it1 != mp.end(); ++it1)
+		for (const_it it2 = mp.begin(); it2 != mp.end(); ++it2)
+			ft_comp(mp, it1, it2);
 
-	std::cout << std::boolalpha;
-	std::cout << ((it_0 + 3 == cit_0 + 3) && (cit_0 + 3 == it_mid)) << std::endl;
-
-	std::cout << "\t\tft_eq_ope:" << std::endl;
-	// regular it
-	ft_eq_ope(it_0 + 3, it_mid);
-	std::cout << "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-	ft_eq_ope(it_0, it_1);
-	ft_eq_ope(it_1 - 3, it_mid);
-	// const it
-	ft_eq_ope(cit_0 + 3, cit_mid);
-	ft_eq_ope(cit_0, cit_1);
-	ft_eq_ope(cit_1 - 3, cit_mid);
-	// both it
-	ft_eq_ope(it_0 + 3, cit_mid);
-	ft_eq_ope(it_mid, cit_0 + 3);
-	ft_eq_ope(it_0, cit_1);
-	ft_eq_ope(it_1, cit_0);
-	ft_eq_ope(it_1 - 3, cit_mid);
-	ft_eq_ope(it_mid, cit_1 - 3);
-
+	printSize(mp);
 	return (0);
 }

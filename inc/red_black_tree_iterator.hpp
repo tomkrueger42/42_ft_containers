@@ -2,6 +2,7 @@
 
 #include "log.hpp"
 #include "iterator.hpp"
+#include "red_black_tree_node.hpp"
 
 namespace ft {
 
@@ -70,22 +71,22 @@ public:
 
 	reference	operator*( void )
 	{
-		return (_current->value_pair);
+		return (_current->value);
 	}
 
 	reference	operator*( void ) const
 	{
-		return (_current->value_pair);
+		return (_current->value);
 	}
 
 	pointer	operator->( void )
 	{
-		return (&(_current->value_pair));
+		return (&(_current->value));
 	}
 
 	pointer	operator->( void ) const
 	{
-		return (&(_current->value_pair));
+		return (&(_current->value));
 	}
 
 	red_black_tree_iterator	&operator++( void )

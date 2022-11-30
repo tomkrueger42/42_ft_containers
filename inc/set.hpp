@@ -10,60 +10,26 @@ namespace ft {
 
 template<
     class Key,
-    class T,
     class Compare = std::less< Key >,
-    class Allocator = std::allocator< ft::pair< const Key, T > >
-> class map
+    class Allocator = std::allocator< Key >
+> class set
 {
 
 public:
 
 /* =================    Member types                        ================= */
 
-    typedef Key                                         key_type;
-    typedef T                                           mapped_type;
-    typedef ft::pair< const key_type, mapped_type >     value_type;
-    typedef std::size_t                                 size_type;
-    typedef std::ptrdiff_t                              difference_type;
-    typedef Compare                                     key_compare;
-    typedef Allocator                                   allocator_type;
-    typedef typename allocator_type::reference          reference;
-    typedef typename allocator_type::const_reference    const_reference;
-    typedef typename allocator_type::pointer            pointer;
-    typedef typename allocator_type::const_pointer      const_pointer;
-
-
-/* =================    Member classes                      ================= */
-
-    class value_compare : public std::binary_function< value_type, value_type, bool >
-    {
-    private:
-        friend class map;
-
-    protected:
-        key_compare _compare;
-
-    public:
-        //  Initializes the internal instance of the comparator to c.
-        value_compare( void ) : _compare() {}
-        value_compare( key_compare c ) : _compare(c) {}
-        value_compare( const value_compare& other ) : _compare(other._compare) {}
-        ~value_compare( void ) {}
-
-        value_compare&  operator=( const value_compare& other )
-        {
-            if (this != &other)
-                _compare = other._compare;
-            return (*this);
-        }
-
-        //  Compares lhs.first and rhs.first by calling the stored comparator.
-        bool    operator()( const value_type& lhs, const value_type& rhs ) const
-        {
-            return (_compare(lhs.first, rhs.first));
-        }
-    };
-
+    typedef Key                                             key_type;
+    typedef Key                                             value_type;
+    typedef std::size_t                                     size_type;
+    typedef std::ptrdiff_t                                  difference_type;
+    typedef Compare                                         key_compare;
+    typedef Compare                                         value_compare;
+    typedef Allocator                                       allocator_type;
+    typedef value_type&                                     reference;
+    typedef const value_type&                               const_reference;
+    typedef typename allocator_type::pointer                pointer;
+    typedef typename allocator_type::const_pointer          const_pointer;
 
 private:
 
@@ -71,7 +37,7 @@ private:
 
 public:
 
-    typedef typename tree::iterator                         iterator;
+    typedef typename tree::const_iterator                   iterator;
     typedef typename tree::const_iterator                   const_iterator;
     typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
     typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
@@ -90,16 +56,16 @@ public:
 
 /* =================    Constructors                        ================= */
 
-    //  (2) Constructs an empty container.
-    explicit map( const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type() )
+    //  Constructs an empty container.
+    explicit set( const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type() )
     {
         _compare = comp;
         _value_alloc = alloc;
     }
 
-    //  (4) Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
+    //  Constructs the container with the contents of the range [first, last). If multiple elements in the range have keys that compare equivalent, it is unspecified which element is inserted.
     template< class InputIt >
-    map( InputIt first, InputIt last,
+    set( InputIt first, InputIt last,
         const key_compare& comp = Compare(),
         const allocator_type& alloc = allocator_type() )
     {
@@ -108,17 +74,17 @@ public:
         insert(first, last);
     }
 
-    //  (6) Copy constructor. Constructs the container with the copy of the contents of other.
-    map( const map& other )
+    //  Copy constructor. Constructs the container with the copy of the contents of other.
+    set( const set& other )
     {
         *this = other;
     }
 
-    //  Destructs the map. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
-    ~map( void ) {}
+    //  Destructs the set. The destructors of the elements are called and the used storage is deallocated. Note, that if the elements are pointers, the pointed-to objects are not destroyed.
+    ~set( void ) {}
 
     //  Copy assignment operator. Replaces the contents with a copy of the contents of other.
-    const map&  operator=( const map& other )
+    const set&  operator=( const set& other )
     {
         if (this != &other)
         {
@@ -136,37 +102,9 @@ public:
     }
 
 
-/* =================    Element access                      ================= */
-
-    //  Returns a reference to the mapped value of the element with key equivalent to key. If no such element exists, an exception of type std::out_of_range is thrown.
-    mapped_type&    at( const key_type& key )
-    {
-        iterator    it = find(key);
-        if (it == end())
-            throw std::out_of_range("map::at:  key not found");
-        else
-            return (it->second);
-    }
-
-    const mapped_type&  at( const key_type& key ) const
-    {
-        const_iterator  it = find(key);
-        if (it == end())
-            throw std::out_of_range("map::at:  key not found");
-        else
-            return (it->second);
-    }
-
-    //  Returns a reference to the value that is mapped to a key equivalent to key, performing an insertion if such key does not already exist.
-    mapped_type&    operator[]( const key_type& key )
-    {
-        return (insert(value_type(key, mapped_type())).first->second);
-    }
-
-
 /* =================    Iterators                           ================= */
 
-    //  Returns an iterator to the first element of the map. If the map is empty, the returned iterator will be equal to end().
+    //  Returns an iterator to the first element of the set. If the set is empty, the returned iterator will be equal to end().
     iterator    begin( void )
     {
         return (_tree.begin());
@@ -177,7 +115,7 @@ public:
         return (_tree.begin());
     }
 
-    //  Returns an iterator to the element following the last element of the map. This element acts as a placeholder; attempting to access it results in undefined behavior.
+    //  Returns an iterator to the element following the last element of the set. This element acts as a placeholder; attempting to access it results in undefined behavior.
     iterator    end( void )
     {
         return (_tree.end());
@@ -188,7 +126,7 @@ public:
         return (_tree.end());
     }
 
-    //  Returns a reverse iterator to the first element of the reversed map. It corresponds to the last element of the non-reversed map. If the map is empty, the returned iterator is equal to rend().
+    //  Returns a reverse iterator to the first element of the reversed set. It corresponds to the last element of the non-reversed set. If the set is empty, the returned iterator is equal to rend().
     reverse_iterator    rbegin( void )
     {
         return (reverse_iterator(end()));
@@ -199,7 +137,7 @@ public:
         return (const_reverse_iterator(end()));
     }
 
-    //  Returns a reverse iterator to the element following the last element of the reversed map. It corresponds to the element preceding the first element of the non-reversed map. This element acts as a placeholder, attempting to access it results in undefined behavior.
+    //  Returns a reverse iterator to the element following the last element of the reversed set. It corresponds to the element preceding the first element of the non-reversed set. This element acts as a placeholder, attempting to access it results in undefined behavior.
     reverse_iterator    rend( void )
     {
         return (reverse_iterator(begin()));
@@ -261,7 +199,7 @@ public:
     {
         for ( ; first != last; first++)
         {
-            _tree.insert(*first, NULL); // what happens if one insert() fails??
+            _tree.insert(*first, NULL);
         }
     }
 
@@ -294,7 +232,7 @@ public:
     }
 
     //  Exchanges the contents of the container with those of other. Does not invoke any move, copy, or swap operations on individual elements.
-    void    swap( map& other )
+    void    swap( set& other )
     {
         ft::swap(_compare, other._compare);
         ft::swap(_value_alloc, other._value_alloc);
@@ -313,12 +251,12 @@ public:
     //  Finds an element with key equivalent to key.
     iterator    find( const key_type& key )
     {
-        return (_tree.search(ft::make_pair(key, mapped_type()), NULL));
+        return (_tree.search(key, NULL));
     }
     
     const_iterator  find( const key_type& key ) const
     {
-        return (const_iterator(_tree.search(ft::make_pair(key, mapped_type()), NULL)));
+        return (const_iterator(_tree.search(key, NULL)));
     }
 
     //  Returns a range containing all elements with the given key in the container. The range is defined by two iterators, one pointing to the first element that is not less than key and another pointing to the first element greater than key. Alternatively, the first iterator may be obtained with lower_bound(), and the second with upper_bound().
@@ -335,23 +273,23 @@ public:
     //  Returns an iterator pointing to the first element that is not less than (i.e. greater or equal to) key.
     iterator    lower_bound( const key_type& key )
     {
-        return (_tree.lower_bound(ft::make_pair(key, mapped_type())));
+        return (_tree.lower_bound(key));
     }
 
     const_iterator  lower_bound( const key_type& key ) const
     {
-        return (_tree.lower_bound(ft::make_pair(key, mapped_type())));
+        return (_tree.lower_bound(key));
     }
 
     //  Returns an iterator pointing to the first element that is greater than key.
     iterator    upper_bound( const key_type& key )
     {
-        return (_tree.upper_bound(ft::make_pair(key, mapped_type())));
+        return (_tree.upper_bound(key));
     }
 
     const_iterator  upper_bound( const key_type& key ) const
     {
-        return (_tree.upper_bound(ft::make_pair(key, mapped_type())));
+        return (_tree.upper_bound(key));
     }
 
 
@@ -363,65 +301,65 @@ public:
         return (key_compare());
     }
 
-    //  Returns a function object that compares objects of type ft::map::value_type (key-value pairs) by using key_comp to compare the first components of the pairs.
+    //  Returns a function object that compares objects of type ft::set::value_type (key-value pairs) by using key_comp to compare the first components of the pairs.
     value_compare   value_comp() const
     {
         return (_compare);
     }
-}; // class map
+}; // class set
 
 
 /* =================    Non-member functions                ================= */
 
-//  Compares the contents of two maps.
-template< class Key, class T, class Compare, class Alloc >
-bool    operator==( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+//  Compares the contents of two sets.
+template< class Key, class Compare, class Alloc >
+bool    operator==( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (lhs.size() == rhs.size()
             && ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator!=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator!=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(lhs == rhs));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator<( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator<( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (ft::lexicographical_compare(lhs.begin(), lhs.end(),
                                         rhs.begin(), rhs.end()));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator<=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator<=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(rhs < lhs));
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator>( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator>( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (rhs < lhs);
 }
 
-template< class Key, class T, class Compare, class Alloc >
-bool    operator>=( const ft::map< Key, T, Compare, Alloc >& lhs,
-                    const ft::map< Key, T, Compare, Alloc >& rhs )
+template< class Key, class Compare, class Alloc >
+bool    operator>=( const ft::set< Key, Compare, Alloc >& lhs,
+                    const ft::set< Key, Compare, Alloc >& rhs )
 {
     return (!(lhs < rhs));
 }
 
-//  Specializes the ft::swap algorithm for ft::map. Swaps the contents of lhs and rhs.
-template< class Key, class T, class Compare, class Alloc >
-void    swap( ft::map< Key, T, Compare, Alloc >& lhs,
-                ft::map< Key, T, Compare, Alloc >& rhs )
+//  Specializes the ft::swap algorithm for ft::set. Swaps the contents of lhs and rhs.
+template< class Key, class Compare, class Alloc >
+void    swap( ft::set< Key, Compare, Alloc >& lhs,
+                ft::set< Key, Compare, Alloc >& rhs )
 {
     lhs.swap(rhs);
 }

@@ -5,7 +5,7 @@ INC_DIR		=	./inc/
 DEPS		=	$(addprefix $(INC_DIR), $(INCS))
 DEPS		+=	$(addprefix ./testing/, $(TEST))
 
-SRCS		=	 ./src/main.cpp #./containers_test/srcs/map/bounds.cpp
+SRCS		=	 ./src/main.cpp
 
 INCS		=	algorithm.hpp \
 				iterator.hpp \
@@ -14,6 +14,8 @@ INCS		=	algorithm.hpp \
 				red_black_tree_node.hpp \
 				red_black_tree.hpp \
 				reverse_iterator.hpp \
+				set.hpp \
+				stack.hpp \
 				type_traits.hpp \
 				utility.hpp \
 				vector_iterator.hpp \

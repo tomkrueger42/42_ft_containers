@@ -15,9 +15,7 @@ int		main(void)
 	it = it + 5;
 	it = 1 + it;
 	it = it - 4;
-	for (TESTED_NAMESPACE::vector<TESTED_TYPE>::reverse_iterator rit = it; rit != it + 5; rit++)
-		std::cout << *it << std::endl;
-	std::cout << "hi" <<  *(it += 2) << std::endl;
+	std::cout << *(it += 2) << std::endl;
 	std::cout << *(it -= 1) << std::endl;
 
 	*(it -= 2) = 42;
