@@ -1,16 +1,14 @@
 #pragma once
 
-#include "log.hpp"
-
 #include <memory>
 #include <stdexcept>
 
-#include "algorithm.hpp"
-#include "type_traits.hpp"
-#include "utility.hpp"
+#include "utils/algorithm.hpp"
+#include "utils/type_traits.hpp"
+#include "utils/utility.hpp"
 
-#include "vector_iterator.hpp"
-#include "reverse_iterator.hpp"
+#include "iterators/vector_iterator.hpp"
+#include "iterators/reverse_iterator.hpp"
 
 namespace ft {
 

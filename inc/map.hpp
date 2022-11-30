@@ -1,10 +1,10 @@
 #pragma once
 
 #include <functional>                                                           //  for std::less<> and maybe also std::binary_function
-#include "algorithm.hpp"                                                        //  for ft::lexicographical_compare()
-#include "utility.hpp"                                                          //  for ft::pair<>
-#include "red_black_tree.hpp"
-#include "reverse_iterator.hpp"
+#include "utils/algorithm.hpp"                                                  //  for ft::lexicographical_compare()
+#include "utils/utility.hpp"                                                    //  for ft::pair<>
+#include "utils/red_black_tree.hpp"
+#include "iterators/reverse_iterator.hpp"
 
 namespace ft {
 

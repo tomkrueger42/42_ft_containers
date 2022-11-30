@@ -4,6 +4,7 @@ ft_containers
 std_containers
 .vs_code
 .vscode
+out.*
 
 # Prerequisites
 *.d

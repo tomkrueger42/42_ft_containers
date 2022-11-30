@@ -42,16 +42,16 @@ all: $(NAME)
 $(NAME): $(SRCS) $(DEPS)
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=0 $(SRCS) -o ft_containers
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
-	bash ./test.sh
 
 1: $(SRCS) $(DEPS)
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=1 $(SRCS) -o ft_containers
-	bash ./test.sh
 
 2: $(SRCS) $(DEPS)
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=2 -DUSING_STD $(SRCS) -o std_containers
 	$(CC) $(CFLAGS) $(INCS) -DDEBUG=2 $(SRCS) -o ft_containers
+
+cmp:
 	bash ./test.sh
 
 clean:

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <memory>
+
 #include "red_black_tree_node.hpp"
-#include "red_black_tree_iterator.hpp"
 #include "utility.hpp"
+
+#include "../iterators/red_black_tree_iterator.hpp"
 
 namespace ft {
 
