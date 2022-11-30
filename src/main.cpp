@@ -1,9 +1,9 @@
 #include "vector_tests.hpp"
 #include "map_tests.hpp"
-#include "../inc/stack.hpp"
-#include "../inc/set.hpp"
-#include "../inc/map.hpp"
-#include "../inc/log.hpp"
+#include "stack.hpp"
+#include "set.hpp"
+#include "map.hpp"
+#include "log.hpp"
 #include <sys/time.h>
 
 // int		main(void)

@@ -5,7 +5,6 @@
 
 namespace ft
 {
-
 /* =================    Iterator tags                       ================= */
 
 /* Typedefining the std::tags enables compatibility with std::containers. */

@@ -13,9 +13,7 @@ template<
     class Allocator = std::allocator< Value >
 > class red_black_tree
 {
-
-public:
-
+   public:
 /* =================    Member types                        ================= */
 
     typedef Value                                                               value_type;
@@ -33,8 +31,7 @@ public:
     typedef ft::const_red_black_tree_iterator< value_type >       const_iterator;
 
 
-private:
-
+   private:
 /* =================    Member objects                      ================= */
 
     value_allocator_type    _value_alloc;
@@ -46,8 +43,7 @@ private:
     node_pointer            _beginNode;
 
 
-public:
-
+   public:
 /* =================    Member classes                      ================= */
 
 
@@ -343,8 +339,7 @@ public:
 
 /* =================    private Member-functions            ================= */
 
-private:
-
+   private:
     node_pointer    _new_node( value_type value, node_pointer parent, COLOR c )
     {
         if (_endNode != NULL)
@@ -572,4 +567,5 @@ private:
         }
     }
 }; //   class red_black_tree
+
 } //    namespace ft

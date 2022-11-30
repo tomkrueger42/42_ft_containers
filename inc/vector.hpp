@@ -7,6 +7,8 @@
 
 #include "algorithm.hpp"
 #include "type_traits.hpp"
+#include "utility.hpp"
+
 #include "vector_iterator.hpp"
 #include "reverse_iterator.hpp"
 
@@ -17,8 +19,7 @@ template<
     class Allocator = std::allocator< T >
 >class vector
 {
-public:
-
+   public:
 /* =================    Member types                        ================= */
 
     typedef T                                               value_type;
@@ -34,8 +35,7 @@ public:
     typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
     typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
 
-private:
-
+   private:
 /* =================    Member objects                      ================= */
 
     size_type       _size;
@@ -43,8 +43,7 @@ private:
     pointer         _ptr;
     allocator_type  _alloc;
 
-public:
-
+   public:
 /* =================    Constructors                        ================= */
 
     //  (1) Default constructor. Constructs an empty container with a default-constructed allocator.
@@ -425,8 +424,7 @@ public:
     }
 
 
-private:
-
+   private:
     void    _realloc( size_type newCapacity )
     {
         pointer newPTR = _alloc.allocate(newCapacity);

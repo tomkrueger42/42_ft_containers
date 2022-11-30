@@ -1,8 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <iostream>
-
 
 namespace ft {
 
@@ -15,8 +13,7 @@ template <
     class T
 > class red_black_tree_node
 {
-public:
-
+   public:
     typedef T                                   value_type;
     typedef red_black_tree_node< value_type >   node_type;
     typedef node_type*                          pointer;
@@ -50,25 +47,5 @@ public:
         return (*this);
     }
 }; //   class red_black_tree_node
-
-template< class value_type >
-std::ostream    &operator <<(std::ostream &out, ft::red_black_tree_node< value_type > &n)
-{
-    out << "val: " << n.value.first << std::endl;
-    if (n.parent != NULL)
-        out << "par: " << n.parent->value.first << std::endl;
-    else
-        out << "par: NULL" << std::endl;
-    if (n.left != NULL)
-        out << "lef: " << n.left->value.first << std::endl;
-    else
-        out << "lef: NULL" << std::endl;
-    if (n.right != NULL)
-        out << "rig: " << n.right->value.first << std::endl;
-    else
-        out << "rig: NULL" << std::endl;
-    out << "col: " << n.color << std::endl;
-    return (out);
-}
 
 } //    namespace ft

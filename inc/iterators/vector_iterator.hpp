@@ -7,18 +7,17 @@ namespace ft {
 template < class T >
 class vector_iterator
 {
-public:
+   public:
     typedef typename ft::iterator<ft::random_access_iterator_tag, T >::value_type           value_type;
     typedef typename ft::iterator<ft::random_access_iterator_tag, T >::difference_type      difference_type;
     typedef typename ft::iterator<ft::random_access_iterator_tag, T >::reference            reference;
     typedef typename ft::iterator<ft::random_access_iterator_tag, T >::pointer              pointer;
     typedef typename ft::iterator<ft::random_access_iterator_tag, T >::iterator_category    iterator_category;
 
-private:
+   private:
     pointer _current;
 
-public:
-
+   public:
 /* =================    Constructors                        ================= */
 
     vector_iterator( pointer ptr = NULL ) : _current(ptr) {}

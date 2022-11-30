@@ -49,9 +49,7 @@ template <
     class T_value
 > class red_black_tree_iterator
 {
-
    public:
-
 /* =================    Member types                        ================= */
 
     typedef T_value                                     value_type;
@@ -69,10 +67,8 @@ template <
 /* =================    Member objects                      ================= */
 
     node_pointer    _current;
-
-
+    
    public:
-
 /* =================    Constructors / Destructor           ================= */
 
     red_black_tree_iterator( const node_pointer& ptr = NULL ) : _current(ptr) {}
@@ -80,16 +76,14 @@ template <
     red_black_tree_iterator( const iterator& rhs ) : _current(rhs.base()) {}
 
     ~red_black_tree_iterator( void ) {}
-
-
+    
 /* =================    Accessors                           ================= */
 
     node_pointer    base( void ) const
     {
         return (_current);
     }
-
-
+    
 /* =================    Operator overloads                  ================= */
 
     reference   operator*( void )
@@ -163,7 +157,6 @@ template <
     class T_value
 > class const_red_black_tree_iterator
 {
-
    public:
 /* =================    Member types                        ================= */
     typedef const T_value                               value_type;
@@ -182,20 +175,19 @@ template <
 
     const_node_pointer    _current;
 
-
    public:
-
 /* =================    Constructors / Destructor           ================= */
 
-    const_red_black_tree_iterator( const const_node_pointer& ptr = NULL ) : _current(ptr) {}
+    const_red_black_tree_iterator( const const_node_pointer& ptr = NULL )
+                                    : _current(ptr) {}
 
     const_red_black_tree_iterator( const const_iterator& other )
-                                : _current(other.base()) {}
+                                    : _current(other.base()) {}
 
-    const_red_black_tree_iterator( const iterator& other ) : _current(other.base()) {}
+    const_red_black_tree_iterator( const iterator& other )
+                                    : _current(other.base()) {}
 
     ~const_red_black_tree_iterator( void ) {}
-
 
 /* =================    Accessors                           ================= */
 
@@ -203,7 +195,6 @@ template <
     {
         return (_current);
     }
-
 
 /* =================    Operator overloads                  ================= */
 

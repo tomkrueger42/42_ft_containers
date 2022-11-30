@@ -1,6 +1,7 @@
 #! /bin/bash
 
-./ft_containers > 1
-./std_containers > 2
+./std_containers > out.std_containers
+./ft_containers > out.ft_containers
 
-diff 1 2
+diff out.std_containers out.ft_containers > out.std_vs_ft.diff
+diff out.std_containers out.ft_containers

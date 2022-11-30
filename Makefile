@@ -1,26 +1,36 @@
 NAME		=	ft_containers
 CC			=	c++
 CFLAGS		+=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
+
 INC_DIR		=	./inc/
-DEPS		=	$(addprefix $(INC_DIR), $(INCS))
+ITER_DIR	=	$(INC_DIR)iterators/
+UTILS_DIR	=	$(INC_DIR)utils/
+
+DEPS		=	$(addprefix $(INC_DIR), $(CONTAINERS))
+DEPS		+=	$(addprefix $(ITER_DIR), $(ITERS))
+DEPS		+=	$(addprefix $(UTILS_DIR), $(UTILS))
 DEPS		+=	$(addprefix ./testing/, $(TEST))
 
-SRCS		=	 ./src/main.cpp
+INCS		+=	-I$(INC_DIR) -I$(ITER_DIR) -I$(UTILS_DIR) -Itesting
 
-INCS		=	algorithm.hpp \
-				iterator.hpp \
-				map.hpp \
-				red_black_tree_iterator.hpp \
-				red_black_tree_node.hpp \
-				red_black_tree.hpp \
-				reverse_iterator.hpp \
+CONTAINERS	=	map.hpp \
 				set.hpp \
 				stack.hpp \
+				vector.hpp
+
+UTILS		=	algorithm.hpp \
+				red_black_tree_node.hpp \
+				red_black_tree.hpp \
 				type_traits.hpp \
 				utility.hpp \
-				vector_iterator.hpp \
-				vector.hpp \
 				log.hpp
+
+ITERS		=	iterator.hpp \
+				red_black_tree_iterator.hpp \
+				reverse_iterator.hpp \
+				vector_iterator.hpp
+
+SRCS		=	./src/main.cpp
 
 TEST		=	map_tests.hpp \
 				vector_tests.hpp
@@ -30,20 +40,22 @@ TEST		=	map_tests.hpp \
 all: $(NAME)
 
 $(NAME): $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 $(SRCS) -o ft_containers
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=0 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=0 -DUSING_STD $(SRCS) -o std_containers
+	bash ./test.sh
 
 1: $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=1 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=1 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=1 $(SRCS) -o ft_containers
+	bash ./test.sh
 
 2: $(SRCS) $(DEPS)
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 -DUSING_STD $(SRCS) -o std_containers
-	$(CC) $(CFLAGS) -Iinc -Itesting -DDEBUG=2 $(SRCS) -o ft_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=2 -DUSING_STD $(SRCS) -o std_containers
+	$(CC) $(CFLAGS) $(INCS) -DDEBUG=2 $(SRCS) -o ft_containers
+	bash ./test.sh
 
 clean:
-	rm -f 1
-	rm -f 2
+	rm -f out.*
 
 fclean: clean
 	rm -f $(NAME)

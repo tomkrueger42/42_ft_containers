@@ -9,8 +9,7 @@ template <
     class Container = ft::vector< T >
 >class stack
 {
-public:
-
+   public:
 /* =================    Member types                        ================= */
 
     typedef Container                                   container_type;
@@ -19,14 +18,12 @@ public:
     typedef typename container_type::reference          reference;
     typedef typename container_type::const_reference    const_reference;
 
-protected:
-
+   protected:
 /* =================    Member objects                      ================= */
 
     container_type  c;
 
-public:
-
+   public:
 /* =================    Constructors                        ================= */
 
     explicit stack( const container_type& cont = Container() ) : c(cont) {}
@@ -87,15 +84,11 @@ public:
         c.pop_back();
     }
 
-
-/* =================    Modifiers                           ================= */
-
     template< class T1, class C1 >
     friend bool operator==( const ft::stack< T1, C1 >& lhs, const ft::stack< T1, C1 >& rhs );
 
     template< class T1, class C1 >
     friend bool operator<( const ft::stack< T1, C1 >& lhs, const ft::stack< T1, C1 >& rhs );
-
 }; // class stack
 
 /* =================    Non-member functions                ================= */

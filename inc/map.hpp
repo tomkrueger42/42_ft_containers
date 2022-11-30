@@ -15,9 +15,7 @@ template<
     class Allocator = std::allocator< ft::pair< const Key, T > >
 > class map
 {
-
-public:
-
+   public:
 /* =================    Member types                        ================= */
 
     typedef Key                                         key_type;
@@ -37,14 +35,14 @@ public:
 
     class value_compare : public std::binary_function< value_type, value_type, bool >
     {
-    private:
-        friend class map;
+       private:
+     friend class map;
 
     protected:
         key_compare _compare;
 
-    public:
-        //  Initializes the internal instance of the comparator to c.
+       public:
+     //  Initializes the internal instance of the comparator to c.
         value_compare( void ) : _compare() {}
         value_compare( key_compare c ) : _compare(c) {}
         value_compare( const value_compare& other ) : _compare(other._compare) {}
@@ -65,20 +63,17 @@ public:
     };
 
 
-private:
-
+   private:
     typedef ft::red_black_tree< value_type, value_compare > tree;
 
-public:
-
+   public:
     typedef typename tree::iterator                         iterator;
     typedef typename tree::const_iterator                   const_iterator;
     typedef typename ft::reverse_iterator<iterator>         reverse_iterator;
     typedef typename ft::reverse_iterator<const_iterator>   const_reverse_iterator;
 
 
-private:
-
+   private:
 /* =================    Member objects                      ================= */
 
     value_compare   _compare;
@@ -86,8 +81,7 @@ private:
     tree            _tree;
 
 
-public:
-
+   public:
 /* =================    Constructors                        ================= */
 
     //  (2) Constructs an empty container.

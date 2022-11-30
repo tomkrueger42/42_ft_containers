@@ -13,7 +13,6 @@ template<
     class Allocator = std::allocator< Key >
 > class set
 {
-
    public:
 /* =================    Member types                        ================= */
 
