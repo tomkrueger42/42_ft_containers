@@ -399,10 +399,11 @@ template<
     //  If the current size is less than count, additional copies of value are appended.
     void    resize( size_type count, T value = T() )
     {
-        if (count > max_size())
+        if (count > max_size() && (_capacity == 0 || _capacity == max_size()))
             throw std::length_error("vector");
-        if (_capacity == 0)
-            reserve(count);
+        else if (count > max_size())
+            count = max_size();
+        reserve(count);
         while (_size < count)
         {
             push_back(value);
