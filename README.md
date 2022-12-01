@@ -20,7 +20,7 @@ These binaries consist of the functions testing the underlying data structures.
 
 3. To compare the output of 'ft_containers' and 'std_containers', run
    ```sh
-   ./test.sh
+   ./run_test.sh
    ```
 
 This script executes both binaries and stores their outputs in out.<binary_filename>, respectively. Also a diff of both files is stored in out.std_ft.diff to track the differences of both outputs. For a quick overview, the diff is also printed into the terminal.
