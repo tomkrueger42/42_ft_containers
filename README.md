@@ -10,7 +10,7 @@ To make sure you understand them, let’s re-implement them!
    ```sh
    git clone https://github.com/tomkrueger42/42_ft_containers.git
    ```
-2. Compile the code
+2. Compile the code, note that the makefile and dependencies are currently only tested on macOS!
    ```sh
    make
    ```
