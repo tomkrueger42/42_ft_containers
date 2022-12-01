@@ -8,7 +8,7 @@ To make sure you understand them, let’s re-implement them!
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/tomkrueger42/ft_containers.git
+   git clone https://github.com/tomkrueger42/42_ft_containers.git
    ```
 2. Compile the code
    ```sh
@@ -25,7 +25,7 @@ These binaries consist of the functions testing the underlying data structures.
 
 This script executes both binaries and stores their outputs in out.<binary_filename>, respectively. Also a diff of both files is stored in out.std_ft.diff to track the differences of both outputs. For a quick overview, the diff is also printed into the terminal.
 
-##### Also, the runtime of each test will be printed to the console. This is to compare the performance between the ft_containers and std_containers
+##### Also, the runtime of each test will be printed to the console. This is to compare the performance between the ft_containers and std_containers!
 
 
 To clean the directory, just use
