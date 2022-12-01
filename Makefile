@@ -2,17 +2,18 @@ NAME		=	ft_containers
 CC			=	c++
 CFLAGS		+=	-Wall -Wextra -Werror -std=c++98 -fsanitize=address
 
-INC_DIR		=	../inc/
+INC_DIR		=	./inc/
 ITER_DIR	=	$(INC_DIR)iterators/
 UTILS_DIR	=	$(INC_DIR)utils/
 
 DEPS		=	$(addprefix $(INC_DIR), $(CONTAINERS))
 DEPS		+=	$(addprefix $(ITER_DIR), $(ITERS))
 DEPS		+=	$(addprefix $(UTILS_DIR), $(UTILS))
-DEPS		+=	./inc_test/tests.hpp
-SRCS		+=	$(addprefix ./src_test/, $(TEST))
 
-INCS		+=	-I$(INC_DIR) -I$(ITER_DIR) -I$(UTILS_DIR) -Iinc_test
+DEPS		+=	./tests/inc/tests.hpp
+SRCS		+=	$(addprefix ./tests/src/, $(TEST))
+
+INCS		+=	-I$(INC_DIR) -I$(ITER_DIR) -I$(UTILS_DIR) -Itests/inc
 
 CONTAINERS	=	map.hpp \
 				set.hpp \
