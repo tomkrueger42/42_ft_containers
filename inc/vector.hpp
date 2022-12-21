@@ -427,7 +427,7 @@ template<
     void    _realloc( size_type newCapacity )
     {
         pointer newPTR = _alloc.allocate(newCapacity);
-        for (size_type i = newCapacity; newCapacity < _size; i++)
+        for (size_type i = newCapacity; i < _size; i++)
         {
             _alloc.destroy(_ptr + i);
         }
